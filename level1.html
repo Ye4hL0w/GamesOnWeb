@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamLand Puzzle - Niveau 1</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="renderCanvas"></canvas>
+        <div id="gameUI">
+            <button id="backButton" onclick="window.location.href='index.html'">Retour au menu</button>
+        </div>
+    </div>
+    
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="js/levelManager.js"></script>
+    <script src="js/level1.js"></script>
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const level1 = new Level1();
+            level1.startLevel(1);
+        });
+    </script>
+</body>
+</html>

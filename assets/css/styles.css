@@ -1,0 +1,200 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1a1c2c, #4a1c40, #1c4a4a);
+    min-height: 100vh;
+    color: white;
+}
+
+.game-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    position: relative;
+}
+
+.title-container {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    margin-bottom: 3rem;
+}
+
+h1 {
+    font-size: 4.5rem;
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, #fff, #7ee7f7, #7ef7c4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(126, 231, 247, 0.8);
+    animation: titleFloat 6s ease-in-out infinite;
+}
+
+@keyframes titleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #a0a0a0;
+    margin-top: 0.5rem;
+}
+
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.level-card {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.level-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+}
+
+.level-content {
+    position: relative;
+    z-index: 1;
+}
+
+.level-content h3 {
+    font-size: 1.8rem;
+    margin: 0 0 1rem 0;
+    color: #fff;
+}
+
+.level-content p {
+    color: #a0a0a0;
+    margin: 0 0 1.5rem 0;
+}
+
+.difficulty {
+    margin-top: auto;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.level-card:nth-child(1) .difficulty {
+    background: #4CAF50;
+}
+
+.level-card:nth-child(2) .difficulty {
+    background: #FF9800;
+}
+
+.level-card:nth-child(3) .difficulty {
+    background: #f44336;
+}
+
+#gameContainer {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#renderCanvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+#mainMenu {
+    text-align: center;
+    color: white;
+}
+
+#startButton {
+    padding: 15px 30px;
+    font-size: 1.5em;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+}
+
+#startButton:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+h2 {
+    color: white;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#gameUI {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+}
+
+#backButton {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: background 0.3s;
+}
+
+#backButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.level-card::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 12%;
+    width: 80%;
+    height: 75%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    transition: transform 0.6s;
+    pointer-events: none;
+}
+
+.level-card:hover::before {
+    transform: rotate(45deg) translate(50%, 50%);
+} 
