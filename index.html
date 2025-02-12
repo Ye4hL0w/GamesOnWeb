@@ -3,14 +3,47 @@
     <head>
         <title>Projets Canvas</title>
         <meta charset="utf-8">
-        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./index.css">
     </head>
     <body>
-        <h1>Tree Games</h1>
+        <header>
+            <nav>
+                <h1 onclick="location.href='index.html'">LOGO</h1>
+                <ul class="liens">
+                    <li class="li" data-section="home">Accueil</li>
+                    <li class="li" data-section="progress">Progression</li>
+                    <li class="li" data-section="connexion">
+                        <button id="connexion">Connexion</button>
+                    </li>
+                </ul>
+                <div class="burger-menu">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </nav>
+        </header>
 
-        <div class="buttons">
-            <a href="./DreamTravelers/index.html" class="button">Dream Travelers</a>
-        </div>
+        <div id="content"></div>
+
+        <footer>
+            <div class="colonne">
+                <h3>A propos</h3>
+                <p>jerem.monc@gmail.com</p>
+                <p>Jérémy Moncada</p>
+            </div>
+            <div class="colonne">
+                <h3>Protfolio</h3>
+                <a href="https://jeremy-moncada.fr/">jeremy-moncada.fr</a>
+
+            </div>
+            <div class="colonne">
+                <p>Facebook</p>
+                <p>Instagram</p>
+            </div>
+        </footer>
+    
+        <script src="./index.js"></script>
     </body>
 
 </html>

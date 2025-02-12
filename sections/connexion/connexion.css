@@ -1,0 +1,172 @@
+.content {
+    padding: 30px 5%;
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1a1b2e;
+}
+
+#log-in h1, #sign-in h1 {
+    font-size: 2rem;
+}
+
+#connexion-box {
+    background-color: #12131f;
+    border-radius: 15px;
+    padding: 30px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#choix {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#choix button {
+    cursor: pointer;
+    margin-top: 2%;
+    color: #8a8d9f;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    font-size: 2em;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+#choix button:hover {
+    color: #9d4ee6;
+}
+
+#choix button.active {
+    border-bottom: 3px solid #9d4ee6;
+}
+
+#log-in, #sign-in {
+    color: #ccc;
+    display: none;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5em;
+    padding: 20px 0;
+    width: 100%;
+}
+
+#log-in form, #sign-in form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+#log-in form input, #sign-in form input {
+    width: 100%;
+    font-size: 1em;
+    border: none;
+    border-radius: 14px;
+    transition: border-color 0.3s;
+    box-shadow: 0px 1px 6px rgba(1, 1, 1, 0.5);
+    background-color: #1a1b2e;
+    padding: 0.5rem 1rem;
+}
+
+#log-in form input::placeholder, #sign-in form input::placeholder {
+    font-size: 0.8em;
+    color: #999;
+}
+
+#log-in input:focus, #sign-in input:focus {
+    outline: none;
+    border-color: #d33bfd;
+    box-shadow: 0 0 10px #d33bfd;
+}
+
+#log-in form button, #sign-in form button {
+    width: it-contentf;
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    color: #fff;
+    background-color: #9d4ee6;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 6px 6px 6px rgba(1, 1, 1, 0.5);
+}
+
+#log-in form button:hover, #sign-in form button:hover {
+    background-color: #7b3eb8;
+}
+
+
+#log-in.active, #sign-in.active {
+    display: flex;
+}
+
+.password-container {
+    position: relative;
+    width: 108.5%;
+    display: flex;
+    align-items: center;
+}
+
+.password-container input {
+    width: 100%;
+    margin: 0;
+}
+
+.password-container i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+    z-index: 1;
+}
+
+.error-message {
+    color: #ff0033;
+    font-size: 0.5em;
+    margin-top: 10px;
+    min-height: 20px;
+    text-align: center;
+    display: none;
+}
+
+.error-message.active {
+    display: block;
+}
+
+@media screen and (max-width: 640px) {
+    .content {
+        height: fit-content;
+    }
+
+    #connexion-box {
+        margin: 10%;
+        height: auto;
+        width: 90%;
+    }
+
+    #choix button {
+        font-size: 1.5em;
+    }
+
+    #log-in, #sign-in {
+        font-size: 1.5em;
+    }
+
+    #log-in form input, #sign-in form input {
+        width: 90%;
+    }
+
+    #log-in form button, #sign-in form button {
+        width: 70%;
+    }
+}

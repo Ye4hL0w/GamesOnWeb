@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <section class="content">
+        <div id="connexion-box">
+            <section id="choix">
+                <button id="btn-log-in">Connexion</button>
+                <button id="btn-sign-in">Inscription</button>
+            </section>
+
+            <div id="log-in" class="active">
+                <h1>Se connecter</h1>
+                <form>
+                    <input type="email" id="email-log-in" name="email" placeholder="Entrez votre adresse email" required>
+    
+                    <div class="password-container">
+                        <input type="password" id="password-log-in" name="password" placeholder="Entrez votre mot de passe" required>
+                        <i class="fas fa-eye" id="togglePassword-login"></i>
+                    </div>
+    
+                    <div id="error-box-login" class="error-message"></div>
+    
+                    <button id="log-in-button" type="submit">Connexion</button>
+                </form>
+            </div>
+            
+            <div id="sign-in">
+                <h1>Créer un compte</h1>
+                <form>
+                    <input type="text" id="name-sign-in" name="name" placeholder="Entrez votre nom" required>
+                    
+                    <input type="email" id="email-sign-in" name="email" placeholder="Entrez votre adresse email" required>
+                    
+                    <div class="password-container">
+                        <input type="password" id="password-sign-in" name="password" placeholder="Entrez votre mot de passe" required>
+                        <i class="fas fa-eye" id="togglePassword-signin"></i>
+                    </div>
+    
+                    <div id="error-box-signin" class="error-message"></div>
+    
+                    <button id="sign-in-button" type="submit">Inscription</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script src="./connexion.js"></script>
+</body>
+</html>
