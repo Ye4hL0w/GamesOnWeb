@@ -37,6 +37,8 @@ class Level1 {
 
     createScene() {
         this.scene = new BABYLON.Scene(this.engine);
+
+        this.scene.clearColor = new BABYLON.Color4(51/255, 176/255, 255/255, 1); // Couleur #33b0ff
         
         // Caméra isométrique
         this.camera = new BABYLON.ArcRotateCamera(
@@ -203,21 +205,30 @@ class Level1 {
             return path;
         }
         
-        while (current.x !== target.x || current.z !== target.z) {
+        while (current.x !== target.x || current.z !== target.z || current.y !== target.y) {
             let nextPos = {...current};
             
-            if (current.x < target.x) {
-                nextPos.x++;
-            } else if (current.x > target.x) {
-                nextPos.x--;
-            }
-            else if (current.z < target.z) {
-                nextPos.z++;
-            } else if (current.z > target.z) {
-                nextPos.z--;
+            // Vérifier si nous sommes sur un escalier
+            const currentKey = `${current.x},${current.y},${current.z}`;
+            const gridElement = this.grid[currentKey];
+            
+            if (gridElement && gridElement.type === 'stair') {
+                switch(gridElement.rotation) {
+                    case 0: nextPos.z++; nextPos.y++; break;
+                    case 1: nextPos.x++; nextPos.y++; break;
+                    case 2: nextPos.z--; nextPos.y++; break;
+                    case 3: nextPos.x--; nextPos.y++; break;
+                }
+            } else {
+                // Mouvement normal
+                if (current.x < target.x) nextPos.x++;
+                else if (current.x > target.x) nextPos.x--;
+                else if (current.z < target.z) nextPos.z++;
+                else if (current.z > target.z) nextPos.z--;
+                else if (current.y < target.y) nextPos.y++;
+                else if (current.y > target.y) nextPos.y--;
             }
             
-            // Vérifier si la prochaine position est valide
             if (!this.isValidPosition(nextPos)) {
                 break;
             }
@@ -231,7 +242,21 @@ class Level1 {
 
     isValidPosition(pos) {
         const key = `${pos.x},${pos.y},${pos.z}`;
-        return this.grid[key] || this.isValidPlatformPosition(pos);
+        const gridElement = this.grid[key];
+        
+        if (gridElement) {
+            if (gridElement.type === 'stair') {
+                // Vérifier si le mouvement suit la direction de l'escalier
+                const nextPos = gridElement.nextPosition;
+                return nextPos && (
+                    this.grid[`${nextPos.x},${nextPos.y},${nextPos.z}`] ||
+                    this.isValidPlatformPosition(nextPos)
+                );
+            }
+            return true;
+        }
+        
+        return this.isValidPlatformPosition(pos);
     }
 
     isValidPlatformPosition(pos) {
@@ -246,7 +271,10 @@ class Level1 {
                 invWorldMatrix
             );
             
-            if (Math.abs(localPos.x) <= 1.5 && Math.abs(localPos.z) <= 0.5) {
+            // Vérifier si la position est sur l'une des trois positions valides de la plateforme
+            // On arrondit la position locale pour gérer les imprécisions numériques
+            const roundedX = Math.round(localPos.x);
+            if (Math.abs(roundedX) <= 1 && Math.abs(localPos.z) <= 0.5) {
                 return true;
             }
         }
@@ -256,12 +284,11 @@ class Level1 {
     movePlayerAlongPath(path) {
         if (path.length === 0) return;
         
-        // Sauvegarder la position mondiale avant de détacher
         const worldPos = this.player.getAbsolutePosition();
         this.player.parent = null;
         this.player.position = worldPos;
         
-        const frameRate = 10;
+        const frameRate = 30; // Augmentation pour un mouvement plus fluide
         const animation = new BABYLON.Animation(
             "playerMove",
             "position",
@@ -272,13 +299,30 @@ class Level1 {
         
         const keyframes = [];
         path.forEach((pos, index) => {
+            // Calculer la hauteur en fonction du type de bloc
+            const key = `${pos.x},${pos.y},${pos.z}`;
+            const gridElement = this.grid[key];
+            let height = pos.y + 0.5;
+            
+            if (gridElement && gridElement.type === 'stair') {
+                // Ajuster la hauteur pour les escaliers
+                const progress = index / (path.length - 1);
+                height += Math.sin(progress * Math.PI) * 0.2; // Effet d'arc
+            }
+            
             keyframes.push({
                 frame: index * frameRate,
-                value: new BABYLON.Vector3(pos.x, pos.y + 0.5, pos.z)
+                value: new BABYLON.Vector3(pos.x, height, pos.z),
+                outTangent: new BABYLON.Vector3(0, 0.1, 0) // Tangente pour une courbe plus douce
             });
         });
         
         animation.setKeys(keyframes);
+        
+        // Ajouter une fonction d'ease pour un mouvement plus fluide
+        const easingFunction = new BABYLON.CircleEase();
+        easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+        animation.setEasingFunction(easingFunction);
         
         this.player.animations = [];
         this.player.animations.push(animation);
@@ -358,9 +402,16 @@ class Level1 {
         this.addGridElement(0, 0, 0);
         this.addGridElement(-1, 0, 0);
         this.addGridElement(-2, 0, 0);
-        this.addGridElement(-0, 0, 3);
+        this.addGridElement(0, 0, 3);
+        this.addGridElement(2, 0, 3);
+        this.addGridElement(2, 1, 3);
+        this.addGridElement(2, 2, 3);
+        this.addGridElement(0, 0, -4);
+        this.addGridElement(-4, 0, -4);
+        this.addStairBlock(0, 0, 1, 2);
+        this.addGridElement(0, 1, 2);
 
-        // Création de la plateforme rotative
+        // Création de la première plateforme rotative
         const rotatingPlatform = BABYLON.MeshBuilder.CreateBox(
             "rotatingPlatform",
             { width: 3, height: 1, depth: 1 },
@@ -368,10 +419,10 @@ class Level1 {
         );
         rotatingPlatform.position = new BABYLON.Vector3(0, 0, -2);
         const platformMaterial = new BABYLON.StandardMaterial("platformMat", this.scene);
-        platformMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.6, 0.9);
+        platformMaterial.diffuseColor = new BABYLON.Color3(0.6, 0.3, 0.1); // Marron
         rotatingPlatform.material = platformMaterial;
 
-        // Création du bouton de rotation
+        // Création du bouton de rotation pour la première plateforme
         const rotateButton = BABYLON.MeshBuilder.CreateCylinder(
             "rotateButton",
             { height: 0.6, diameter: 0.3 },
@@ -383,6 +434,25 @@ class Level1 {
         buttonMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
         buttonMaterial.emissiveColor = new BABYLON.Color3(0.5, 0, 0);
         rotateButton.material = buttonMaterial;
+
+        // Création de la deuxième plateforme rotative
+        const rotatingPlatform2 = BABYLON.MeshBuilder.CreateBox(
+            "rotatingPlatform",
+            { width: 3, height: 1, depth: 1 },
+            this.scene
+        );
+        rotatingPlatform2.position = new BABYLON.Vector3(-2, 0, -4);
+        rotatingPlatform2.material = platformMaterial.clone("platformMat2");
+
+        // Création du bouton de rotation pour la deuxième plateforme
+        const rotateButton2 = BABYLON.MeshBuilder.CreateCylinder(
+            "rotateButton",
+            { height: 0.6, diameter: 0.3 },
+            this.scene
+        );
+        rotateButton2.parent = rotatingPlatform2;
+        rotateButton2.position.y = 0.35;
+        rotateButton2.material = buttonMaterial.clone("buttonMat2");
 
         // Création de la sphère du joueur
         this.player = BABYLON.MeshBuilder.CreateSphere("player", {
@@ -517,5 +587,63 @@ class Level1 {
         this.scene.registerBeforeRender(() => {
             cloudsParent.rotation.y += 0.002; // Vitesse de rotation
         });
+    }
+
+    addStairBlock(x, y, z, rotation = 0) {
+        const key = `${x},${y},${z}`;
+        
+        // Création du bloc principal
+        const stairBase = BABYLON.MeshBuilder.CreateBox(
+            `stair_${key}`,
+            { width: 1, height: 0.5, depth: 1 },
+            this.scene
+        );
+        stairBase.position = new BABYLON.Vector3(x, y + 0.25, z);
+        
+        // Création de la rampe avec une meilleure géométrie
+        const ramp = BABYLON.MeshBuilder.CreateBox(
+            `ramp_${key}`,
+            { width: 1, height: 0.1, depth: 1.2 },
+            this.scene
+        );
+        
+        // Ajustement de la position et rotation de la rampe
+        ramp.position = new BABYLON.Vector3(0, 0.3, 0.1);
+        ramp.rotation.x = Math.PI / 6; // 30 degrés pour une pente plus douce
+        
+        // Création d'un parent pour grouper les deux meshes
+        const stairParent = new BABYLON.TransformNode(`stairParent_${key}`, this.scene);
+        stairParent.position = new BABYLON.Vector3(x, y, z);
+        stairBase.parent = stairParent;
+        ramp.parent = stairParent;
+        
+        // Application de la rotation au parent
+        stairParent.rotation.y = rotation * Math.PI / 2;
+        
+        // Application du matériau avec un style plus Monument Valley
+        const material = new BABYLON.StandardMaterial(`stairMat_${key}`, this.scene);
+        material.diffuseColor = new BABYLON.Color3(0.8, 0.6, 0.4); // Couleur plus chaude
+        material.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1); // Moins brillant
+        material.emissiveColor = new BABYLON.Color3(0.1, 0.08, 0.06); // Légère lueur
+        stairBase.material = material;
+        ramp.material = material;
+        
+        // Stocker plus d'informations pour le pathfinding
+        this.grid[key] = {
+            mesh: stairParent,
+            type: 'stair',
+            rotation: rotation,
+            nextPosition: this.getNextStairPosition(x, y, z, rotation)
+        };
+    }
+
+    // Nouvelle méthode pour calculer la position suivante d'un escalier
+    getNextStairPosition(x, y, z, rotation) {
+        switch(rotation) {
+            case 0: return {x: x, y: y + 1, z: z + 1}; // Nord
+            case 1: return {x: x + 1, y: y + 1, z: z}; // Est
+            case 2: return {x: x, y: y + 1, z: z - 1}; // Sud
+            case 3: return {x: x - 1, y: y + 1, z: z}; // Ouest
+        }
     }
 }

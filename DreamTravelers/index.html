@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Travelers</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="game-container">
+        <div id="mainMenu">
+            <div class="title-container">
+                <h1>Dream Travelers</h1>
+                <p class="subtitle">Un voyage dans l'imaginaire</p>
+            </div>
+            
+            <div class="level-grid">
+                <div class="level-card" onclick="startGame(1)">
+                    <div class="level-content">
+                        <h3>Niveau 1</h3>
+                        <p>Le début du rêve</p>
+                        <div class="difficulty">Facile</div>
+                    </div>
+                </div>
+                
+                <div class="level-card" onclick="startGame(2)">
+                    <div class="level-content">
+                        <h3>Niveau 2</h3>
+                        <p>Les chemins impossibles</p>
+                        <div class="difficulty">Moyen</div>
+                    </div>
+                </div>
+                
+                <div class="level-card" onclick="startGame(3)">
+                    <div class="level-content">
+                        <h3>Niveau 3</h3>
+                        <p>La tour mystérieuse</p>
+                        <div class="difficulty">Difficile</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/index.js"></script>
+</body>
+</html>
