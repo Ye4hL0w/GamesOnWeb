@@ -65,7 +65,7 @@ export class Level1 {
     }
 
     update() {
-        this.player.groundY = this.canvas.height - this.floorHeight - this.player.height;
+        this.player.groundY = this.canvas.height - this.floorHeight + 10 - this.player.height;
         
         if (!this.player.isJumping) {
             this.player.y = this.player.groundY;
