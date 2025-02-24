@@ -95,5 +95,4 @@ async function loadSection(section) {
             nav.classList.remove('active');
         }
     });
-
 }

@@ -33,7 +33,6 @@
         </header>
 
         <div id="content">
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
         </div>
 
         <footer>
@@ -52,16 +51,7 @@
                 <p>Instagram</p>
             </div>
         </footer>
-    
-        <script type="module">
-            import { Level1 } from './ShadowTravelers/js/levels/Level1.js';
-
-            const canvas = document.getElementById('gameCanvas');
-            const context = canvas.getContext('2d');
-            
-            const level1 = new Level1(context, canvas);
-            level1.initialize();
-        </script>
+        <script src="./index.js"></script>
     </body>
 
 </html>
