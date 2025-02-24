@@ -1,0 +1,39 @@
+/* Styles spécifiques au niveau 3 */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #808080; /* Fond grisé */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+canvas {
+    display: block;
+    background-color: white; /* Canvas blanc */
+    width: 80vw;
+    height: 80vh;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.back-button a {
+    text-decoration: none;
+    color: white;
+    background-color: #4a4a4a;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    transition: background-color 0.3s;
+}
+
+.back-button a:hover {
+    background-color: #2a2a2a;
+} 

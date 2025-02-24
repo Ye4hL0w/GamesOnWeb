@@ -4,20 +4,21 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #1a1b2e;
+    background: linear-gradient(135deg, #ffffff, #f0f7ff);
 }
 
 #log-in h1, #sign-in h1 {
     font-size: 2rem;
+    color: #4a8bda;
 }
 
 #connexion-box {
-    background-color: #12131f;
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
     padding: 30px;
     width: 100%;
     max-width: 500px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 20px rgba(107, 140, 174, 0.1);
 }
 
 #choix {
@@ -30,7 +31,7 @@
 #choix button {
     cursor: pointer;
     margin-top: 2%;
-    color: #8a8d9f;
+    color: #6b8cae;
     background: none;
     border: none;
     padding: 0;
@@ -40,15 +41,15 @@
 }
 
 #choix button:hover {
-    color: #9d4ee6;
+    color: #4a8bda;
 }
 
 #choix button.active {
-    border-bottom: 3px solid #9d4ee6;
+    border-bottom: 3px solid #4a8bda;
 }
 
 #log-in, #sign-in {
-    color: #ccc;
+    color: #6b8cae;
     display: none;
     align-items: center;
     flex-direction: column;
@@ -67,42 +68,41 @@
 #log-in form input, #sign-in form input {
     width: 100%;
     font-size: 1em;
-    border: none;
+    border: 1px solid #f0f7ff;
     border-radius: 14px;
     transition: border-color 0.3s;
-    box-shadow: 0px 1px 6px rgba(1, 1, 1, 0.5);
-    background-color: #1a1b2e;
+    box-shadow: 0px 1px 6px rgba(107, 140, 174, 0.1);
+    background-color: white;
     padding: 0.5rem 1rem;
 }
 
 #log-in form input::placeholder, #sign-in form input::placeholder {
     font-size: 0.8em;
-    color: #999;
+    color: #6b8cae;
 }
 
 #log-in input:focus, #sign-in input:focus {
     outline: none;
-    border-color: #d33bfd;
-    box-shadow: 0 0 10px #d33bfd;
+    border-color: #4a8bda;
+    box-shadow: 0 0 10px rgba(74, 139, 218, 0.2);
 }
 
 #log-in form button, #sign-in form button {
-    width: it-contentf;
+    width: fit-content;
     padding: 10px 20px;
     font-size: 1.5rem;
-    color: #fff;
-    background-color: #9d4ee6;
+    color: white;
+    background-color: #4a8bda;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
-    box-shadow: 6px 6px 6px rgba(1, 1, 1, 0.5);
+    box-shadow: 0 4px 15px rgba(107, 140, 174, 0.2);
 }
 
 #log-in form button:hover, #sign-in form button:hover {
-    background-color: #7b3eb8;
+    background-color: #6b8cae;
 }
-
 
 #log-in.active, #sign-in.active {
     display: flex;
@@ -126,12 +126,12 @@
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #999;
+    color: #6b8cae;
     z-index: 1;
 }
 
 .error-message {
-    color: #ff0033;
+    color: #ff6b6b;
     font-size: 0.5em;
     margin-top: 10px;
     min-height: 20px;

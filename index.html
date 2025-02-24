@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="fr">
     <head>
-        <title>Projets Canvas</title>
-        <meta charset="utf-8">
+        <title>Shadow Travelers - Level 1</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./index.css">
+        <style>
+            canvas {
+                border: 1px solid black;
+                display: block;
+                margin: 0 auto;
+            }
+        </style>
     </head>
     <body>
         <header>
             <nav>
-                <h1 onclick="location.href='index.html'">LOGO</h1>
+                <h1 onclick="location.href='index.html'">J.MONCADA  </h1>
                 <ul class="liens">
                     <li class="li" data-section="home">Accueil</li>
                     <li class="li" data-section="progress">Progression</li>
@@ -24,7 +32,9 @@
             </nav>
         </header>
 
-        <div id="content"></div>
+        <div id="content">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
 
         <footer>
             <div class="colonne">
@@ -43,7 +53,15 @@
             </div>
         </footer>
     
-        <script src="./index.js"></script>
+        <script type="module">
+            import { Level1 } from './ShadowTravelers/js/levels/Level1.js';
+
+            const canvas = document.getElementById('gameCanvas');
+            const context = canvas.getContext('2d');
+            
+            const level1 = new Level1(context, canvas);
+            level1.initialize();
+        </script>
     </body>
 
 </html>

@@ -1,17 +1,27 @@
+.content {
+    padding: 30px 5%;
+    min-height: 69.5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ffffff, #f0f7ff);
+}
+
 .buttons {
     display: flex;
     flex-wrap: wrap;
+    height: fit-content;
     justify-content: center;
     align-items: center;
-    min-height: 60vh;
     gap: 20px;
 }
 
 .button {
     display: inline-block;
+    height: fit-content;
     padding: 15px 30px;
     font-size: 1.5em;
-    background: #d33bfd;
+    background: #4a8bda;
     color: white;
     text-decoration: none;
     border-radius: 5px;
@@ -19,7 +29,7 @@
 }
 
 .button:hover {
-    background-color: #b22dd8;
+    background-color: #6b8cae;
     transform: scale(1.05);
-    filter: brightness(50%);
+    filter: brightness(105%);
 }
