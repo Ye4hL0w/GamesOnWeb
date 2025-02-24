@@ -1,9 +1,8 @@
-/* Styles spécifiques au niveau 2 */
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #808080; /* Fond grisé */
+    background-color: #474444;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,9 +11,13 @@ body {
 
 canvas {
     display: block;
-    background-color: white; /* Canvas blanc */
-    width: 80vw;
-    height: 80vh;
+    background-color: #ffffff;
+    border-radius: 0;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 .back-button {
@@ -36,4 +39,4 @@ canvas {
 
 .back-button a:hover {
     background-color: #2a2a2a;
-} 
+}
