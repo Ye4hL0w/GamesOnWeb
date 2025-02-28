@@ -47,90 +47,47 @@ export class Player {
         this.sprites.fallLeft.src = './assets/player/fall-left.png';
     }
 
-    update(keys, floorHeight, deltaTime) {
+    update(keys, floorHeight) {
         this.groundY = this.canvas.height - floorHeight - this.height + 10;
         
         if (!this.isJumping) {
             this.y = this.groundY;
         }
         
-        // Si deltaTime n'est pas fourni, utiliser une valeur fixe
-        // pour la compatibilité avec l'ancienne version
-        if (deltaTime === undefined) {
-            // Utiliser une vitesse fixe en pixels par frame
-            this.isMoving = false;
+        this.isMoving = false;
+        
+        if (keys.ArrowLeft) {
+            this.x -= 10;
+            this.direction = 'left';
+            this.lastDirection = 'left';
+            this.isMoving = true;
+            this.frameCount++;
+        }
+        if (keys.ArrowRight) {
+            this.x += 10;
+            this.direction = 'right';
+            this.lastDirection = 'right';
+            this.isMoving = true;
+            this.frameCount++;
+        }
+        
+        if (!this.isMoving) {
+            this.frameCount = 0;
+        }
+        
+        if ((keys.Space || keys.ArrowUp) && !this.isJumping) {
+            this.isJumping = true;
+            this.velocityY = -20;
+        }
+        
+        if (this.isJumping) {
+            this.velocityY += 0.8; // Gravité fixe
+            this.y += this.velocityY;
             
-            if (keys.ArrowLeft) {
-                this.x -= 10; 
-                this.direction = 'left';
-                this.lastDirection = 'left';
-                this.isMoving = true;
-                this.frameCount++;
-            }
-            if (keys.ArrowRight) {
-                this.x += 10;
-                this.direction = 'right';
-                this.lastDirection = 'right';
-                this.isMoving = true;
-                this.frameCount++;
-            }
-            
-            if (!this.isMoving) {
-                this.frameCount = 0;
-            }
-            
-            if ((keys.Space || keys.ArrowUp) && !this.isJumping) {
-                this.isJumping = true;
-                this.velocityY = -15; // Vitesse fixe pour le saut
-            }
-            
-            if (this.isJumping) {
-                this.velocityY += 0.8; // Gravité fixe
-                this.y += this.velocityY;
-                
-                if (this.y >= this.groundY) {
-                    this.y = this.groundY;
-                    this.isJumping = false;
-                    this.velocityY = 0;
-                }
-            }
-        } else {
-            // Version avec deltaTime (pour la compatibilité future)
-            this.isMoving = false;
-            
-            if (keys.ArrowLeft) {
-                this.x -= this.speed * deltaTime;
-                this.direction = 'left';
-                this.lastDirection = 'left';
-                this.isMoving = true;
-                this.frameCount++;
-            }
-            if (keys.ArrowRight) {
-                this.x += this.speed * deltaTime;
-                this.direction = 'right';
-                this.lastDirection = 'right';
-                this.isMoving = true;
-                this.frameCount++;
-            }
-            
-            if (!this.isMoving) {
-                this.frameCount = 0;
-            }
-            
-            if ((keys.Space || keys.ArrowUp) && !this.isJumping) {
-                this.isJumping = true;
-                this.velocityY = this.jumpForce;
-            }
-            
-            if (this.isJumping) {
-                this.velocityY += this.gravity * deltaTime;
-                this.y += this.velocityY * deltaTime;
-                
-                if (this.y >= this.groundY) {
-                    this.y = this.groundY;
-                    this.isJumping = false;
-                    this.velocityY = 0;
-                }
+            if (this.y >= this.groundY) {
+                this.y = this.groundY;
+                this.isJumping = false;
+                this.velocityY = 0;
             }
         }
         

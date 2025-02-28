@@ -27,8 +27,10 @@ export class BaseLevel {
         // Gestion de la sortie
         this.exit = null;
         
-        // Initialisation du temps pour le deltaTime
+        // Gestion du temps pour limiter le FPS
         this.lastTime = performance.now();
+        this.targetFPS = 60;
+        this.frameInterval = 1000 / this.targetFPS; // Intervalle entre les frames en ms
 
         this.bindEvents();
     }
@@ -47,16 +49,16 @@ export class BaseLevel {
         });
     }
 
-    update(currentTime) {
+    update() {
         // Mise à jour du joueur
         if (this.player) {
-            // Mettre à jour le joueur sans deltaTime pour l'instant
+            // Mettre à jour le joueur sans deltaTime
             this.player.update(this.keys, this.floorHeight);
 
             // Gestion du défilement vers la droite
             if (this.player.x > this.canvas.width * 0.6 && this.keys.ArrowRight) {
                 // Utiliser une valeur fixe pour le défilement
-                const scrollAmount = 5;
+                const scrollAmount = 10;
                 if (this.cameraX + this.canvas.width < this.levelWidth) {
                     this.cameraX += scrollAmount;
                     this.player.x -= scrollAmount;
@@ -66,7 +68,7 @@ export class BaseLevel {
             // Gestion du défilement vers la gauche
             if (this.player.x < this.canvas.width * 0.2 && this.keys.ArrowLeft) {
                 // Utiliser une valeur fixe pour le défilement
-                const scrollAmount = 5;
+                const scrollAmount = 10;
                 if (this.cameraX > 0) {
                     this.cameraX -= scrollAmount;
                     this.player.x += scrollAmount;
@@ -207,7 +209,7 @@ export class BaseLevel {
         // Créer le joueur
         this.player = new Player(this.canvas);
         
-        // Réinitialiser le temps pour éviter un grand deltaTime au premier frame
+        // Réinitialiser le temps
         this.lastTime = performance.now();
 
         this.gameLoop();
@@ -215,8 +217,18 @@ export class BaseLevel {
 
     gameLoop() {
         const currentTime = performance.now();
-        this.update(currentTime);
-        this.draw();
+        const elapsed = currentTime - this.lastTime;
+        
+        // Limiter le FPS pour assurer une vitesse constante
+        if (elapsed > this.frameInterval) {
+            // Ajuster le temps pour maintenir un timing régulier
+            this.lastTime = currentTime - (elapsed % this.frameInterval);
+            
+            // Mettre à jour et dessiner le jeu
+            this.update();
+            this.draw();
+        }
+        
         requestAnimationFrame(() => this.gameLoop());
     }
 
