@@ -5,17 +5,18 @@ export class Player {
         this.height = 100;
         this.x = this.canvas.width / 2;
         this.y = 0;
-        this.speed = 5;
+        this.speed = 1000; // Augmenté de 500 à 1000 pour un déplacement plus rapide
         this.direction = 'right';
         this.lastDirection = 'right';
         this.isJumping = false;
         this.isMoving = false;
-        this.jumpForce = -15;
-        this.gravity = 0.3;
+        this.jumpForce = -800; // Force de saut en pixels par seconde
+        this.gravity = 1800; // Gravité en pixels par seconde²
         this.velocityY = 0;
         this.groundY = 0;
         this.frameCount = 0;
         this.animationSpeed = 20;
+        this.lastTime = performance.now(); // Temps du dernier frame
 
         this.sprites = {
             runRight: new Image(),
@@ -46,50 +47,93 @@ export class Player {
         this.sprites.fallLeft.src = './assets/player/fall-left.png';
     }
 
-    update(keys, floorHeight) {
+    update(keys, floorHeight, deltaTime) {
         this.groundY = this.canvas.height - floorHeight - this.height + 10;
         
         if (!this.isJumping) {
             this.y = this.groundY;
         }
         
-        this.isMoving = false;
-        
-        if (keys.ArrowLeft) {
-            this.x -= this.speed;
-            this.direction = 'left';
-            this.lastDirection = 'left';
-            this.isMoving = true;
-            this.frameCount++;
-        }
-        if (keys.ArrowRight) {
-            this.x += this.speed;
-            this.direction = 'right';
-            this.lastDirection = 'right';
-            this.isMoving = true;
-            this.frameCount++;
-        }
-
-        if (!this.isMoving) {
-            this.frameCount = 0;
-        }
-
-        if ((keys.Space || keys.ArrowUp) && !this.isJumping) {
-            this.isJumping = true;
-            this.velocityY = this.jumpForce;
-        }
-
-        if (this.isJumping) {
-            this.velocityY += this.gravity;
-            this.y += this.velocityY;
-
-            if (this.y >= this.groundY) {
-                this.y = this.groundY;
-                this.isJumping = false;
-                this.velocityY = 0;
+        // Si deltaTime n'est pas fourni, utiliser une valeur fixe
+        // pour la compatibilité avec l'ancienne version
+        if (deltaTime === undefined) {
+            // Utiliser une vitesse fixe en pixels par frame
+            this.isMoving = false;
+            
+            if (keys.ArrowLeft) {
+                this.x -= 10; 
+                this.direction = 'left';
+                this.lastDirection = 'left';
+                this.isMoving = true;
+                this.frameCount++;
+            }
+            if (keys.ArrowRight) {
+                this.x += 10;
+                this.direction = 'right';
+                this.lastDirection = 'right';
+                this.isMoving = true;
+                this.frameCount++;
+            }
+            
+            if (!this.isMoving) {
+                this.frameCount = 0;
+            }
+            
+            if ((keys.Space || keys.ArrowUp) && !this.isJumping) {
+                this.isJumping = true;
+                this.velocityY = -15; // Vitesse fixe pour le saut
+            }
+            
+            if (this.isJumping) {
+                this.velocityY += 0.8; // Gravité fixe
+                this.y += this.velocityY;
+                
+                if (this.y >= this.groundY) {
+                    this.y = this.groundY;
+                    this.isJumping = false;
+                    this.velocityY = 0;
+                }
+            }
+        } else {
+            // Version avec deltaTime (pour la compatibilité future)
+            this.isMoving = false;
+            
+            if (keys.ArrowLeft) {
+                this.x -= this.speed * deltaTime;
+                this.direction = 'left';
+                this.lastDirection = 'left';
+                this.isMoving = true;
+                this.frameCount++;
+            }
+            if (keys.ArrowRight) {
+                this.x += this.speed * deltaTime;
+                this.direction = 'right';
+                this.lastDirection = 'right';
+                this.isMoving = true;
+                this.frameCount++;
+            }
+            
+            if (!this.isMoving) {
+                this.frameCount = 0;
+            }
+            
+            if ((keys.Space || keys.ArrowUp) && !this.isJumping) {
+                this.isJumping = true;
+                this.velocityY = this.jumpForce;
+            }
+            
+            if (this.isJumping) {
+                this.velocityY += this.gravity * deltaTime;
+                this.y += this.velocityY * deltaTime;
+                
+                if (this.y >= this.groundY) {
+                    this.y = this.groundY;
+                    this.isJumping = false;
+                    this.velocityY = 0;
+                }
             }
         }
-
+        
         this.x = Math.max(0, Math.min(this.canvas.width - this.width, this.x));
     }
 

@@ -9,7 +9,7 @@ export class BaseLevel {
         
         // Position de la caméra pour le défilement
         this.cameraX = 0;
-        this.scrollSpeed = 5;
+        this.scrollSpeed = 5; // Vitesse fixe en pixels par frame
         this.scrollThreshold = this.canvas.width * 0.4; // Point à partir duquel le niveau commence à défiler
         
         // Gestion des obstacles et du sol
@@ -26,6 +26,9 @@ export class BaseLevel {
 
         // Gestion de la sortie
         this.exit = null;
+        
+        // Initialisation du temps pour le deltaTime
+        this.lastTime = performance.now();
 
         this.bindEvents();
     }
@@ -44,14 +47,16 @@ export class BaseLevel {
         });
     }
 
-    update() {
+    update(currentTime) {
         // Mise à jour du joueur
         if (this.player) {
+            // Mettre à jour le joueur sans deltaTime pour l'instant
             this.player.update(this.keys, this.floorHeight);
 
             // Gestion du défilement vers la droite
             if (this.player.x > this.canvas.width * 0.6 && this.keys.ArrowRight) {
-                const scrollAmount = 5; // Vitesse de défilement réduite
+                // Utiliser une valeur fixe pour le défilement
+                const scrollAmount = 5;
                 if (this.cameraX + this.canvas.width < this.levelWidth) {
                     this.cameraX += scrollAmount;
                     this.player.x -= scrollAmount;
@@ -60,7 +65,8 @@ export class BaseLevel {
             
             // Gestion du défilement vers la gauche
             if (this.player.x < this.canvas.width * 0.2 && this.keys.ArrowLeft) {
-                const scrollAmount = 5; // Vitesse de défilement réduite
+                // Utiliser une valeur fixe pour le défilement
+                const scrollAmount = 5;
                 if (this.cameraX > 0) {
                     this.cameraX -= scrollAmount;
                     this.player.x += scrollAmount;
@@ -200,12 +206,16 @@ export class BaseLevel {
     initialize() {
         // Créer le joueur
         this.player = new Player(this.canvas);
+        
+        // Réinitialiser le temps pour éviter un grand deltaTime au premier frame
+        this.lastTime = performance.now();
 
         this.gameLoop();
     }
 
     gameLoop() {
-        this.update();
+        const currentTime = performance.now();
+        this.update(currentTime);
         this.draw();
         requestAnimationFrame(() => this.gameLoop());
     }
