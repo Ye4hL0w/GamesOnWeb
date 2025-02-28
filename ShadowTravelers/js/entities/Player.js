@@ -9,6 +9,7 @@ export class Player {
         this.direction = 'right';
         this.lastDirection = 'right';
         this.isJumping = false;
+        this.wasJumping = false;
         this.isMoving = false;
         this.jumpForce = -800;
         this.gravity = 1800;
