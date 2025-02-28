@@ -12,7 +12,7 @@ export class Level1 extends BaseLevel {
         super.initialize();
 
         const obstacleHeight = 100;
-        const obstacleY = this.canvas.height - this.floorHeight + 740;
+        const obstacleY = this.canvas.height - this.floorHeight - (this.canvas.height * -4.9);
         
         this.obstacles.push(
             { x: 1500, y: obstacleY, width: 50, height: obstacleHeight },

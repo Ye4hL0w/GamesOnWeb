@@ -5,18 +5,18 @@ export class Player {
         this.height = 100;
         this.x = this.canvas.width / 2;
         this.y = 0;
-        this.speed = 1000; // Augmenté de 500 à 1000 pour un déplacement plus rapide
+        this.speed = 1000;
         this.direction = 'right';
         this.lastDirection = 'right';
         this.isJumping = false;
         this.isMoving = false;
-        this.jumpForce = -800; // Force de saut en pixels par seconde
-        this.gravity = 1800; // Gravité en pixels par seconde²
+        this.jumpForce = -800;
+        this.gravity = 1800;
         this.velocityY = 0;
         this.groundY = 0;
         this.frameCount = 0;
-        this.animationSpeed = 20;
-        this.lastTime = performance.now(); // Temps du dernier frame
+        this.animationSpeed = 10;
+        this.lastTime = performance.now();
 
         this.sprites = {
             runRight: new Image(),
@@ -81,7 +81,7 @@ export class Player {
         }
         
         if (this.isJumping) {
-            this.velocityY += 0.8; // Gravité fixe
+            this.velocityY += 0.8;
             this.y += this.velocityY;
             
             if (this.y >= this.groundY) {
