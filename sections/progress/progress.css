@@ -1,18 +1,22 @@
 body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
+    color: #e0e6f0;
 }
 
 .progress-container {
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    z-index: 10;
 }
 
 h1 {
     text-align: center;
-    color: #4a8bda;
+    color: #6fc3df;
     margin-top: 40px;
     margin-bottom: 40px;
+    text-shadow: 0 0 10px rgba(111, 195, 223, 0.5);
 }
 
 .games-progress {
@@ -23,59 +27,152 @@ h1 {
 }
 
 .game-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(10, 14, 23, 0.7);
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 4px 6px rgba(107, 140, 174, 0.1);
-    transition: transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(10, 14, 23, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(111, 195, 223, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.game-card:nth-child(1) {
+    box-shadow: 0 4px 20px rgba(92, 61, 153, 0.3);
+    border: 1px solid rgba(92, 61, 153, 0.2);
+}
+
+.game-card:nth-child(2) {
+    box-shadow: 0 4px 20px rgba(35, 69, 103, 0.3);
+    border: 1px solid rgba(35, 69, 103, 0.2);
+}
+
+.game-card:nth-child(3) {
+    box-shadow: 0 4px 20px rgba(111, 195, 223, 0.3);
+    border: 1px solid rgba(111, 195, 223, 0.2);
 }
 
 .game-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(111, 195, 223, 0.4);
 }
 
 .game-card h2 {
-    color: #4a8bda;
+    color: #6fc3df;
     margin-bottom: 20px;
     text-align: center;
+    text-shadow: 0 0 5px rgba(111, 195, 223, 0.3);
+}
+
+.game-card:nth-child(1) h2 {
+    color: #9b6dff;
+    text-shadow: 0 0 5px rgba(155, 109, 255, 0.3);
+}
+
+.game-card:nth-child(2) h2 {
+    color: #4a8bda;
+    text-shadow: 0 0 5px rgba(74, 139, 218, 0.3);
 }
 
 .progress-bar {
     width: 100%;
     height: 20px;
-    background-color: #f0f7ff;
+    background-color: rgba(14, 22, 34, 0.6);
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .progress-fill {
     height: 100%;
-    background-color: #4a8bda;
     width: 0%;
-    transition: width 0.5s ease-in-out;
+    transition: width 1s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card:nth-child(1) .progress-fill {
+    background: linear-gradient(to right, #3d2a5c, #5c3d99);
+}
+
+.game-card:nth-child(2) .progress-fill {
+    background: linear-gradient(to right, #1c2637, #234567);
+}
+
+.game-card:nth-child(3) .progress-fill {
+    background: linear-gradient(to right, #26889c, #6fc3df);
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shine 2s infinite;
+    transform: translateX(-100%);
+}
+
+@keyframes shine {
+    to {
+        transform: translateX(100%);
+    }
 }
 
 .progress-text {
     text-align: center;
     font-weight: bold;
-    color: #4a8bda;
+    color: #6fc3df;
     margin: 10px 0;
+}
+
+.game-card:nth-child(1) .progress-text {
+    color: #9b6dff;
+}
+
+.game-card:nth-child(2) .progress-text {
+    color: #4a8bda;
 }
 
 .game-stats {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid #f0f7ff;
+    border-top: 1px solid rgba(111, 195, 223, 0.2);
+}
+
+.game-card:nth-child(1) .game-stats {
+    border-top: 1px solid rgba(155, 109, 255, 0.2);
+}
+
+.game-card:nth-child(2) .game-stats {
+    border-top: 1px solid rgba(74, 139, 218, 0.2);
 }
 
 .game-stats p {
     margin: 5px 0;
-    color: #6b8cae;
+    color: #8ba4c7;
     font-size: 0.9em;
 }
 
 .game-stats span {
     font-weight: bold;
+}
+
+.game-card:nth-child(1) .game-stats span {
+    color: #9b6dff;
+}
+
+.game-card:nth-child(2) .game-stats span {
     color: #4a8bda;
+}
+
+.game-card:nth-child(3) .game-stats span {
+    color: #6fc3df;
 }

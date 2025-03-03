@@ -16,6 +16,9 @@ export class PNJ {
         // Distance d'apparition du texte
         this.textVisibilityDistance = 500; // Distance en pixels
         this.showText = false; // État de visibilité du texte
+        
+        // Largeur maximale du texte
+        this.maxTextWidth = 250;
     }
 
     update(playerX) {
@@ -43,10 +46,12 @@ export class PNJ {
         context.font = this.font;
         context.textAlign = 'center';
         
-        // Mesurer le texte pour le fond
-        const metrics = context.measureText(this.text);
-        const textWidth = metrics.width + this.textPadding * 2;
-        const textHeight = 20 + this.textPadding * 2;
+        // Découper le texte en lignes pour respecter la largeur maximale
+        const lines = this.wrapText(context, this.text, this.maxTextWidth);
+        
+        // Calculer la hauteur totale du texte
+        const lineHeight = 20;
+        const textHeight = (lineHeight * lines.length) + this.textPadding * 2;
         
         // Position du texte
         const textX = adjustedX + this.width / 2;
@@ -55,17 +60,44 @@ export class PNJ {
         // Dessiner le fond
         context.fillStyle = this.textBackground;
         context.fillRect(
-            textX - textWidth / 2,
+            textX - (this.maxTextWidth + this.textPadding * 2) / 2,
             textY - textHeight + this.textPadding,
-            textWidth,
+            this.maxTextWidth + this.textPadding * 2,
             textHeight
         );
         
-        // Dessiner le texte
+        // Dessiner chaque ligne de texte
         context.fillStyle = this.textColor;
-        context.fillText(this.text, textX, textY);
+        lines.forEach((line, index) => {
+            context.fillText(
+                line, 
+                textX, 
+                textY - textHeight + this.textPadding + lineHeight * (index + 1)
+            );
+        });
         
         context.restore();
+    }
+    
+    wrapText(context, text, maxWidth) {
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = words[0];
+        
+        for (let i = 1; i < words.length; i++) {
+            const testLine = currentLine + ' ' + words[i];
+            const metrics = context.measureText(testLine);
+            
+            if (metrics.width > maxWidth) {
+                lines.push(currentLine);
+                currentLine = words[i];
+            } else {
+                currentLine = testLine;
+            }
+        }
+        
+        lines.push(currentLine);
+        return lines;
     }
 
     drawCharacter(context, adjustedX) {

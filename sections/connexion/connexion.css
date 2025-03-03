@@ -4,21 +4,44 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #ffffff, #f0f7ff);
+    background: linear-gradient(135deg, #0a0e17, #1c2331);
+    position: relative;
+    overflow: hidden;
+}
+
+.content::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 50%, rgba(10, 14, 23, 0.5) 150%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%236fc3df" opacity="0.2"/></svg>') repeat;
+    opacity: 0.6;
+    animation: dreamFloat 120s linear infinite;
+}
+
+@keyframes dreamFloat {
+    from { background-position: 0 0; }
+    to { background-position: 1000px 1000px; }
 }
 
 #log-in h1, #sign-in h1 {
     font-size: 2rem;
-    color: #4a8bda;
+    color: #6fc3df;
+    text-shadow: 0 0 10px rgba(111, 195, 223, 0.5);
 }
 
 #connexion-box {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(10, 14, 23, 0.7);
     border-radius: 15px;
     padding: 30px;
     width: 100%;
     max-width: 500px;
-    box-shadow: 0 0 20px rgba(107, 140, 174, 0.1);
+    box-shadow: 0 0 30px rgba(111, 195, 223, 0.2);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(111, 195, 223, 0.1);
+    position: relative;
+    z-index: 10;
 }
 
 #choix {
@@ -31,7 +54,7 @@
 #choix button {
     cursor: pointer;
     margin-top: 2%;
-    color: #6b8cae;
+    color: #8ba4c7;
     background: none;
     border: none;
     padding: 0;
@@ -41,15 +64,17 @@
 }
 
 #choix button:hover {
-    color: #4a8bda;
+    color: #6fc3df;
+    text-shadow: 0 0 10px rgba(111, 195, 223, 0.5);
 }
 
 #choix button.active {
-    border-bottom: 3px solid #4a8bda;
+    border-bottom: 3px solid #6fc3df;
+    color: #6fc3df;
 }
 
 #log-in, #sign-in {
-    color: #6b8cae;
+    color: #8ba4c7;
     display: none;
     align-items: center;
     flex-direction: column;
@@ -68,23 +93,24 @@
 #log-in form input, #sign-in form input {
     width: 100%;
     font-size: 1em;
-    border: 1px solid #f0f7ff;
+    border: 1px solid #234567;
     border-radius: 14px;
-    transition: border-color 0.3s;
-    box-shadow: 0px 1px 6px rgba(107, 140, 174, 0.1);
-    background-color: white;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0px 1px 6px rgba(111, 195, 223, 0.1);
+    background-color: rgba(10, 14, 23, 0.7);
     padding: 0.5rem 1rem;
+    color: #e0e6f0;
 }
 
 #log-in form input::placeholder, #sign-in form input::placeholder {
     font-size: 0.8em;
-    color: #6b8cae;
+    color: #8ba4c7;
 }
 
 #log-in input:focus, #sign-in input:focus {
     outline: none;
-    border-color: #4a8bda;
-    box-shadow: 0 0 10px rgba(74, 139, 218, 0.2);
+    border-color: #6fc3df;
+    box-shadow: 0 0 15px rgba(111, 195, 223, 0.3);
 }
 
 #log-in form button, #sign-in form button {
@@ -92,20 +118,28 @@
     padding: 10px 20px;
     font-size: 1.5rem;
     color: white;
-    background-color: #4a8bda;
+    background: linear-gradient(135deg, #2c1a47, #3d2a5c);
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    box-shadow: 0 4px 15px rgba(107, 140, 174, 0.2);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(92, 61, 153, 0.3);
 }
 
 #log-in form button:hover, #sign-in form button:hover {
-    background-color: #6b8cae;
+    background: linear-gradient(135deg, #3d2a5c, #5c3d99);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(92, 61, 153, 0.5);
 }
 
 #log-in.active, #sign-in.active {
     display: flex;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .password-container {
@@ -126,8 +160,13 @@
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #6b8cae;
+    color: #8ba4c7;
     z-index: 1;
+    transition: color 0.3s ease;
+}
+
+.password-container i:hover {
+    color: #6fc3df;
 }
 
 .error-message {
@@ -141,6 +180,14 @@
 
 .error-message.active {
     display: block;
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
 }
 
 @media screen and (max-width: 640px) {

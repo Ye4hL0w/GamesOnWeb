@@ -1,15 +1,15 @@
 import { BaseLevel } from './BaseLevel.js';
-import { Exit } from '../entities/Exit.js';
+import { Exit } from '../elements/Exit.js';
 import { Ghost } from '../entities/Ghost.js';
-import { JumpingObstacle } from '../entities/JumpingObstacle.js';
-import { DirectionalObstacle } from '../entities/DirectionalObstacle.js';
+import { JumpingObstacle } from '../elements/JumpingObstacle.js';
+import { DirectionalObstacle } from '../elements/DirectionalObstacle.js';
 
 export class Level1 extends BaseLevel {
     constructor(context, canvas) {
         super(context, canvas);
         this.ghosts = [];
-        this.jumpingObstacles = []; // Tableau pour stocker les obstacles interactifs
-        this.directionalObstacles = []; // Tableau pour stocker les obstacles directionnels
+        this.jumpingObstacles = [];
+        this.directionalObstacles = [];
     }
 
     initialize() {
@@ -25,21 +25,25 @@ export class Level1 extends BaseLevel {
         );
 
         this.jumpingObstacles.push(
-            new JumpingObstacle(3200, obstacleY, 70, this.canvas.height, 200, 8)
+            new JumpingObstacle(3200, obstacleY-850, 70, 1000, 200, 8)
         );
         
         this.directionalObstacles.push(
-            new DirectionalObstacle(3800, obstacleY, 70, this.canvas.height, 200, 8)
+            new DirectionalObstacle(3800, obstacleY-850, 70, 1000, 200, 8)
         );
 
         const ghostY = obstacleY;
         this.ghosts.push(
-            new Ghost(750, ghostY, "Bonjour voyageur !")
+            new Ghost(750, ghostY, "Bienvenue, voyageur de l'entre-deux mondes! Je sens que tu viens de t'éveiller... Ce royaume n'est qu'un passage vers Dream Land. Méfie-toi des ombres qui rôdent par ici.")
+        );
+
+        this.ghosts.push(
+            new Ghost(this.levelWidth - 400, ghostY, "Tu as atteint la fin de ce passage obscur... *murmure* Si tu continues ta quête, arme-toi de courage. Le véritable voyage ne fait que commencer...")
         );
 
         this.exit = new Exit(
             this.levelWidth - 200,
-            this.canvas.height - this.floorHeight - 100,
+            obstacleY,
             50,
             100
         );
