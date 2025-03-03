@@ -15,24 +15,23 @@ export class Level1 extends BaseLevel {
     initialize() {
         super.initialize();
 
+        const floorY = this.canvas.height - this.floorHeight;
         const obstacleHeight = 100;
-        const obstacleY = this.canvas.height - this.floorHeight - (this.canvas.height * -4.9);
         
         this.obstacles.push(
-            { x: 1500, y: obstacleY, width: 50, height: obstacleHeight },
-            { x: 2000, y: obstacleY, width: 50, height: obstacleHeight },
-            { x: 2500, y: obstacleY, width: 50, height: obstacleHeight }
+            { x: 1500, y: floorY - obstacleHeight, width: 50, height: obstacleHeight },
+            { x: 2000, y: floorY - obstacleHeight, width: 300, height: obstacleHeight },
+            { x: 2750, y: floorY - obstacleHeight, width: 50, height: obstacleHeight }
         );
 
         this.jumpingObstacles.push(
-            new JumpingObstacle(3200, obstacleY-850, 70, 1000, 200, 8)
+            new JumpingObstacle(3200, 0, 70, floorY, 200, 8)
         );
-        
         this.directionalObstacles.push(
-            new DirectionalObstacle(3800, obstacleY-850, 70, 1000, 200, 8)
+            new DirectionalObstacle(3800, 0, 70, floorY, 200, 8)
         );
 
-        const ghostY = obstacleY;
+        const ghostY = floorY - 100;
         this.ghosts.push(
             new Ghost(750, ghostY, "Bienvenue, voyageur de l'entre-deux mondes! Je sens que tu viens de t'éveiller... Ce royaume n'est qu'un passage vers Dream Land. Méfie-toi des ombres qui rôdent par ici.")
         );
@@ -43,7 +42,7 @@ export class Level1 extends BaseLevel {
 
         this.exit = new Exit(
             this.levelWidth - 200,
-            obstacleY,
+            floorY - 100,
             50,
             100
         );

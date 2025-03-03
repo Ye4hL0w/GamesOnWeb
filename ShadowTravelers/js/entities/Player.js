@@ -3,8 +3,8 @@ export class Player {
         this.canvas = canvas;
         this.width = 100;
         this.height = 100;
-        this.x = this.canvas.width / 2;
-        this.y = 0;
+        this.x = this.canvas.width * 0.1;
+        this.y = this.canvas.height - this.height +10;
         this.speed = 1000;
         this.direction = 'right';
         this.lastDirection = 'right';
@@ -18,6 +18,7 @@ export class Player {
         this.frameCount = 0;
         this.animationSpeed = 10;
         this.lastTime = performance.now();
+        this.canJump = true;
 
         this.sprites = {
             runRight: new Image(),
@@ -51,8 +52,9 @@ export class Player {
     update(keys, floorHeight) {
         this.groundY = this.canvas.height - floorHeight - this.height + 10;
         
-        if (!this.isJumping) {
+        if (!this.isJumping && this.y >= this.groundY) {
             this.y = this.groundY;
+            this.canJump = true;
         }
         
         this.isMoving = false;
@@ -76,8 +78,9 @@ export class Player {
             this.frameCount = 0;
         }
         
-        if ((keys.Space || keys.ArrowUp) && !this.isJumping) {
+        if ((keys.Space || keys.ArrowUp) && this.canJump) {
             this.isJumping = true;
+            this.canJump = false;
             this.velocityY = -20;
         }
         

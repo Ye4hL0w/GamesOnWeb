@@ -5,7 +5,11 @@ export class BaseLevel {
     constructor(context, canvas) {
         this.context = context;
         this.canvas = canvas;
+        
+        console.log("BaseLevel constructor - Canvas:", canvas.width, "x", canvas.height);
+        
         this.floorHeight = 50;
+        this.floorY = this.canvas.height - this.floorHeight;
         
         this.cameraX = 0;
         this.scrollSpeed = 5;
@@ -28,6 +32,8 @@ export class BaseLevel {
         this.targetFPS = 60;
         this.frameInterval = 1000 / this.targetFPS;
 
+        this.isRunning = true;
+        
         this.bindEvents();
     }
 
@@ -174,25 +180,45 @@ export class BaseLevel {
     }
 
     initialize() {
-        this.player = new Player(this.canvas);
-        this.lastTime = performance.now();
-        this.gameLoop();
-    }
-
-    gameLoop() {
-        const currentTime = performance.now();
-        const elapsed = currentTime - this.lastTime;
+        this.floorY = this.canvas.height - this.floorHeight;
+        console.log("BaseLevel initialize - Canvas:", this.canvas.width, "x", this.canvas.height);
+        console.log("Calculé floorY =", this.floorY);
         
-        if (elapsed > this.frameInterval) {
-            this.lastTime = currentTime - (elapsed % this.frameInterval);
-            this.update();
-            this.draw();
+        // Créer le joueur si nécessaire
+        if (!this.player) {
+            this.player = new Player(this.canvas);
         }
         
-        requestAnimationFrame(() => this.gameLoop());
+        this.lastTime = performance.now();
     }
 
     onLevelComplete() {
         console.log('Niveau terminé !');
+    }
+
+    handleResize() {
+        // Recalculer floorY
+        this.floorY = this.canvas.height - this.floorHeight;
+        console.log("Resize - nouveau floorY =", this.floorY);
+        
+        this.updateElementPositions();
+        
+        this.draw();
+    }
+
+    updateElementPositions() {
+        if (this.player) {
+            // Positionner le joueur plus vers la gauche (environ 20% de la largeur du canvas)
+            this.player.x = this.canvas.width * 0.1;
+            
+            // S'assurer que le joueur est au bon niveau vertical
+            this.player.y = this.canvas.height - this.floorHeight - this.player.height + 10;
+        }
+        
+        // Recalculer les positions d'autres éléments si nécessaire
+        if (this.exit) {
+            // Maintenir la position de la sortie relative à la taille du canvas
+            this.exit.y = this.canvas.height - this.floorHeight - this.exit.height;
+        }
     }
 } 
