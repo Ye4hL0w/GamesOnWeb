@@ -10,6 +10,8 @@ export class Level1 extends BaseLevel {
         this.ghosts = [];
         this.jumpingObstacles = [];
         this.directionalObstacles = [];
+        
+        this.levelTitle = "Niveau 1 - L'éveil des ombres";
     }
 
     initialize() {
@@ -40,12 +42,7 @@ export class Level1 extends BaseLevel {
             new Ghost(this.levelWidth - 400, ghostY, "Tu as atteint la fin de ce passage obscur... *murmure* Si tu continues ta quête, arme-toi de courage. Le véritable voyage ne fait que commencer...")
         );
 
-        this.exit = new Exit(
-            this.levelWidth - 200,
-            floorY - 100,
-            50,
-            100
-        );
+        this.exit = new Exit(this.levelWidth - 200, floorY - 100,80, 80);
     }
 
     update() {
@@ -117,5 +114,28 @@ export class Level1 extends BaseLevel {
 
     onLevelComplete() {
         console.log('Niveau 1 terminé ! Passage au niveau suivant...');
+        
+        // Ajouter un effet visuel de "fondu" avant la transition
+        const canvas = this.canvas;
+        const context = this.context;
+        
+        let opacity = 0;
+        const fadeEffect = setInterval(() => {
+            opacity += 0.05;
+            context.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (opacity >= 1) {
+                clearInterval(fadeEffect);
+                
+                // Stocker le niveau suivant dans localStorage
+                localStorage.setItem('selectedLevel', 2);
+                
+                // Rediriger vers le niveau 2
+                setTimeout(() => {
+                    window.location.href = 'level2.html';
+                }, 500);
+            }
+        }, 50);
     }
 }

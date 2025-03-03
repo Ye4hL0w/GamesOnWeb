@@ -19,9 +19,7 @@ function startGame(levelId) {
         // Créer le niveau avec le canvas correctement dimensionné
         const canvas = document.getElementById('myCanvas');
         const context = canvas.getContext('2d');
-        
-        console.log("Starting game with canvas dimensions:", canvas.width, "x", canvas.height);
-        
+                
         // Créer le niveau approprié
         let level;
         switch(levelId) {
@@ -54,7 +52,6 @@ function resizeCanvas() {
     if (canvas) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        console.log("Canvas redimensionné à:", canvas.width, "x", canvas.height);
         return canvas;
     }
     return null;
@@ -88,14 +85,11 @@ function initializeLevel() {
         
         // Vérifier que le canvas a bien les bonnes dimensions
         if (canvas.width <= 300 || canvas.height <= 150) {
-            console.warn("Canvas pas correctement redimensionné, réessai dans 100ms...");
             setTimeout(initializeLevel, 100);
             isInitializing = false;
             return;
         }
-        
-        console.log("Initialisation avec canvas:", canvas.width, "x", canvas.height);
-        
+                
         // Créer le niveau approprié
         const url = window.location.href;
         if (url.includes('level1')) {

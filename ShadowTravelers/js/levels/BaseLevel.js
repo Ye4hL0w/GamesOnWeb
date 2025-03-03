@@ -34,6 +34,15 @@ export class BaseLevel {
 
         this.isRunning = true;
         
+        // Propriétés pour l'animation du titre
+        this.levelTitle = "Niveau";
+        this.titleY = this.canvas.height / 2; // Position initiale au centre
+        this.targetTitleY = 50; // Position finale en haut
+        this.titleAnimationDone = false;
+        this.titleAnimationStarted = false;
+        this.titleAnimationSpeed = 2; // Vitesse de l'animation
+        this.titleDisplayTime = 0; // Compteur pour retarder le début de l'animation
+        
         this.bindEvents();
     }
 
@@ -97,6 +106,9 @@ export class BaseLevel {
         if (this.player) {
             this.player.draw(this.context);
         }
+
+        // Dessiner le titre du niveau
+        this.drawLevelTitle();
     }
 
     drawGround() {
@@ -181,8 +193,6 @@ export class BaseLevel {
 
     initialize() {
         this.floorY = this.canvas.height - this.floorHeight;
-        console.log("BaseLevel initialize - Canvas:", this.canvas.width, "x", this.canvas.height);
-        console.log("Calculé floorY =", this.floorY);
         
         // Créer le joueur si nécessaire
         if (!this.player) {
@@ -199,7 +209,6 @@ export class BaseLevel {
     handleResize() {
         // Recalculer floorY
         this.floorY = this.canvas.height - this.floorHeight;
-        console.log("Resize - nouveau floorY =", this.floorY);
         
         this.updateElementPositions();
         
@@ -220,5 +229,36 @@ export class BaseLevel {
             // Maintenir la position de la sortie relative à la taille du canvas
             this.exit.y = this.canvas.height - this.floorHeight - this.exit.height;
         }
+    }
+
+    drawLevelTitle() {
+        if (!this.titleAnimationStarted) {
+            this.titleDisplayTime++;
+            if (this.titleDisplayTime > 30) {
+                this.titleAnimationStarted = true;
+            }
+        }
+        
+        if (this.titleAnimationStarted && !this.titleAnimationDone) {
+            this.titleY -= this.titleAnimationSpeed;
+            
+            if (this.titleY <= this.targetTitleY) {
+                this.titleY = this.targetTitleY;
+                this.titleAnimationDone = true;
+            }
+        }
+        
+        this.context.save();
+        
+        const fontSize = this.titleAnimationDone ? 24 : 36;
+        this.context.font = `bold ${fontSize}px Arial`;
+        
+        const textWidth = this.context.measureText(this.levelTitle).width;
+        
+        this.context.fillStyle = 'black';
+        this.context.textAlign = 'center';
+        
+        this.context.fillText(this.levelTitle, this.canvas.width / 2, this.titleY);
+        this.context.restore();
     }
 } 
