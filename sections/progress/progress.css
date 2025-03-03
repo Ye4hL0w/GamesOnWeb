@@ -1,7 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Cinzel:wght@400;600&display=swap');
+
+:root {
+    --shadow-dark: #111927;
+    --shadow-medium: #1f293a;
+    --shadow-light: #2e3a4f;
+    --dream-dark: #166a7d;
+    --dream-medium: #2a96aa;
+    --dream-light: #7fd4ef;
+    --awakening-dark: #332152;
+    --awakening-medium: #462f69;
+    --awakening-light: #6a45ad;
+    --text-light: #f0f6ff;
+    --text-medium: #a6bbd9;
+}
+
 body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
-    color: #e0e6f0;
+    color: var(--text-light);
+    background: linear-gradient(135deg, var(--shadow-dark), var(--shadow-medium));
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="0.8" fill="%237fd4ef" opacity="0.2"/></svg>') repeat;
+    pointer-events: none;
+    opacity: 0.2;
+    animation: starFloat 150s linear infinite;
+    z-index: -1;
+}
+
+@keyframes starFloat {
+    from { background-position: 0 0; }
+    to { background-position: 1000px 1000px; }
 }
 
 .progress-container {
@@ -9,170 +47,267 @@ body {
     margin: 0 auto;
     position: relative;
     z-index: 10;
+    padding: 0 20px;
 }
 
-h1 {
+.progress-container h1 {
     text-align: center;
-    color: #6fc3df;
+    color: var(--dream-light);
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
     margin-top: 40px;
     margin-bottom: 40px;
-    text-shadow: 0 0 10px rgba(111, 195, 223, 0.5);
+    text-shadow: 0 0 12px rgba(127, 212, 239, 0.5);
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.progress-container h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        rgba(127, 212, 239, 0) 0%, 
+        rgba(127, 212, 239, 0.7) 50%, 
+        rgba(127, 212, 239, 0) 100%);
 }
 
 .games-progress {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
-    padding: 20px;
+    padding: 20px 10px 40px 10px;
 }
 
 .game-card {
-    background: rgba(10, 14, 23, 0.7);
+    background: rgba(31, 41, 58, 0.6);
     border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(10, 14, 23, 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(111, 195, 223, 0.1);
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(17, 25, 39, 0.5);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    border: 1px solid rgba(127, 212, 239, 0.1);
     backdrop-filter: blur(5px);
-}
-
-.game-card:nth-child(1) {
-    box-shadow: 0 4px 20px rgba(92, 61, 153, 0.3);
-    border: 1px solid rgba(92, 61, 153, 0.2);
-}
-
-.game-card:nth-child(2) {
-    box-shadow: 0 4px 20px rgba(35, 69, 103, 0.3);
-    border: 1px solid rgba(35, 69, 103, 0.2);
-}
-
-.game-card:nth-child(3) {
-    box-shadow: 0 4px 20px rgba(111, 195, 223, 0.3);
-    border: 1px solid rgba(111, 195, 223, 0.2);
-}
-
-.game-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 25px rgba(111, 195, 223, 0.4);
-}
-
-.game-card h2 {
-    color: #6fc3df;
-    margin-bottom: 20px;
-    text-align: center;
-    text-shadow: 0 0 5px rgba(111, 195, 223, 0.3);
-}
-
-.game-card:nth-child(1) h2 {
-    color: #9b6dff;
-    text-shadow: 0 0 5px rgba(155, 109, 255, 0.3);
-}
-
-.game-card:nth-child(2) h2 {
-    color: #4a8bda;
-    text-shadow: 0 0 5px rgba(74, 139, 218, 0.3);
-}
-
-.progress-bar {
-    width: 100%;
-    height: 20px;
-    background-color: rgba(14, 22, 34, 0.6);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
-}
-
-.progress-fill {
-    height: 100%;
-    width: 0%;
-    transition: width 1s ease-in-out;
     position: relative;
     overflow: hidden;
 }
 
-.game-card:nth-child(1) .progress-fill {
-    background: linear-gradient(to right, #3d2a5c, #5c3d99);
-}
-
-.game-card:nth-child(2) .progress-fill {
-    background: linear-gradient(to right, #1c2637, #234567);
-}
-
-.game-card:nth-child(3) .progress-fill {
-    background: linear-gradient(to right, #26889c, #6fc3df);
-}
-
-.progress-fill::after {
+.game-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: radial-gradient(circle at top right, rgba(127, 212, 239, 0.1) 0%, rgba(127, 212, 239, 0) 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.game-card:nth-child(1) {
+    box-shadow: 0 4px 20px rgba(106, 69, 173, 0.3);
+    border: 1px solid rgba(106, 69, 173, 0.2);
+}
+
+.game-card:nth-child(1)::before {
+    background: radial-gradient(circle at top right, rgba(106, 69, 173, 0.1) 0%, rgba(106, 69, 173, 0) 70%);
+}
+
+.game-card:nth-child(2) {
+    box-shadow: 0 4px 20px rgba(46, 58, 79, 0.3);
+    border: 1px solid rgba(46, 58, 79, 0.2);
+}
+
+.game-card:nth-child(2)::before {
+    background: radial-gradient(circle at top right, rgba(46, 58, 79, 0.1) 0%, rgba(46, 58, 79, 0) 70%);
+}
+
+.game-card:nth-child(3) {
+    box-shadow: 0 4px 20px rgba(127, 212, 239, 0.3);
+    border: 1px solid rgba(127, 212, 239, 0.2);
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(127, 212, 239, 0.4);
+}
+
+.game-card:hover::before {
+    opacity: 1;
+}
+
+.game-card:nth-child(1):hover {
+    box-shadow: 0 8px 30px rgba(106, 69, 173, 0.4);
+}
+
+.game-card:nth-child(2):hover {
+    box-shadow: 0 8px 30px rgba(46, 58, 79, 0.4);
+}
+
+.game-card h2 {
+    color: var(--dream-light);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    text-shadow: 0 0 10px rgba(127, 212, 239, 0.3);
+    font-family: 'Cinzel', serif;
+}
+
+.game-card:nth-child(1) h2 {
+    color: var(--awakening-light);
+    text-shadow: 0 0 10px rgba(106, 69, 173, 0.3);
+}
+
+.game-card:nth-child(2) h2 {
+    color: var(--text-light);
+    text-shadow: 0 0 10px rgba(240, 246, 255, 0.3);
+}
+
+.progress-bar {
+    height: 12px;
+    background: rgba(31, 41, 58, 0.4);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(17, 25, 39, 0.3) inset;
+    border: 1px solid rgba(127, 212, 239, 0.1);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--dream-dark), var(--dream-light));
+    border-radius: 6px;
+    position: relative;
+    transition: width 1s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 0 10px rgba(127, 212, 239, 0.5);
+    overflow: hidden;
+}
+
+.game-card:nth-child(1) .progress-fill {
+    background: linear-gradient(90deg, var(--awakening-dark), var(--awakening-light));
+    box-shadow: 0 0 10px rgba(106, 69, 173, 0.5);
+}
+
+.game-card:nth-child(2) .progress-fill {
+    background: linear-gradient(90deg, var(--shadow-medium), var(--shadow-light));
+    box-shadow: 0 0 10px rgba(46, 58, 79, 0.5);
+}
+
+.game-card:nth-child(3) .progress-fill {
+    background: linear-gradient(90deg, var(--dream-dark), var(--dream-light));
+    box-shadow: 0 0 10px rgba(127, 212, 239, 0.5);
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
     background: linear-gradient(
-        90deg, 
-        rgba(255, 255, 255, 0) 0%, 
-        rgba(255, 255, 255, 0.2) 50%, 
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
         rgba(255, 255, 255, 0) 100%
     );
-    animation: shine 2s infinite;
-    transform: translateX(-100%);
+    animation: shine 2s infinite linear;
+    transition: opacity 0.3s ease;
+    opacity: 0.5;
+}
+
+.game-card:hover .progress-fill::after {
+    opacity: 0.8;
+    animation-duration: 1.5s;
 }
 
 @keyframes shine {
-    to {
-        transform: translateX(100%);
-    }
+    0% { left: -50%; }
+    100% { left: 150%; }
 }
 
 .progress-text {
-    text-align: center;
-    font-weight: bold;
-    color: #6fc3df;
-    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    color: var(--text-medium);
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .game-card:nth-child(1) .progress-text {
-    color: #9b6dff;
+    color: rgba(106, 69, 173, 0.8);
 }
 
 .game-card:nth-child(2) .progress-text {
-    color: #4a8bda;
+    color: var(--text-medium);
 }
 
 .game-stats {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(111, 195, 223, 0.2);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 25px;
 }
 
 .game-card:nth-child(1) .game-stats {
-    border-top: 1px solid rgba(155, 109, 255, 0.2);
+    color: rgba(166, 187, 217, 0.9);
 }
 
 .game-card:nth-child(2) .game-stats {
-    border-top: 1px solid rgba(74, 139, 218, 0.2);
+    color: rgba(166, 187, 217, 0.9);
 }
 
 .game-stats p {
-    margin: 5px 0;
-    color: #8ba4c7;
-    font-size: 0.9em;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .game-stats span {
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-top: 5px;
 }
 
 .game-card:nth-child(1) .game-stats span {
-    color: #9b6dff;
+    color: var(--awakening-light);
 }
 
 .game-card:nth-child(2) .game-stats span {
-    color: #4a8bda;
+    color: var(--text-light);
 }
 
 .game-card:nth-child(3) .game-stats span {
-    color: #6fc3df;
+    color: var(--dream-light);
+}
+
+@media screen and (max-width: 768px) {
+    .games-progress {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    h1 {
+        font-size: 2rem;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .game-card {
+        padding: 20px;
+    }
+    
+    .game-card h2 {
+        font-size: 1.5rem;
+    }
 }

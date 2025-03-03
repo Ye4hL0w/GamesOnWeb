@@ -15,12 +15,8 @@ export class Level3 extends BaseLevel {
 
         // Créer la sortie à la fin du niveau
         const floorY = this.canvas.height - this.floorHeight;
-        this.exit = new Exit(
-            this.levelWidth - 200,
-            floorY - 120,
-            80,
-            80
-        );
+        this.exit = new Exit(this.levelWidth - 200, floorY - 100, 80, 80);
+
         
         // Ajouter des obstacles ou autres éléments spécifiques au niveau 3
         this.obstacles.push(

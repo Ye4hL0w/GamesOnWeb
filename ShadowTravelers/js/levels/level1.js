@@ -42,7 +42,7 @@ export class Level1 extends BaseLevel {
             new Ghost(this.levelWidth - 400, ghostY, "Tu as atteint la fin de ce passage obscur... *murmure* Si tu continues ta quête, arme-toi de courage. Le véritable voyage ne fait que commencer...")
         );
 
-        this.exit = new Exit(this.levelWidth - 200, floorY - 100,80, 80);
+        this.exit = new Exit(this.levelWidth - 200, floorY - 100, 80, 80);
     }
 
     update() {
