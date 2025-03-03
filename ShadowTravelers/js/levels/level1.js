@@ -24,14 +24,12 @@ export class Level1 extends BaseLevel {
             { x: 2500, y: obstacleY, width: 50, height: obstacleHeight }
         );
 
-        // Ajouter des obstacles interactifs
         this.jumpingObstacles.push(
-            new JumpingObstacle(3200, obstacleY, 70, 120, 200, 8)
+            new JumpingObstacle(3200, obstacleY, 70, this.canvas.height, 200, 8)
         );
         
-        // Ajouter des obstacles directionnels
         this.directionalObstacles.push(
-            new DirectionalObstacle(3800, obstacleY, 70, 120, 200, 8)
+            new DirectionalObstacle(3800, obstacleY, 70, this.canvas.height, 200, 8)
         );
 
         const ghostY = obstacleY;
@@ -50,54 +48,44 @@ export class Level1 extends BaseLevel {
     update() {
         super.update();
         
-        // Mise à jour des fantômes
         if (this.player) {
             const playerAbsoluteX = this.player.x + this.cameraX;
             for (const ghost of this.ghosts) {
                 ghost.update(playerAbsoluteX);
             }
             
-            
-            // Mise à jour des obstacles interactifs
             for (const obstacle of this.jumpingObstacles) {
                 obstacle.update();
                 
-                // Vérifier si le joueur saute
                 if (this.player.isJumping && !this.player.wasJumping) {
                     obstacle.onPlayerJump();
                 } else if (!this.player.isJumping && this.player.wasJumping) {
                     obstacle.onPlayerLand();
                 }
                 
-                // Vérifier les collisions avec les obstacles interactifs
                 if (this.checkCollision(this.player, obstacle)) {
                     this.handleCollision(this.player, obstacle);
                 }
             }
             
-            // Mise à jour des obstacles directionnels
             for (const obstacle of this.directionalObstacles) {
                 obstacle.update();
                 
-                // Vérifier la direction du joueur
                 if (this.keys.ArrowLeft) {
                     obstacle.onPlayerGoLeft(this.player.isJumping);
                 } else if (this.keys.ArrowRight) {
                     obstacle.onPlayerGoRight(this.player.isJumping);
                 }
                 
-                // Vérifier si le joueur atterrit
                 if (!this.player.isJumping && this.player.wasJumping) {
                     obstacle.onPlayerLand();
                 }
                 
-                // Vérifier les collisions avec les obstacles directionnels
                 if (this.checkCollision(this.player, obstacle)) {
                     this.handleCollision(this.player, obstacle);
                 }
             }
             
-            // Mémoriser l'état de saut précédent
             this.player.wasJumping = this.player.isJumping;
         }
     }
@@ -105,21 +93,18 @@ export class Level1 extends BaseLevel {
     draw() {
         super.draw();
         
-        // Dessiner les fantômes
         this.context.save();
         for (const ghost of this.ghosts) {
             ghost.draw(this.context, this.cameraX);
         }
         this.context.restore();
         
-        // Dessiner les obstacles interactifs
         this.context.save();
         for (const obstacle of this.jumpingObstacles) {
             obstacle.draw(this.context, this.cameraX);
         }
         this.context.restore();
         
-        // Dessiner les obstacles directionnels
         this.context.save();
         for (const obstacle of this.directionalObstacles) {
             obstacle.draw(this.context, this.cameraX);

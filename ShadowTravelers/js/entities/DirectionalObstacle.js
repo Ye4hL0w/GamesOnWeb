@@ -9,7 +9,7 @@ export class DirectionalObstacle {
         this.riseSpeed = riseSpeed; // Vitesse de montée
         this.isRising = false;
         this.targetY = y;
-        this.color = '#4682B4'; // Couleur bleu acier pour distinguer cet obstacle
+        this.color = 'black'; // Couleur bleu acier pour distinguer cet obstacle
         this.playerWasInAir = false; // Pour suivre si le joueur était en l'air
     }
 
@@ -62,10 +62,6 @@ export class DirectionalObstacle {
         if (adjustedX + this.width > 0 && adjustedX < context.canvas.width) {
             context.fillStyle = this.color;
             context.fillRect(adjustedX, this.y, this.width, this.height);
-            
-            // Ajouter des détails visuels pour le distinguer
-            context.fillStyle = '#36648B'; // Couleur plus foncée pour les détails
-            context.fillRect(adjustedX, this.y, this.width, this.height * 0.2);
             
             // Ajouter une flèche pour indiquer que l'obstacle réagit à la direction
             context.fillStyle = '#FFFFFF';
