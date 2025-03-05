@@ -1,11 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>L'Éveil de l'Esprit</title>
+    <link rel="stylesheet" href="assets/css/index.css">
 </head>
 <body>
-    <h1>Jeux</h1>
+    <div id="menu-container">
+        <div class="menu-content">
+            <h1>L'Éveil de l'Esprit</h1>
+            <button id="tutorial-btn" class="menu-btn">
+                Tutoriel
+                <span>Découvrez votre histoire</span>
+            </button>
+            <button id="level1-btn" class="menu-btn">
+                Niveau 1
+                <span>Commencez directement l'aventure</span>
+            </button>
+            <button id="level2-btn" class="menu-btn">
+                Niveau 2
+                <span>Défi des murs éthérés (Dash requis)</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="game-container" style="display: none;">
+        <div id="spirit"></div>
+        <div id="message-box"></div>
+        <div id="fragments-counter">
+            Fragments : <span id="fragments-collected">0</span>/<span id="total-fragments">0</span>
+        </div>
+        <div id="lives-counter">❤️❤️❤️</div>
+    </div>
+
+    <!-- Chargement des modules -->
+    <script src="js/ui.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/physics.js"></script>
+    <script src="js/levels/tutorial.js"></script>
+    <script src="js/levels/level1.js"></script>
+    <script src="js/levels/level2.js"></script>
+    <script src="js/levels/level3.js"></script>
+    <script src="js/levelManager.js"></script>
+    <script src="js/game.js"></script>
 </body>
 </html>
