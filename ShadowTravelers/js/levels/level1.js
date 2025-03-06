@@ -21,28 +21,28 @@ export class Level1 extends BaseLevel {
         const obstacleHeight = 100;
         
         this.obstacles.push(
-            { x: 1500, y: floorY - obstacleHeight, width: 50, height: obstacleHeight },
-            { x: 2000, y: floorY - obstacleHeight, width: 300, height: obstacleHeight },
-            { x: 2750, y: floorY - obstacleHeight, width: 50, height: obstacleHeight }
+            { x: 2800, y: floorY - obstacleHeight, width: 50, height: obstacleHeight },
+            { x: 8000, y: floorY - 200, width: 50, height: 200 },
         );
 
         this.jumpingObstacles.push(
-            new JumpingObstacle(3200, 0, 70, floorY, 200, 8)
+            new JumpingObstacle(4000, 0, 70, floorY, 200, 8),
+            new JumpingObstacle(8000, 640, 50, 100, 200, 8)
         );
         this.directionalObstacles.push(
-            new DirectionalObstacle(3800, 0, 70, floorY, 200, 8)
+            new DirectionalObstacle(6000, 0, 70, floorY, 200, 8)
         );
 
         const ghostY = floorY - 100;
         this.ghosts.push(
-            new Ghost(750, ghostY, "Bienvenue, voyageur de l'entre-deux mondes! Je sens que tu viens de t'éveiller... Ce royaume n'est qu'un passage vers Dream Land. Méfie-toi des ombres qui rôdent par ici.")
+            new Ghost(this.canvas.width - 150, ghostY, "Bienvenue, voyageur perdu… Tu as quitté le néant, mais ton chemin est encore obscur. Ce monde est un labyrinthe façonné par l’oubli. Seuls ceux qui perçoivent l’invisible peuvent avancer…")
         );
 
         this.ghosts.push(
-            new Ghost(this.levelWidth - 400, ghostY, "Tu as atteint la fin de ce passage obscur... *murmure* Si tu continues ta quête, arme-toi de courage. Le véritable voyage ne fait que commencer...")
+            new Ghost(this.levelWidth - 600, ghostY, "Tu as franchi la première épreuve… mais ce n’était qu’une illusion. Les ombres testent ta volonté, elles murmurent des mensonges. Écoute bien… tout ici a un double sens.")
         );
 
-        this.exit = new Exit(this.levelWidth - 200, floorY - 100, 80, 80);
+        this.exit = new Exit(this.levelWidth - 150, floorY - 100, 80, 80);
     }
 
     update() {

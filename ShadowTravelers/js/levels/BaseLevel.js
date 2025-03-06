@@ -17,7 +17,7 @@ export class BaseLevel {
         
         this.obstacles = [];
         this.platforms = [];
-        this.levelWidth = 5000;
+        this.levelWidth = 10000;
         
         this.keys = {
             ArrowLeft: false,
