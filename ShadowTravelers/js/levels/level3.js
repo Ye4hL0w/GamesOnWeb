@@ -4,6 +4,7 @@ import { Exit } from '../elements/Exit.js';
 import { Ghost } from '../entities/Ghost.js';
 import { JumpingObstacle } from '../elements/JumpingObstacle.js';
 import { DirectionalObstacle } from '../elements/DirectionalObstacle.js';
+import { Guardian } from '../entities/Guardian.js';
 
 export class Level3 extends BaseLevel {
     constructor(context, canvas) {
@@ -13,6 +14,9 @@ export class Level3 extends BaseLevel {
         this.ghosts = [];
         this.jumpingObstacles = [];
         this.directionalObstacles = [];
+        this.guardians = [];
+        this.playerStartX = this.canvas.width * 0.1;
+        this.playerStartY = this.canvas.height - this.floorHeight;
         
         this.levelTitle = "Niveau 3 - Le dernier voyage";
     }
@@ -25,8 +29,6 @@ export class Level3 extends BaseLevel {
         
         this.obstacles.push(
             { x: 1500, y: floorY - obstacleHeight, width: 50, height: obstacleHeight },
-            { x: 2000, y: floorY - obstacleHeight, width: 300, height: obstacleHeight },
-            { x: 2750, y: floorY - obstacleHeight, width: 50, height: obstacleHeight }
         );
 
         this.jumpingObstacles.push(
@@ -38,14 +40,32 @@ export class Level3 extends BaseLevel {
 
         const ghostY = floorY - 100;
         this.ghosts.push(
-            new Ghost(750, ghostY, "Tu es arrivé au seuil… Regarde autour de toi. Dream Land brille au loin, mais l’ombre refuse de te laisser partir. La dernière énigme est la plus cruelle : sais-tu vraiment ce que tu cherches ?")
+            new Ghost(750, ghostY, "Tu es arrivé au seuil… Regarde autour de toi. Dream Land brille au loin, mais l'ombre refuse de te laisser partir. La dernière énigme est la plus cruelle : sais-tu vraiment ce que tu cherches ?")
         );
 
         this.ghosts.push(
-            new Ghost(this.levelWidth - 400, ghostY, "Les portes s’ouvrent… mais à quel prix ? Dream Land t’attend… ou bien te piège ? Va, voyageur. Trouve la réponse par toi-même…")
+            new Ghost(this.levelWidth - 400, ghostY, "Les portes s'ouvrent… mais à quel prix ? Dream Land t'attend… ou bien te piège ? Va, voyageur. Trouve la réponse par toi-même…")
+        );
+
+        // Ajouter un gardien au niveau
+        this.guardians.push(
+            new Guardian(2400, floorY - 85)
+        );
+
+        this.guardians.push(
+            new Guardian(2800, floorY - 85)
         );
 
         this.exit = new Exit(this.levelWidth - 200, floorY - 100, 80, 80);
+    }
+
+    resetPlayerPosition() {
+        // Réinitialiser la position du joueur au début du niveau
+        if (this.player) {
+            this.player.x = this.playerStartX;
+            this.player.y = this.playerStartY - this.player.height + 10;
+            this.cameraX = 0;
+        }
     }
 
     update() {
@@ -55,6 +75,29 @@ export class Level3 extends BaseLevel {
             const playerAbsoluteX = this.player.x + this.cameraX;
             for (const ghost of this.ghosts) {
                 ghost.update(playerAbsoluteX);
+            }
+            
+            // Mise à jour des gardiens
+            for (const guardian of this.guardians) {
+                const allObstacles = [...this.obstacles, ...this.directionalObstacles, ...this.jumpingObstacles];
+                guardian.update(
+                    playerAbsoluteX, 
+                    this.player.y, 
+                    this.player.width, 
+                    this.player.height,
+                    allObstacles
+                );
+                
+                // Vérifier si le gardien a attrapé le joueur
+                if (guardian.checkCollision(
+                    playerAbsoluteX, 
+                    this.player.y, 
+                    this.player.width, 
+                    this.player.height
+                )) {
+                    // Téléporter le joueur au début du niveau
+                    this.resetPlayerPosition();
+                }
             }
             
             for (const obstacle of this.jumpingObstacles) {
@@ -99,6 +142,13 @@ export class Level3 extends BaseLevel {
         this.context.save();
         for (const ghost of this.ghosts) {
             ghost.draw(this.context, this.cameraX);
+        }
+        this.context.restore();
+        
+        // Dessiner les gardiens
+        this.context.save();
+        for (const guardian of this.guardians) {
+            guardian.draw(this.context, this.cameraX);
         }
         this.context.restore();
         

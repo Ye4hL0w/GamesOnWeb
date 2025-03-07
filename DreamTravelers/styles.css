@@ -197,4 +197,116 @@ h2 {
 
 .level-card:hover::before {
     transform: rotate(45deg) translate(50%, 50%);
+}
+
+/* Nouveaux styles pour l'interface simplifiée */
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+}
+
+.back-button a {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    transition: background 0.3s;
+    display: inline-block;
+}
+
+.back-button a:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#menu-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.menu-content {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    text-align: center;
+    max-width: 600px;
+}
+
+.level-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.menu-btn {
+    padding: 1.2rem 2rem;
+    background: linear-gradient(45deg, rgba(126, 231, 247, 0.3), rgba(126, 247, 196, 0.3));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    transition: transform 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+}
+
+.menu-btn:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(45deg, rgba(126, 231, 247, 0.5), rgba(126, 247, 196, 0.5));
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.menu-btn span {
+    display: block;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+.menu-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 1.5rem;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid rgba(255, 255, 255, 0.8);
+    border-right: 2px solid rgba(255, 255, 255, 0.8);
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.lore-text {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin-top: 2rem;
+    text-align: justify;
+}
+
+/* Media queries pour la responsivité */
+@media (max-width: 768px) {
+    .menu-content {
+        padding: 2rem;
+        margin: 0 1rem;
+    }
+    
+    .menu-btn {
+        padding: 1rem 1.5rem;
+    }
+    
+    h1 {
+        font-size: 3rem;
+    }
 } 

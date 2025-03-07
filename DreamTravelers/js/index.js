@@ -76,11 +76,13 @@ function initParticles() {
 }
 
 function startGame(levelId) {
-    const container = document.querySelector('.game-container');
+    const menuContent = document.querySelector('.menu-content');
     
-    gsap.to(container, {
+    gsap.to(menuContent, {
         opacity: 0,
+        scale: 0.9,
         duration: 0.5,
+        ease: "power2.out",
         onComplete: () => {
             window.location.href = `level${levelId}.html`;
         }
@@ -90,4 +92,25 @@ function startGame(levelId) {
 document.addEventListener('DOMContentLoaded', () => {
     initCardParallax();
     initParticles();
+    
+    // Animation d'entrée pour le menu
+    const menuContent = document.querySelector('.menu-content');
+    gsap.from(menuContent, {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        ease: "power3.out"
+    });
+    
+    // Animation pour les boutons
+    const buttons = document.querySelectorAll('.menu-btn');
+    buttons.forEach((button, index) => {
+        gsap.from(button, {
+            opacity: 0,
+            x: -50,
+            duration: 0.8,
+            delay: 0.3 + (index * 0.2),
+            ease: "back.out(1.7)"
+        });
+    });
 }); 

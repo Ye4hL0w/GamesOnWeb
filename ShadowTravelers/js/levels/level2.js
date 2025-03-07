@@ -149,7 +149,7 @@ export class Level2 extends BaseLevel {
                 // Gestion du défilement de la caméra avec contrôles partiellement inversés
                 const leftScrollThreshold = this.canvas.width * 0.2;
                 const rightScrollThreshold = this.canvas.width * 0.6;
-                const scrollAmount = 10;
+                const scrollAmount = 15;
                 
                 // Défilement à droite (combinaison des deux touches selon l'influence)
                 if ((this.player.x > rightScrollThreshold && this.keys.ArrowRight * normalLeftInfluence > 0.3) || 
@@ -174,7 +174,7 @@ export class Level2 extends BaseLevel {
                 
                 // Gestion normale du défilement de la caméra
                 if (this.player.x > this.canvas.width * 0.6 && this.keys.ArrowRight) {
-                    const scrollAmount = 10;
+                    const scrollAmount = 15;
                     if (this.cameraX + this.canvas.width < this.levelWidth) {
                         this.cameraX += scrollAmount;
                         this.player.x -= scrollAmount;
@@ -182,7 +182,7 @@ export class Level2 extends BaseLevel {
                 }
                 
                 if (this.player.x < this.canvas.width * 0.2 && this.keys.ArrowLeft) {
-                    const scrollAmount = 10;
+                    const scrollAmount = 15;
                     if (this.cameraX > 0) {
                         this.cameraX -= scrollAmount;
                         this.player.x += scrollAmount;
