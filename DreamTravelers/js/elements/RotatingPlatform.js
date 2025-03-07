@@ -1,5 +1,5 @@
 class RotatingPlatform {
-    constructor(scene, position, size = 2) {
+    constructor(scene, position, size) {
         this.scene = scene;
         this.position = position;
         this.size = size;
@@ -10,8 +10,8 @@ class RotatingPlatform {
     createPlatform() {
         // Créer une plateforme rotative
         const platform = BABYLON.MeshBuilder.CreateBox("rotatingPlatform", {
-            width: this.size,
-            height: 0.5,
+            width: 3,
+            height: 1,
             depth: 1
         }, this.scene);
         

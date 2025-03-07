@@ -15,6 +15,9 @@ class BaseLevel {
         window.addEventListener("resize", () => {
             this.engine.resize();
         });
+
+        // Ajouter un gestionnaire d'événements générique
+        this.scene.onPointerDown = (evt) => this.handleClick(evt);
     }
 
     createScene() {
@@ -186,5 +189,130 @@ class BaseLevel {
         });
         
         return cloudsParent;
+    }
+
+    handleClick(evt) {
+        if (!this.player || this.player.isMoving) return;
+        
+        try {
+            const pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+            if (pickResult.hit) {
+                // Gestion des boutons de rotation
+                if (pickResult.pickedMesh.name === "rotateButton") {
+                    // Trouver la plateforme correspondante
+                    for (const platform of this.rotatingPlatforms || []) {
+                        if (platform.mesh === pickResult.pickedMesh.parent) {
+                            platform.rotate();
+                            return;
+                        }
+                    }
+                    return;
+                }
+                
+                // Gestion du déplacement vers les cubes et plateformes
+                if (pickResult.pickedMesh.name.startsWith('cube') || 
+                    pickResult.pickedMesh.name === "rotatingPlatform" ||
+                    pickResult.pickedMesh.name.startsWith('stair')) {
+                    
+                    const targetPosition = pickResult.pickedMesh.position.clone();
+                    
+                    // Si c'est une plateforme rotative, calculer la position précise sur la grille
+                    if (pickResult.pickedMesh.name === "rotatingPlatform") {
+                        // Obtenir le point précis où l'utilisateur a cliqué
+                        const hitPoint = pickResult.pickedPoint;
+                        
+                        // Trouver la plateforme rotative concernée
+                        let platformHit = null;
+                        for (const platform of this.rotatingPlatforms || []) {
+                            if (platform.mesh === pickResult.pickedMesh) {
+                                platformHit = platform;
+                                break;
+                            }
+                        }
+                        
+                        if (platformHit) {
+                            // Convertir le point en coordonnées locales de la plateforme
+                            const localHitPoint = hitPoint.subtract(platformHit.mesh.position);
+                            
+                            // Appliquer la rotation inverse pour obtenir les coordonnées non-pivotées
+                            const rotationMatrix = BABYLON.Matrix.RotationY(-platformHit.mesh.rotation.y);
+                            const rotatedPoint = BABYLON.Vector3.TransformCoordinates(localHitPoint, rotationMatrix);
+                            
+                            // Calculer la position de la cellule de la grille la plus proche
+                            const gridX = Math.round(platformHit.mesh.position.x + rotatedPoint.x);
+                            const gridZ = Math.round(platformHit.mesh.position.z + rotatedPoint.z);
+                            
+                            // Mettre à jour la position cible
+                            targetPosition.x = gridX;
+                            targetPosition.z = gridZ;
+                            targetPosition.y = platformHit.mesh.position.y;
+                        }
+                    }
+                    
+                    // Calcul du chemin
+                    const path = this.player.findPath({
+                        x: targetPosition.x, 
+                        y: targetPosition.y, 
+                        z: targetPosition.z
+                    });
+                    
+                    // Vérifier explicitement si le chemin est valide et non vide
+                    if (path && path.length > 0) {
+                        this.player.moveAlongPath(path);
+                    } else {
+                        console.log("Destination inaccessible, aucun déplacement");
+                        // Optionnel: Ajouter un feedback visuel pour indiquer que la destination est inaccessible
+                        this.showInaccessibleFeedback(targetPosition);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Erreur lors du traitement du clic:", error);
+            // S'assurer que le joueur n'est pas bloqué en état de mouvement
+            if (this.player) {
+                this.player.isMoving = false;
+            }
+        }
+    }
+
+    // Méthode optionnelle pour montrer un feedback visuel quand une destination est inaccessible
+    showInaccessibleFeedback(position) {
+        // Créer un effet visuel temporaire (par exemple, un X rouge)
+        const feedbackMarker = BABYLON.MeshBuilder.CreatePlane("inaccessibleMarker", {size: 0.5}, this.scene);
+        feedbackMarker.position = new BABYLON.Vector3(position.x, position.y + 1, position.z);
+        feedbackMarker.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+        
+        // Appliquer un matériau rouge semi-transparent
+        const material = new BABYLON.StandardMaterial("feedbackMat", this.scene);
+        material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+        material.alpha = 0.7;
+        feedbackMarker.material = material;
+        
+        // Animer l'opacité pour faire disparaître progressivement
+        const animation = new BABYLON.Animation(
+            "fadeOut", 
+            "visibility", 
+            30, 
+            BABYLON.Animation.ANIMATIONTYPE_FLOAT, 
+            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+        );
+        
+        const keys = [
+            { frame: 0, value: 1 },
+            { frame: 30, value: 0 }
+        ];
+        animation.setKeys(keys);
+        
+        feedbackMarker.animations = [animation];
+        
+        // Lancer l'animation et supprimer le marqueur après
+        this.scene.beginAnimation(feedbackMarker, 0, 30, false, 1, () => {
+            feedbackMarker.dispose();
+        });
+    }
+    
+    // Méthode par défaut à surcharger dans les classes filles
+    createLevel() {
+        console.warn("La méthode createLevel doit être implémentée dans la classe fille");
     }
 } 
