@@ -73,5 +73,7 @@ class Level1 extends BaseLevel {
 
         // Placer le joueur à la position initiale
         this.player.setPosition(0, 0, 0);
+
+        this.exit = new Exit(this.scene, this.grid, {x: 2, y: 0, z: 0}, 2);
     }
 }
