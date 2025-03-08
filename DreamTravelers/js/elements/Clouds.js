@@ -8,7 +8,7 @@ class Clouds {
     create() {
         // Créer un parent vide pour faire tourner tous les nuages
         this.cloudsParent = new BABYLON.TransformNode("cloudsParent", this.scene);
-        this.cloudsParent.position.y = 8;
+        this.cloudsParent.position.y = 10;
 
         // Créer 4 nuages
         for (let i = 0; i < 4; i++) {
