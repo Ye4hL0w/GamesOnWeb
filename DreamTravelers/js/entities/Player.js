@@ -11,12 +11,10 @@ class Player {
     }
     
     createPlayerMesh() {
-        // Créer le mesh du joueur
         this.mesh = BABYLON.MeshBuilder.CreateSphere("player", {
             diameter: 0.8
         }, this.scene);
         
-        // Matériau rose pour le joueur (couleurs d'origine)
         const material = new BABYLON.StandardMaterial("playerMat", this.scene);
         material.diffuseColor = new BABYLON.Color3(1, 0.5, 0.8); // Rose
         material.emissiveColor = new BABYLON.Color3(0.5, 0.25, 0); // Légère lueur
@@ -26,7 +24,7 @@ class Player {
         // Positionner le joueur
         this.mesh.position = new BABYLON.Vector3(
             this.position.x,
-            this.position.y + 0.5, // Le joueur est légèrement au-dessus du sol
+            this.position.y + 0.5,
             this.position.z
         );
     }
@@ -38,15 +36,12 @@ class Player {
     }
     
     updateParent() {
-        // Recherche de plateformes rotatives
         const platforms = this.scene.meshes.filter(mesh => mesh.name === "rotatingPlatform");
         let isOnPlatform = false;
         
         for (let platform of platforms) {
-            // Obtenir la position du joueur dans l'espace monde
             const playerWorldPos = this.mesh.getAbsolutePosition();
             
-            // Convertir en coordonnées locales de la plateforme
             const worldMatrix = platform.getWorldMatrix();
             const invWorldMatrix = worldMatrix.clone();
             invWorldMatrix.invert();
@@ -56,22 +51,16 @@ class Player {
                 invWorldMatrix
             );
             
-            // Vérifier si le joueur est sur la plateforme avec une marge plus précise
-            // Utiliser la taille réelle de la plateforme si disponible
             const platformSize = platform.metadata?.size || 1.5;
             if (Math.abs(localPos.x) <= platformSize && 
                 Math.abs(localPos.z) <= platformSize && 
                 Math.abs(localPos.y - 0.5) <= 0.1) {
                 
-                // Si le joueur n'est pas déjà sur cette plateforme
                 if (this.mesh.parent !== platform) {
-                    // Sauvegarder la position mondiale actuelle
                     const worldPosition = this.mesh.getAbsolutePosition();
                     
-                    // Définir la plateforme comme parent
                     this.mesh.parent = platform;
                     
-                    // Ajuster la position pour qu'elle reste visuellement au même endroit
                     this.mesh.position = BABYLON.Vector3.TransformCoordinates(
                         worldPosition,
                         invWorldMatrix
@@ -318,8 +307,8 @@ class Player {
             }
             
             // CORRECTION: Nous gardons les mouvements directs entre niveaux mais avec moins de cas
-            // Permettre de descendre au niveau du sol depuis y = 1 (cas simplifié)
-            if (pos.y === 1) {
+            // Permettre de descendre depuis n'importe quel niveau (pas seulement depuis y = 1)
+            if (pos.y > 0) {  // Modifier cette condition pour inclure tous les niveaux > 0
                 const directionsDescente = [
                     { x: 0, y: -1, z: 0 },   // Descente directe
                     { x: 1, y: -1, z: 0 },   // Descente en diagonale
