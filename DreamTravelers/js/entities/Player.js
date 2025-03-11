@@ -101,7 +101,216 @@ class Player {
         // CORRECTION: Vérifier si la destination est un escalier
         const isStair = targetElement && targetElement.type === 'stair';
         
-        // NOUVEAU: Cas spécial pour monter directement au niveau supérieur (y + 1)
+        // NOUVELLE APPROCHE: Pour monter à un niveau supérieur
+        if (target.y > this.position.y) {
+            console.log("Tentative de monter à un niveau supérieur (y = " + target.y + ")");
+            
+            // Rechercher des positions "accessibles par proximité" au niveau cible
+            // Ces positions peuvent être atteintes directement depuis le niveau actuel
+            const positionsCibles = [];
+            
+            // Parcourir toutes les positions valides au niveau cible (y=target.y)
+            for (const [key, element] of Object.entries(gridElements)) {
+                const [x, y, z] = key.split(',').map(Number);
+                
+                // Si cette position est au niveau cible
+                if (y === target.y) {
+                    // Vérifier si cette position est atteignable directement par proximité
+                    // (c'est-à-dire située juste au-dessus d'une position du niveau actuel)
+                    for (const [baseKey, baseElement] of Object.entries(gridElements)) {
+                        const [baseX, baseY, baseZ] = baseKey.split(',').map(Number);
+                        
+                        if (baseY === this.position.y) {
+                            const horizontalDistance = Math.abs(baseX - x) + Math.abs(baseZ - z);
+                            
+                            // Si cette position du niveau supérieur est proche horizontalement
+                            // d'une position du niveau actuel, elle est potentiellement accessible
+                            if (horizontalDistance <= 2) {
+                                positionsCibles.push({
+                                    position: {x, y, z},
+                                    basePosition: {x: baseX, y: baseY, z: baseZ},
+                                    distance: Math.abs(this.position.x - baseX) + Math.abs(this.position.z - baseZ) + horizontalDistance
+                                });
+                                console.log("Position atteignable au niveau supérieur:", {x, y, z}, "depuis", {x: baseX, y: baseY, z: baseZ});
+                            }
+                        }
+                    }
+                }
+            }
+            
+            console.log("Nombre de positions atteignables au niveau supérieur:", positionsCibles.length);
+            
+            // Si on a trouvé des positions potentiellement accessibles au niveau supérieur
+            if (positionsCibles.length > 0) {
+                // Trier par distance totale (distance jusqu'à la base + proximité à la cible)
+                positionsCibles.sort((a, b) => {
+                    // Calculer aussi la distance à la cible finale
+                    const distanceACible = Math.abs(a.position.x - target.x) + Math.abs(a.position.z - target.z);
+                    const distanceBCible = Math.abs(b.position.x - target.x) + Math.abs(b.position.z - target.z);
+                    
+                    return (a.distance + distanceACible) - (b.distance + distanceBCible);
+                });
+                
+                // Utiliser la position la plus pertinente
+                const meilleurPoint = positionsCibles[0];
+                console.log("Meilleur point d'accès au niveau supérieur:", meilleurPoint.position, "via", meilleurPoint.basePosition);
+                
+                // 1. Trouver un chemin vers la position de base au niveau actuel
+                const cheminVersBase = [];
+                
+                // Utiliser l'algorithme A* existant mais limité au niveau actuel
+                const path = [];
+                const start = this.position;
+                const baseTarget = meilleurPoint.basePosition;
+                
+                // Limiter le nombre d'itérations pour éviter les boucles infinies
+                const maxIterations = 100;
+                let iterations = 0;
+                
+                // Utiliser une version simplifiée de A* pour trouver un chemin
+                const openSet = [{ ...start, g: 0, h: 0, f: 0, parent: null }];
+                const closedSet = new Set();
+                
+                // Fonction heuristique (distance de Manhattan)
+                const heuristic = (a, b) => {
+                    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z);
+                };
+                
+                // Fonction pour vérifier si deux positions sont égales
+                const posEqual = (a, b) => {
+                    return a.x === b.x && a.y === b.y && a.z === b.z;
+                };
+                
+                // Fonction pour obtenir une clé unique pour chaque position
+                const posKey = (pos) => `${pos.x},${pos.y},${pos.z}`;
+                
+                // Fonction pour vérifier si une position est valide (au niveau actuel uniquement)
+                const isValidMove = (pos) => {
+                    // Vérifier que la position est au même niveau Y
+                    if (pos.y !== this.position.y) return false;
+                    
+                    // Vérifier les positions standard
+                    if (this.grid.isValidPosition(pos) || this.grid.isValidPlatformPosition(pos)) {
+                        return true;
+                    }
+                    
+                    // Vérifier si c'est un escalier
+                    const posKey = `${pos.x},${pos.y},${pos.z}`;
+                    const element = gridElements[posKey];
+                    if (element && element.type === 'stair') {
+                        return true;
+                    }
+                    
+                    return false;
+                };
+                
+                // Obtenir les voisins sur le même niveau Y uniquement
+                const getNeighborsOnSameLevel = (pos) => {
+                    const neighbors = [];
+                    
+                    // Directions de base (X et Z sur le même niveau Y)
+                    const directions = [
+                        { x: 1, y: 0, z: 0 },
+                        { x: -1, y: 0, z: 0 },
+                        { x: 0, y: 0, z: 1 },
+                        { x: 0, y: 0, z: -1 }
+                    ];
+                    
+                    for (const dir of directions) {
+                        const newPos = {
+                            x: pos.x + dir.x,
+                            y: pos.y + dir.y,
+                            z: pos.z + dir.z
+                        };
+                        
+                        if (isValidMove(newPos)) {
+                            neighbors.push(newPos);
+                        }
+                    }
+                    
+                    return neighbors;
+                };
+                
+                // Trouver un chemin en utilisant l'algorithme A*
+                while (openSet.length > 0 && iterations < maxIterations) {
+                    iterations++;
+                    
+                    // Trier l'ensemble ouvert par coût f
+                    openSet.sort((a, b) => a.f - b.f);
+                    
+                    // Prendre le nœud avec le coût f le plus bas
+                    const current = openSet.shift();
+                    
+                    // Si nous avons atteint la position de base
+                    if (posEqual(current, baseTarget)) {
+                        // Reconstruire le chemin
+                        let currentNode = current;
+                        while (currentNode.parent) {
+                            path.unshift({
+                                x: currentNode.x,
+                                y: currentNode.y,
+                                z: currentNode.z
+                            });
+                            currentNode = currentNode.parent;
+                        }
+                        
+                        console.log("Chemin trouvé vers la position de base:", path);
+                        
+                        // 2. Créer le chemin complet: chemin vers base + monter + aller à la cible
+                        const cheminComplet = [
+                            ...path,  // Aller à la position de base au niveau actuel
+                            meilleurPoint.position,  // Monter au niveau supérieur
+                            target  // Aller à la cible finale
+                        ];
+                        
+                        return cheminComplet;
+                    }
+                    
+                    // Ajouter le nœud actuel à l'ensemble fermé
+                    closedSet.add(posKey(current));
+                    
+                    // Obtenir les voisins du nœud actuel
+                    const neighbors = getNeighborsOnSameLevel(current);
+                    
+                    for (const neighbor of neighbors) {
+                        // Ignorer les voisins déjà explorés
+                        if (closedSet.has(posKey(neighbor))) {
+                            continue;
+                        }
+                        
+                        const tentativeG = current.g + 1;
+                        
+                        // Vérifier si ce voisin est déjà dans l'ensemble ouvert
+                        const existingNeighbor = openSet.find(n => posEqual(n, neighbor));
+                        
+                        if (!existingNeighbor || tentativeG < existingNeighbor.g) {
+                            // Ce chemin est meilleur, mettre à jour ou ajouter le voisin
+                            const h = heuristic(neighbor, baseTarget);
+                            
+                            if (!existingNeighbor) {
+                                // Ajouter à l'ensemble ouvert
+                                openSet.push({
+                                    ...neighbor,
+                                    g: tentativeG,
+                                    h: h,
+                                    f: tentativeG + h,
+                                    parent: current
+                                });
+                            } else {
+                                // Mettre à jour le voisin existant
+                                existingNeighbor.g = tentativeG;
+                                existingNeighbor.f = tentativeG + h;
+                                existingNeighbor.parent = current;
+                            }
+                        }
+                    }
+                }
+                
+                console.log("Aucun chemin trouvé vers la position de base");
+            }
+        }
+        
+        // On conserve le cas spécial existant pour monter directement si c'est à proximité
         if (this.position.y === 0 && target.y === 1) {
             console.log("Tentative de monter directement au niveau supérieur");
             
