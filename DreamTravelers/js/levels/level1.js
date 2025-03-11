@@ -54,7 +54,10 @@ class Level1 extends BaseLevel {
         this.grid.addGridElement(0, 0, 0);
         this.grid.addGridElement(-1, 0, 0);
         this.grid.addGridElement(-2, 0, 0);
-        this.grid.addGridElement(0, 0, 3);
+        this.grid.addGridElement(0, 1, 3);
+        this.grid.addGridElement(1, 1, 3);
+        this.grid.addGridElement(-1, 1, 3);
+        this.grid.addGridElement(-2, 1, 3);
         this.grid.addGridElement(2, 0, 3);
         this.grid.addGridElement(2, 1, 3);
         this.grid.addGridElement(2, 2, 3);
@@ -62,6 +65,11 @@ class Level1 extends BaseLevel {
         this.grid.addGridElement(-4, 0, -4);
         this.grid.addGridElement(0, 1, 2);
         this.grid.addGridElement(-2, 0, -2);
+        
+        // Création d'un escalier pour monter de (0,0,0) à (0,1,2)
+        const stairs = new Stairs(this.scene, this.grid);
+        stairs.create(0, 1, 1, 0);
+        stairs.create(1, 2, 3, 1);
 
         // Création d'une plateforme rotative
         const platform1 = new RotatingPlatform(this.scene, new BABYLON.Vector3(0, 0, -2), 3);
@@ -74,6 +82,6 @@ class Level1 extends BaseLevel {
         // Placer le joueur à la position initiale
         this.player.setPosition(0, 0, 0);
 
-        this.exit = new Exit(this.scene, this.grid, {x: 2, y: 0, z: 0}, 2);
+        this.exit = new Exit(this.scene, this.grid, {x: -4, y: 0, z: -4}, 2);
     }
 }

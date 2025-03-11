@@ -197,6 +197,10 @@ class BaseLevel {
         try {
             const pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
             if (pickResult.hit) {
+                // IMPORTANT: Logs de débogage pour comprendre ce que vous cliquez
+                console.log("Mesh cliqué:", pickResult.pickedMesh.name);
+                console.log("Parent:", pickResult.pickedMesh.parent ? pickResult.pickedMesh.parent.name : "Aucun");
+                
                 // Gestion des boutons de rotation
                 if (pickResult.pickedMesh.name === "rotateButton") {
                     // Trouver la plateforme correspondante
@@ -209,20 +213,46 @@ class BaseLevel {
                     return;
                 }
                 
-                // Gestion du déplacement vers les cubes et plateformes
-                if (pickResult.pickedMesh.name.startsWith('cube') || 
+                // AMÉLIORATION: Meilleure détection des escaliers - utiliser contains au lieu de startsWith
+                // Cela permettra de détecter les noms comme "marche_0_x,y,z" ou "stairBase_x,y,z"
+                const isStair = pickResult.pickedMesh.name.includes('stair') || 
+                               pickResult.pickedMesh.name.includes('marche');
+                
+                // Gestion du déplacement vers les cubes, plateformes et escaliers
+                if (pickResult.pickedMesh.name.includes('cube') || 
                     pickResult.pickedMesh.name === "rotatingPlatform" ||
-                    pickResult.pickedMesh.name.startsWith('stair')) {
+                    isStair) {
                     
-                    const targetPosition = pickResult.pickedMesh.position.clone();
+                    let targetPosition = new BABYLON.Vector3();
                     
-                    // Si c'est une plateforme rotative, calculer la position précise sur la grille
-                    if (pickResult.pickedMesh.name === "rotatingPlatform") {
-                        // Obtenir le point précis où l'utilisateur a cliqué
+                    if (isStair) {
+                        // Pour un escalier, chercher le parent ou utiliser la position du mesh cliqué
+                        if (pickResult.pickedMesh.parent && 
+                            (pickResult.pickedMesh.parent.name.includes('stair') || 
+                             pickResult.pickedMesh.parent.metadata?.type === 'stair')) {
+                            targetPosition = pickResult.pickedMesh.parent.position.clone();
+                        } else {
+                            // Si c'est directement un escalier ou une marche sans parent
+                            targetPosition = pickResult.pickedMesh.position.clone();
+                            
+                            // Si l'escalier a une position dans la grille, l'utiliser directement
+                            for (const [key, element] of Object.entries(this.grid.getAllElements())) {
+                                if (element.type === 'stair' && 
+                                    element.mesh && 
+                                    element.mesh.id === pickResult.pickedMesh.id) {
+                                    const [x, y, z] = key.split(',').map(Number);
+                                    targetPosition.x = x;
+                                    targetPosition.y = y;
+                                    targetPosition.z = z;
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (pickResult.pickedMesh.name === "rotatingPlatform") {
+                        // Gestion des plateformes rotatives inchangée
                         const hitPoint = pickResult.pickedPoint;
-                        
-                        // Trouver la plateforme rotative concernée
                         let platformHit = null;
+                        
                         for (const platform of this.rotatingPlatforms || []) {
                             if (platform.mesh === pickResult.pickedMesh) {
                                 platformHit = platform;
@@ -231,23 +261,23 @@ class BaseLevel {
                         }
                         
                         if (platformHit) {
-                            // Convertir le point en coordonnées locales de la plateforme
                             const localHitPoint = hitPoint.subtract(platformHit.mesh.position);
-                            
-                            // Appliquer la rotation inverse pour obtenir les coordonnées non-pivotées
                             const rotationMatrix = BABYLON.Matrix.RotationY(-platformHit.mesh.rotation.y);
                             const rotatedPoint = BABYLON.Vector3.TransformCoordinates(localHitPoint, rotationMatrix);
                             
-                            // Calculer la position de la cellule de la grille la plus proche
                             const gridX = Math.round(platformHit.mesh.position.x + rotatedPoint.x);
                             const gridZ = Math.round(platformHit.mesh.position.z + rotatedPoint.z);
                             
-                            // Mettre à jour la position cible
                             targetPosition.x = gridX;
                             targetPosition.z = gridZ;
                             targetPosition.y = platformHit.mesh.position.y;
                         }
+                    } else {
+                        // Cubes et autres éléments
+                        targetPosition = pickResult.pickedMesh.position.clone();
                     }
+                    
+                    console.log("Tentative de déplacement vers:", targetPosition);
                     
                     // Calcul du chemin
                     const path = this.player.findPath({
@@ -261,7 +291,6 @@ class BaseLevel {
                         this.player.moveAlongPath(path);
                     } else {
                         console.log("Destination inaccessible, aucun déplacement");
-                        // Optionnel: Ajouter un feedback visuel pour indiquer que la destination est inaccessible
                         this.showInaccessibleFeedback(targetPosition);
                     }
                 }

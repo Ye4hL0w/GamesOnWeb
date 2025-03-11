@@ -100,13 +100,97 @@ class Player {
             return [];
         }
         
+        // Logs de débogage
+        console.log("Position actuelle:", this.position);
+        console.log("Position cible:", target);
+        
         // Vérification rapide si la destination est accessible
         const targetKey = `${target.x},${target.y},${target.z}`;
+        const gridElements = this.grid.getAllElements();
+        const targetElement = gridElements[targetKey];
         
-        // Si la cible n'est pas une position valide ou une position de plateforme valide, retourner un chemin vide
-        if (!this.grid.isValidPosition(target) && !this.grid.isValidPlatformPosition(target)) {
+        // CORRECTION: Vérifier si la destination est un escalier
+        const isStair = targetElement && targetElement.type === 'stair';
+        
+        // NOUVEAU: Cas spécial pour monter directement au niveau supérieur (y + 1)
+        if (this.position.y === 0 && target.y === 1) {
+            console.log("Tentative de monter directement au niveau supérieur");
+            
+            // Vérifier si la cible est adjacente horizontalement à la position actuelle
+            const dx = Math.abs(this.position.x - target.x);
+            const dz = Math.abs(this.position.z - target.z);
+            
+            // Si la distance horizontale est raisonnable, permettre la montée
+            if (dx + dz <= 2) {
+                console.log("Montée directe au niveau supérieur autorisée");
+                return [target];
+            }
+        }
+        
+        // NOUVEAU: Cas spécial pour permettre de descendre au niveau du sol (y = 0)
+        if (this.position.y === 1 && target.y === 0) {
+            console.log("Tentative de descendre au niveau du sol");
+            
+            // Vérifier si la cible est adjacente horizontalement à la position actuelle
+            const dx = Math.abs(this.position.x - target.x);
+            const dz = Math.abs(this.position.z - target.z);
+            
+            // Si la distance horizontale est raisonnable, permettre la descente
+            if (dx + dz <= 2) {
+                console.log("Descente directe au niveau du sol autorisée");
+                return [target];
+            }
+        }
+        
+        // CORRECTION: Cas spécial pour un clic direct sur un escalier
+        if (isStair) {
+            // Vérifier si l'escalier est adjacent au joueur (horizontalement)
+            const dx = Math.abs(this.position.x - target.x);
+            const dz = Math.abs(this.position.z - target.z);
+            const isAdjacent = (dx + dz) <= 1;
+            
+            if (isAdjacent) {
+                console.log("Déplacement direct vers l'escalier adjacent");
+                return [target];
+            }
+            
+            // Vérifier si le joueur est à la position suivante de l'escalier (pour la descente)
+            if (targetElement.nextPosition) {
+                const nextPos = targetElement.nextPosition;
+                if (this.position.x === nextPos.x && 
+                    this.position.y === nextPos.y && 
+                    this.position.z === nextPos.z) {
+                    console.log("Descente directe de l'escalier");
+                    return [target];
+                }
+            }
+        }
+        
+        // Si la cible n'est pas une position valide, une position de plateforme valide, ou un escalier, retourner un chemin vide
+        if (!isStair && !this.grid.isValidPosition(target) && !this.grid.isValidPlatformPosition(target)) {
             console.log("Destination inaccessible: position non valide");
             return [];
+        }
+        
+        // CORRECTION: Vérifier s'il s'agit d'un cas spécial d'adjacence d'escalier
+        for (const [key, element] of Object.entries(gridElements)) {
+            if (element.type === 'stair' && element.nextPosition) {
+                // Si la cible est la position suivante d'un escalier adjacent au joueur
+                const [stairX, stairY, stairZ] = key.split(',').map(Number);
+                const isStairAdjacent = Math.abs(this.position.x - stairX) + 
+                                        Math.abs(this.position.z - stairZ) <= 1;
+                
+                if (isStairAdjacent && 
+                    target.x === element.nextPosition.x && 
+                    target.y === element.nextPosition.y && 
+                    target.z === element.nextPosition.z) {
+                    console.log("Utilisation d'un escalier pour atteindre la cible");
+                    return [
+                        { x: stairX, y: stairY, z: stairZ },
+                        target
+                    ];
+                }
+            }
         }
         
         const path = [];
@@ -133,42 +217,127 @@ class Player {
         // Fonction pour obtenir une clé unique pour chaque position
         const posKey = (pos) => `${pos.x},${pos.y},${pos.z}`;
         
-        // Fonction pour vérifier si une position est valide et peut être atteinte
+        // CORRECTION: Fonction pour vérifier si une position est valide
         const isValidMove = (pos) => {
-            return this.grid.isValidPosition(pos) || this.grid.isValidPlatformPosition(pos);
+            // Vérifier les positions standard
+            if (this.grid.isValidPosition(pos) || this.grid.isValidPlatformPosition(pos)) {
+                return true;
+            }
+            
+            // Vérifier si c'est un escalier
+            const posKey = `${pos.x},${pos.y},${pos.z}`;
+            const element = gridElements[posKey];
+            if (element && element.type === 'stair') {
+                return true;
+            }
+            
+            return false;
         };
         
-        // Fonction pour obtenir les voisins valides d'une position
+        // CORRECTION: Obtenir les voisins
         const getNeighbors = (pos) => {
             const neighbors = [];
+            const currentKey = posKey(pos);
+            const currentElement = gridElements[currentKey];
+            
+            // Directions de base (X et Z sur le même niveau Y)
             const directions = [
-                { x: 1, y: 0, z: 0 }, { x: -1, y: 0, z: 0 },
-                { x: 0, y: 0, z: 1 }, { x: 0, y: 0, z: -1 },
-                { x: 0, y: 1, z: 0 }, { x: 0, y: -1, z: 0 }
+                { x: 1, y: 0, z: 0 },
+                { x: -1, y: 0, z: 0 },
+                { x: 0, y: 0, z: 1 },
+                { x: 0, y: 0, z: -1 }
             ];
             
-            // Vérifier s'il s'agit d'un escalier
-            const posKey = `${pos.x},${pos.y},${pos.z}`;
-            const gridElement = this.grid.getAllElements()[posKey];
+            // Ajouter les voisins de base sur le même niveau Y
+            for (const dir of directions) {
+                const newPos = {
+                    x: pos.x + dir.x,
+                    y: pos.y + dir.y,
+                    z: pos.z + dir.z
+                };
+                if (isValidMove(newPos)) {
+                    neighbors.push(newPos);
+                }
+            }
             
-            if (gridElement && gridElement.type === 'stair' && gridElement.nextPosition) {
-                // Ajouter la position suivante de l'escalier comme voisin prioritaire
-                neighbors.push({
-                    x: gridElement.nextPosition.x,
-                    y: gridElement.nextPosition.y,
-                    z: gridElement.nextPosition.z
-                });
-            } else {
-                // Ajouter tous les voisins standards
-                for (const dir of directions) {
-                    const neighbor = {
+            // Si nous sommes sur un escalier, ajouter sa destination comme voisin
+            if (currentElement && currentElement.type === 'stair' && currentElement.nextPosition) {
+                neighbors.push(currentElement.nextPosition);
+                console.log("Position suivante d'escalier ajoutée comme voisin:", currentElement.nextPosition);
+            }
+            
+            // Vérifier si cette position est la destination d'un escalier (pour descendre)
+            for (const [key, element] of Object.entries(gridElements)) {
+                if (element.type === 'stair' && element.nextPosition) {
+                    const next = element.nextPosition;
+                    if (next.x === pos.x && next.y === pos.y && next.z === pos.z) {
+                        // Extraire les coordonnées de l'escalier
+                        const [x, y, z] = key.split(',').map(Number);
+                        
+                        // Ajouter l'escalier comme voisin pour permettre la descente
+                        const descensoEscalier = { x, y, z };
+                        neighbors.push(descensoEscalier);
+                        console.log("Escalier descendant trouvé: de", pos, "vers", descensoEscalier);
+                    }
+                }
+            }
+            
+            // NOUVEAU: Trouver tous les escaliers adjacents
+            // Si le niveau de destination est différent (ex: y=1 alors que nous sommes à y=0)
+            // chercher activement des escaliers qui pourraient nous y mener
+            if (target.y !== pos.y) {
+                console.log("Recherche d'escaliers pour changer de niveau y:", pos.y, "->", target.y);
+                
+                // Recherche d'escaliers proches
+                for (const [key, element] of Object.entries(gridElements)) {
+                    if (element.type === 'stair') {
+                        // Extraire les coordonnées de l'escalier
+                        const [x, y, z] = key.split(',').map(Number);
+                        
+                        // Distance horizontale à l'escalier
+                        const distanceHorizontale = Math.abs(pos.x - x) + Math.abs(pos.z - z);
+                        
+                        // Si l'escalier est sur le même niveau y et peut nous amener au niveau cible
+                        if (y === pos.y && element.nextPosition && element.nextPosition.y === target.y) {
+                            // Ajouter directement l'escalier comme voisin
+                            const stairPos = { x, y, z };
+                            // Vérifier que la position existe dans la grille avant d'ajouter
+                            if (isValidMove(stairPos)) {
+                                neighbors.push(stairPos);
+                                console.log("Escalier montant trouvé pour changer de niveau:", stairPos);
+                            }
+                        }
+                        
+                        // Si l'escalier est aussi sur le niveau de destination et peut nous ramener à notre niveau
+                        if (y === target.y && element.nextPosition && element.nextPosition.y === pos.y) {
+                            // Pour les escaliers sur le niveau cible, on les considère comme accessibles via leur nextPosition
+                            console.log("Escalier pour descendre repéré au niveau cible");
+                        }
+                    }
+                }
+            }
+            
+            // CORRECTION: Nous gardons les mouvements directs entre niveaux mais avec moins de cas
+            // Permettre de descendre au niveau du sol depuis y = 1 (cas simplifié)
+            if (pos.y === 1) {
+                const directionsDescente = [
+                    { x: 0, y: -1, z: 0 },   // Descente directe
+                    { x: 1, y: -1, z: 0 },   // Descente en diagonale
+                    { x: -1, y: -1, z: 0 },  // Descente en diagonale
+                    { x: 0, y: -1, z: 1 },   // Descente en diagonale
+                    { x: 0, y: -1, z: -1 }   // Descente en diagonale
+                ];
+                
+                for (const dir of directionsDescente) {
+                    const posDescente = {
                         x: pos.x + dir.x,
                         y: pos.y + dir.y,
                         z: pos.z + dir.z
                     };
                     
-                    if (isValidMove(neighbor)) {
-                        neighbors.push(neighbor);
+                    // Vérifier si la position en bas est accessible
+                    if (isValidMove(posDescente)) {
+                        neighbors.push(posDescente);
                     }
                 }
             }
@@ -176,70 +345,89 @@ class Player {
             return neighbors;
         };
         
-        // Ajouter une vérification du nombre d'itérations pour éviter les boucles infinies
+        // Trouver un chemin en utilisant l'algorithme A*
         while (openSet.length > 0 && iterations < maxIterations) {
             iterations++;
             
-            // Trouver le nœud avec le coût f le plus bas
-            let current = openSet.reduce((min, item) => 
-                item.f < min.f ? item : min, openSet[0]);
+            // Trier l'ensemble ouvert par coût f
+            openSet.sort((a, b) => a.f - b.f);
             
-            // Si nous avons atteint la cible
+            // Prendre le nœud avec le coût f le plus bas
+            const current = openSet.shift();
+            
+            // Si nous avons atteint la destination
             if (posEqual(current, target)) {
                 // Reconstruire le chemin
-                let temp = current;
-                while (temp.parent) {
-                    path.unshift(temp);
-                    temp = temp.parent;
+                let currentNode = current;
+                while (currentNode.parent) {
+                    path.unshift({
+                        x: currentNode.x,
+                        y: currentNode.y,
+                        z: currentNode.z
+                    });
+                    currentNode = currentNode.parent;
                 }
                 return path;
             }
             
-            // Retirer current de openSet et l'ajouter à closedSet
-            openSet.splice(openSet.indexOf(current), 1);
+            // Ajouter le nœud actuel à l'ensemble fermé
             closedSet.add(posKey(current));
             
-            // Vérifier tous les voisins
-            for (const neighbor of getNeighbors(current)) {
-                // Si déjà évalué, ignorer
-                if (closedSet.has(posKey(neighbor))) continue;
+            // Obtenir les voisins du nœud actuel
+            const neighbors = getNeighbors(current);
+            
+            for (const neighbor of neighbors) {
+                // Ignorer les voisins déjà explorés
+                if (closedSet.has(posKey(neighbor))) {
+                    continue;
+                }
                 
-                // Calculer le coût g
-                const gScore = current.g + 1;
+                // NOUVEAU: Vérifier si ce voisin est un escalier qui nous fait changer de niveau
+                const isStairNeighbor = gridElements[posKey(neighbor)]?.type === 'stair';
                 
-                // Vérifier si ce voisin est dans openSet
-                const openNeighbor = openSet.find(n => posEqual(n, neighbor));
+                // Coût g (coût pour atteindre ce voisin depuis le départ)
+                // AMÉLIORATION: Favoriser les escaliers si on doit changer de niveau
+                const isLevelChange = current.y !== neighbor.y;
+                let moveCost = 1; // Coût normal de déplacement
                 
-                if (!openNeighbor || gScore < openNeighbor.g) {
-                    // Ce chemin est meilleur, ajouter ou mettre à jour
+                // Si nous devons changer de niveau et que c'est un escalier, donnons-lui la priorité
+                if (isLevelChange && isStairNeighbor && target.y !== current.y) {
+                    // Favoriser les escaliers quand on veut changer de niveau
+                    moveCost = 0.5; // Coût réduit pour favoriser l'escalier
+                    console.log("Favorisant l'escalier pour changer de niveau");
+                } else if (isLevelChange && !isStairNeighbor) {
+                    // Pénaliser légèrement les changements de niveau qui ne sont pas des escaliers
+                    moveCost = 1.2;
+                }
+                
+                const tentativeG = current.g + moveCost;
+                
+                // Vérifier si ce voisin est déjà dans l'ensemble ouvert
+                const existingNeighbor = openSet.find(n => posEqual(n, neighbor));
+                
+                if (!existingNeighbor || tentativeG < existingNeighbor.g) {
+                    // Ce chemin est meilleur, mettre à jour ou ajouter le voisin
                     const h = heuristic(neighbor, target);
-                    const f = gScore + h;
                     
-                    if (!openNeighbor) {
+                    if (!existingNeighbor) {
+                        // Ajouter à l'ensemble ouvert
                         openSet.push({
                             ...neighbor,
-                            g: gScore,
+                            g: tentativeG,
                             h: h,
-                            f: f,
+                            f: tentativeG + h,
                             parent: current
                         });
                     } else {
-                        openNeighbor.g = gScore;
-                        openNeighbor.f = f;
-                        openNeighbor.parent = current;
+                        // Mettre à jour le voisin existant
+                        existingNeighbor.g = tentativeG;
+                        existingNeighbor.f = tentativeG + h;
+                        existingNeighbor.parent = current;
                     }
                 }
             }
         }
         
-        // Si on a atteint le nombre maximum d'itérations sans trouver de chemin
-        if (iterations >= maxIterations) {
-            console.log("Recherche de chemin abandonnée: trop d'itérations");
-            return [];
-        }
-        
-        // Si aucun chemin n'est trouvé
-        console.log("Aucun chemin trouvé vers la destination");
         return [];
     }
     

@@ -27,7 +27,7 @@ export class Level1 extends BaseLevel {
 
         this.jumpingObstacles.push(
             new JumpingObstacle(4000, 0, 70, floorY, 200, 8),
-            new JumpingObstacle(8000, 640, 50, 100, 200, 8)
+            new JumpingObstacle(8000, floorY - 300, 50, 100, 200, 8)
         );
         this.directionalObstacles.push(
             new DirectionalObstacle(6000, 0, 70, floorY, 200, 8)
