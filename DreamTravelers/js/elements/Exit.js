@@ -1,10 +1,13 @@
 class Exit {
-    constructor(scene, grid, position, nextLevelId) {
+    constructor(scene, grid, position, nextLevelId, requiredFragments = 0) {
         this.scene = scene;
         this.grid = grid;
         this.position = position;
         this.nextLevelId = nextLevelId;
         this.mesh = null;
+        this.requiredFragments = requiredFragments;
+        this.collectedFragments = 0;
+        this.isActive = (requiredFragments === 0); // Actif par défaut si aucun fragment requis
         
         this.createExit();
         this.setupInteraction();
@@ -33,7 +36,7 @@ class Exit {
                 );
             }
             
-            // Créer un rectangle blanc simple
+            // Créer un rectangle blanc simple (design original)
             this.mesh = BABYLON.MeshBuilder.CreateBox(`exit_mesh_${key}`, {
                 width: 0.25,
                 height: 0.5,
@@ -44,19 +47,27 @@ class Exit {
             this.mesh.position.y = 0.75; // Moitié de la hauteur au-dessus du sol
             this.mesh.parent = this.meshParent;
             
-            // Matériau blanc simple
-            const material = new BABYLON.StandardMaterial(`exit_mat_${key}`, this.scene);
-            material.diffuseColor = new BABYLON.Color3(1, 1, 1); // Blanc
-            material.emissiveColor = new BABYLON.Color3(0.6, 0.6, 0.6); // Légère lueur
-            material.alpha = 0.8; // Légèrement transparent
+            // Matériau blanc mat (sans brillance)
+            this.material = new BABYLON.StandardMaterial(`exit_mat_${key}`, this.scene);
+            this.material.diffuseColor = new BABYLON.Color3(1, 1, 1); // Blanc
+            this.material.emissiveColor = new BABYLON.Color3(0, 0, 0); // Pas de lueur
+            this.material.specularColor = new BABYLON.Color3(0, 0, 0); // Pas de reflet brillant
+            this.material.alpha = 0.8; // Légèrement transparent
             
-            this.mesh.material = material;
+            this.mesh.material = this.material;
             
-            // Légère lumière pour le rendre visible
+            // Lumière très légère (faible intensité)
             this.light = new BABYLON.PointLight(`exit_light_${key}`, new BABYLON.Vector3(0, 0.75, 0), this.scene);
             this.light.parent = this.mesh;
-            this.light.intensity = 0.5;
+            this.light.intensity = 0.2; // Intensité réduite
             this.light.diffuse = new BABYLON.Color3(1, 1, 1);
+            
+            // Animation de légère rotation
+            this.scene.registerBeforeRender(() => {
+                if (this.mesh) {
+                    this.mesh.rotation.y += 0.005;
+                }
+            });
             
             console.log("Exit créée avec succès à la position:", this.position);
         } catch (error) {
@@ -89,15 +100,90 @@ class Exit {
                 Math.pow(playerPos.z - exitPos.z, 2)
             );
             
-            // Si le joueur est assez proche, téléporter
-            // Utiliser un rayon plus petit pour que le joueur doive vraiment être sur la sortie
-            if (distance < 0.5) {
+            // Si le joueur est assez proche et l'exit est actif, téléporter
+            if (distance < 0.5 && this.isActive) {
                 this.teleportToNextLevel();
+            } else if (distance < 0.5 && !this.isActive) {
+                // Feedback visuel si pas assez de fragments
+                this.showInactiveMessage();
             }
         });
         
         // Stocker l'observer pour pouvoir le supprimer plus tard si nécessaire
         this.observer = observer;
+    }
+    
+    updateFragmentCount(count) {
+        this.collectedFragments = count;
+        this.isActive = (this.collectedFragments >= this.requiredFragments);
+        
+        // Aucun changement visuel - par contre on peut faire un petit effet quand activé
+        if (this.isActive && !this._pulseAnimation) {
+            this._pulseAnimation = true;
+            this._startPulseAnimation();
+        } else if (!this.isActive && this._pulseAnimation) {
+            this._pulseAnimation = false;
+        }
+    }
+    
+    _startPulseAnimation() {
+        let time = 0;
+        const observer = this.scene.onBeforeRenderObservable.add(() => {
+            if (!this._pulseAnimation) {
+                this.scene.onBeforeRenderObservable.remove(observer);
+                return;
+            }
+            
+            time += this.scene.getEngine().getDeltaTime() / 1000;
+            const pulse = Math.sin(time * 2) * 0.2 + 0.8;
+            
+            // Faire pulser légèrement la taille seulement
+            if (this.mesh) {
+                const pulseFactor = 0.9 + (pulse * 0.2);
+                this.mesh.scaling.set(pulseFactor, pulseFactor, pulseFactor);
+            }
+        });
+    }
+    
+    showInactiveMessage() {
+        // Créer un message flottant "Fragments requis: X/Y"
+        if (this._messageTimeout) {
+            return; // Éviter d'afficher le message trop souvent
+        }
+        
+        const container = document.createElement('div');
+        container.className = 'floating-message';
+        container.innerHTML = `Fragments requis: ${this.collectedFragments}/${this.requiredFragments}`;
+        document.body.appendChild(container);
+        
+        // Positionner le message au-dessus de la sortie dans l'écran
+        const engine = this.scene.getEngine();
+        const camera = this.scene.activeCamera;
+        
+        if (camera) {
+            const projectedPosition = BABYLON.Vector3.Project(
+                new BABYLON.Vector3(this.position.x, this.position.y + 1.5, this.position.z),
+                BABYLON.Matrix.Identity(),
+                this.scene.getTransformMatrix(),
+                camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+            );
+            
+            container.style.left = projectedPosition.x + 'px';
+            container.style.top = projectedPosition.y + 'px';
+        }
+        
+        // Ajouter animation et supprimer après quelques secondes
+        setTimeout(() => {
+            container.classList.add('fadeOut');
+            setTimeout(() => {
+                if (document.body.contains(container)) {
+                    document.body.removeChild(container);
+                }
+            }, 1000);
+            this._messageTimeout = null;
+        }, 2000);
+        
+        this._messageTimeout = true;
     }
     
     teleportToNextLevel() {
@@ -139,14 +225,8 @@ class Exit {
         
         // Lancer l'animation de fondu
         this.scene.beginAnimation(fadeMaterial, 0, 30, false, 1, () => {
-            // Une fois le fondu terminé, charger le niveau suivant
-            if (this.scene.level && this.scene.level.startLevel) {
-                this.scene.level.startLevel(this.nextLevelId);
-            } else {
-                // Fallback si la fonction startLevel n'est pas disponible
-                const levelManager = new LevelManager();
-                levelManager.startLevel(this.nextLevelId, this.scene);
-            }
+            // Redirection directe vers level2.html au lieu d'utiliser le LevelManager
+            window.location.href = `level${this.nextLevelId}.html`;
         });
     }
     

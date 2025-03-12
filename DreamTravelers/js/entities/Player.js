@@ -20,13 +20,13 @@ class Player {
         material.emissiveColor = new BABYLON.Color3(0.5, 0.25, 0); // Légère lueur
         material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
         this.mesh.material = material;
-        
-        // Positionner le joueur
+
         this.mesh.position = new BABYLON.Vector3(
             this.position.x,
-            this.position.y + 0.5,
+            this.position.y,
             this.position.z
         );
+        
     }
     
     setPosition(x, y, z) {
@@ -36,6 +36,17 @@ class Player {
     }
     
     updateParent() {
+        if (this._startTime === undefined) {
+            this._startTime = performance.now();
+        }
+        
+        const currentTime = performance.now();
+        const timeSinceStart = currentTime - this._startTime;
+        
+        if (timeSinceStart < 500) {
+            return;
+        }
+        
         const platforms = this.scene.meshes.filter(mesh => mesh.name === "rotatingPlatform");
         let isOnPlatform = false;
         

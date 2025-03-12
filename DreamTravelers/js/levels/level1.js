@@ -8,16 +8,21 @@ class Level1 extends BaseLevel {
         this.playerPosition = { x: 0, y: 0, z: 0 };
         this.pathLine = null;
         
-        // Initialiser le niveau
+        // Système de fragments
+        this.fragments = [];
+        this.requiredFragments = 3; // Nombre de fragments requis pour ce niveau
+        this.collectedFragments = 0;
+        
         this.createGridLines(this.grid.gridSize);
         this.clouds = new Clouds(this.scene);
         this.player = new Player(this.scene, this.grid);
         
-        // Créer le niveau spécifique
         this.createLevel();
         
-        // Nous n'avons plus besoin de définir onPointerDown ici car il est défini dans BaseLevel
         window.addEventListener("keydown", (evt) => this.handleKeyboard(evt));
+        
+        // Référencer le niveau dans la scène
+        this.scene.level = this;
     }
 
     startLevel(levelId) {
@@ -26,13 +31,72 @@ class Level1 extends BaseLevel {
         levelManager.startLevel(levelId, this.scene);
     }
 
-    handleKeyboard(evt) {
-        // À implémenter si nécessaire
+    // Méthode appelée quand un fragment est collecté
+    fragmentCollected() {
+        this.collectedFragments++;
+        console.log(`Fragment collecté! ${this.collectedFragments}/${this.requiredFragments}`);
+        
+        // Mettre à jour la sortie
+        if (this.exit) {
+            this.exit.updateFragmentCount(this.collectedFragments);
+        }
+        
+        // Afficher un message
+        this.showFragmentMessage();
+    }
+    
+    // Afficher un message de fragment collecté
+    showFragmentMessage() {
+        const message = document.createElement('div');
+        message.className = 'fragment-message';
+        message.textContent = `Fragment collecté: ${this.collectedFragments}/${this.requiredFragments}`;
+        
+        // Styles
+        message.style.position = 'fixed';
+        message.style.top = '100px';
+        message.style.left = '50%';
+        message.style.transform = 'translateX(-50%)';
+        message.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        message.style.color = '#FFD700';
+        message.style.padding = '10px 20px';
+        message.style.borderRadius = '5px';
+        message.style.fontFamily = '"Poppins", sans-serif';
+        message.style.zIndex = '1000';
+        
+        document.body.appendChild(message);
+        
+        // Animation avec GSAP
+        if (window.gsap) {
+            gsap.fromTo(message, 
+                { opacity: 0, y: -20 }, 
+                { opacity: 1, y: 0, duration: 0.5 }
+            );
+            
+            gsap.to(message, {
+                opacity: 0, 
+                y: -20, 
+                delay: 2,
+                duration: 0.5,
+                onComplete: () => {
+                    document.body.removeChild(message);
+                }
+            });
+        } else {
+            // Fallback sans GSAP
+            setTimeout(() => {
+                message.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(message);
+                }, 500);
+            }, 2000);
+        }
     }
 
+    handleKeyboard(evt) {
+        // Peut-être implémenter des raccourcis clavier ici
+    }
 
     async loadIslandModel() {
-        // À implémenter si nécessaire
     }
 
     createLevel() {
@@ -80,8 +144,33 @@ class Level1 extends BaseLevel {
         this.rotatingPlatforms.push(platform2);
 
         // Placer le joueur à la position initiale
-        this.player.setPosition(0, 0, 0);
-
-        this.exit = new Exit(this.scene, this.grid, {x: -4, y: 0, z: -4}, 2);
+        // Forcer une position spécifique en désactivant temporairement le parent
+        if (this.player && this.player.mesh) {
+            // S'assurer que le joueur n'est pas attaché à une plateforme au démarrage
+            this.player.mesh.parent = null;
+            this.player.setPosition(0, 0, 0);
+            
+            // Forcer un delay pour permettre au joueur de s'initialiser correctement
+            setTimeout(() => {
+                // Double vérification de la position
+                if (this.player.mesh && this.player.mesh.parent) {
+                    const worldPos = this.player.mesh.getAbsolutePosition();
+                    this.player.mesh.parent = null;
+                    this.player.mesh.position = worldPos;
+                    this.player.mesh.position.x = 0;
+                    this.player.mesh.position.z = 0;
+                    this.player.position = { x: 0, y: 0, z: 0 };
+                    console.log("Position du joueur corrigée:", this.player.mesh.position);
+                }
+            }, 100);
+        }
+        
+        // Ajouter des fragments à collecter
+        this.fragments.push(new Fragment(this.scene, this.grid, {x: -2, y: 0, z: 0}));
+        this.fragments.push(new Fragment(this.scene, this.grid, {x: 0, y: 1, z: 3}));
+        this.fragments.push(new Fragment(this.scene, this.grid, {x: 0, y: 0, z: -4}));
+        
+        // Créer la sortie, en spécifiant le nombre de fragments requis
+        this.exit = new Exit(this.scene, this.grid, {x: -4, y: 0, z: -4}, 2, this.requiredFragments);
     }
 }

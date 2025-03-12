@@ -272,3 +272,24 @@ body {
     z-index: 1000;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.back-button a {
+    text-decoration: none;
+    color: white;
+    background-color: #4a4a4a;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    transition: background-color 0.3s;
+}
+
+.back-button a:hover {
+    background-color: #2a2a2a;
+}
