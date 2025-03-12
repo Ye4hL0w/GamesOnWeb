@@ -5,13 +5,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./index.css">
-        <style>
-            canvas {
-                border: 1px solid black;
-                display: block;
-                margin: 0 auto;
-            }
-        </style>
     </head>
     <body>
         <header>
@@ -20,7 +13,11 @@
                 <ul class="liens">
                     <li class="li" data-section="home">Accueil</li>
                     <li class="li" data-section="progress">Progression</li>
-                    <li class="li" data-section="connexion">
+                    <li class="li user-info" id="user-info">
+                        <span class="user-greeting" id="user-greeting"></span>
+                        <button id="deconnexion">Déconnexion</button>
+                    </li>
+                    <li class="li" data-section="connexion" id="connexion-li">
                         <button id="connexion">Connexion</button>
                     </li>
                 </ul>
@@ -44,7 +41,6 @@
             <div class="colonne">
                 <h3>Portfolio</h3>
                 <a href="https://jeremy-moncada.fr/">jeremy-moncada.fr</a>
-
             </div>
             <div class="colonne">
                 <h3>Contact</h3>
@@ -52,6 +48,6 @@
             </div>
         </footer>
         <script src="./index.js"></script>
+        <script src="./gameProgress.js"></script>
     </body>
-
 </html>

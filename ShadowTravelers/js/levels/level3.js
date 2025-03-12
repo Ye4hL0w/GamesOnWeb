@@ -168,6 +168,17 @@ export class Level3 extends BaseLevel {
     onLevelComplete() {
         console.log('Niveau 3 terminé ! Retour au menu...');
         
+        // Sauvegarder la progression du jeu (Shadow Travelers = jeu 1, niveau 3 = jeu terminé)
+        if (window.GameProgress) {
+            window.GameProgress.saveGameProgress(
+                window.GameProgress.GAME_IDS.SHADOW_TRAVELERS,
+                3  // niveau 3 complété (jeu terminé)
+            );
+            console.log('Progression sauvegardée: Shadow Travelers - Jeu terminé!');
+        } else {
+            console.error('Module GameProgress non disponible');
+        }
+        
         // Créer un effet de fondu
         const canvas = this.canvas;
         const context = this.context;
@@ -181,7 +192,9 @@ export class Level3 extends BaseLevel {
             if (opacity >= 1) {
                 clearInterval(fadeEffect);
                 // Rediriger vers un écran de fin ou menu principal
-                this.game.loadLevel(1); // Retour au niveau 1 ou écran de fin
+                setTimeout(() => {
+                    window.location.href = 'index.html'; // Retour au menu principal
+                }, 500);
             }
         }, 50);
     }

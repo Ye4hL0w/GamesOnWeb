@@ -35,11 +35,11 @@ export class Level1 extends BaseLevel {
 
         const ghostY = floorY - 100;
         this.ghosts.push(
-            new Ghost(this.canvas.width - 150, ghostY, "Bienvenue, voyageur perdu… Tu as quitté le néant, mais ton chemin est encore obscur. Ce monde est un labyrinthe façonné par l’oubli. Seuls ceux qui perçoivent l’invisible peuvent avancer…")
+            new Ghost(this.canvas.width - 150, ghostY, "Bienvenue, voyageur perdu… Tu as quitté le néant, mais ton chemin est encore obscur. Ce monde est un labyrinthe façonné par l'oubli. Seuls ceux qui perçoivent l'invisible peuvent avancer…")
         );
 
         this.ghosts.push(
-            new Ghost(this.levelWidth - 600, ghostY, "Tu as franchi la première épreuve… mais ce n’était qu’une illusion. Les ombres testent ta volonté, elles murmurent des mensonges. Écoute bien… tout ici a un double sens.")
+            new Ghost(this.levelWidth - 600, ghostY, "Tu as franchi la première épreuve… mais ce n'était qu'une illusion. Les ombres testent ta volonté, elles murmurent des mensonges. Écoute bien… tout ici a un double sens.")
         );
 
         this.exit = new Exit(this.levelWidth - 150, floorY - 100, 80, 80);
@@ -115,6 +115,14 @@ export class Level1 extends BaseLevel {
     onLevelComplete() {
         console.log('Niveau 1 terminé ! Passage au niveau suivant...');
         
+        // Sauvegarder la progression si GameProgress est disponible
+        if (typeof window.GameProgress !== 'undefined') {
+            window.GameProgress.saveGameProgress(
+                window.GameProgress.GAME_IDS.SHADOW_TRAVELERS,
+                1  // niveau 1 complété
+            );
+        }
+        
         // Ajouter un effet visuel de "fondu" avant la transition
         const canvas = this.canvas;
         const context = this.context;
@@ -137,5 +145,21 @@ export class Level1 extends BaseLevel {
                 }, 500);
             }
         }, 50);
+    }
+    
+    // Méthode pour calculer le score du joueur
+    calculateScore() {
+        // Score de base pour avoir terminé le niveau
+        let score = 1000;
+        
+        // Bonus basé sur le temps (moins de temps = plus de points)
+        // Exemple: 30 secondes de base - temps écoulé (plafonné à 0)
+        const timeBonus = Math.max(0, 30 - (this.elapsedTime / 1000)) * 50;
+        
+        // Bonus pour les collectibles (le cas échéant)
+        const collectiblesBonus = this.collectibles ? this.collectibles.filter(c => c.collected).length * 100 : 0;
+        
+        // Score total
+        return Math.round(score + timeBonus + collectiblesBonus);
     }
 }

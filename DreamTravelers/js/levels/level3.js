@@ -189,5 +189,9 @@ class Level3 extends BaseLevel {
 
         // Placer le joueur à la position initiale
         this.player.setPosition(0, 0, 2);
+        
+        // Créer la sortie au sommet de la tour
+        // Niveau 3 étant le dernier, on renvoie vers index.html (niveau 0)
+        this.exit = new Exit(this.scene, this.grid, {x: 0, y: 5, z: 0}, 0);
     }
 } 

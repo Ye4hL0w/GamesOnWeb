@@ -287,6 +287,17 @@ export class Level2 extends BaseLevel {
     onLevelComplete() {
         console.log('Niveau 2 terminé ! Passage au niveau suivant...');
         
+        // Sauvegarder la progression du jeu (Shadow Travelers = jeu 1, niveau 2)
+        if (window.GameProgress) {
+            window.GameProgress.saveGameProgress(
+                window.GameProgress.GAME_IDS.SHADOW_TRAVELERS,
+                2  // niveau 2 complété
+            );
+            console.log('Progression sauvegardée: Shadow Travelers - Niveau 2');
+        } else {
+            console.error('Module GameProgress non disponible');
+        }
+        
         // Ajouter un effet visuel de "fondu" avant la transition
         const canvas = this.canvas;
         const context = this.context;

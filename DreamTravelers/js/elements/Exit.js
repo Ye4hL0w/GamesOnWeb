@@ -193,6 +193,19 @@ class Exit {
             this.observer = null;
         }
         
+        // Sauvegarder la progression du niveau
+        if (window.GameProgress && typeof window.GameProgress.saveGameProgress === 'function') {
+            // Utiliser GAME_IDS.DREAM_TRAVELERS qui est 2
+            const gameId = window.GameProgress.GAME_IDS.DREAM_TRAVELERS;
+            const currentLevel = parseInt(window.location.pathname.split('level')[1]?.split('.')[0] || '1');
+            
+            // Sauvegarder la progression
+            window.GameProgress.saveGameProgress(gameId, currentLevel);
+            console.log(`Progression sauvegardée pour Dream Travelers: Niveau ${currentLevel} terminé`);
+        } else {
+            console.warn("GameProgress n'est pas disponible, la progression ne sera pas sauvegardée");
+        }
+        
         // Effet de fondu avant de changer de niveau
         const fadeAnimation = new BABYLON.Animation(
             "fadeOut", 
@@ -225,8 +238,13 @@ class Exit {
         
         // Lancer l'animation de fondu
         this.scene.beginAnimation(fadeMaterial, 0, 30, false, 1, () => {
-            // Redirection directe vers level2.html au lieu d'utiliser le LevelManager
-            window.location.href = `level${this.nextLevelId}.html`;
+            // Si nextLevelId est 0, rediriger vers index.html
+            if (this.nextLevelId === 0) {
+                window.location.href = "index.html";
+            } else {
+                // Sinon, rediriger vers le niveau suivant
+                window.location.href = `level${this.nextLevelId}.html`;
+            }
         });
     }
     

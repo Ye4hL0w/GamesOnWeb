@@ -66,7 +66,7 @@ function initConnexion() {
             return;
         }
 
-        const user = { name, email, password };
+        const user = { name, email, password, gameProgress: {} };
         localStorage.setItem(email, JSON.stringify(user));
 
         signInForm.reset();
@@ -84,8 +84,14 @@ function initConnexion() {
         const user = JSON.parse(localStorage.getItem(email));
         
         if (user && user.password === password) {
+            // Enregistrer l'utilisateur actuel
+            localStorage.setItem('currentUser', email);
+            
             logInForm.reset();
             alert('Connexion réussie');
+            
+            // Rediriger vers l'accueil
+            window.location.href = '../../index.html';
         } else {
             errorBoxLogin.textContent = 'Email ou mot de passe incorrect';
             errorBoxLogin.classList.add('active');

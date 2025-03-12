@@ -180,5 +180,8 @@ class Level2 extends BaseLevel {
 
         // Placer le joueur à la position initiale
         this.player.setPosition(0, 0, 0);
+        
+        // Créer la sortie du niveau - NextLevelId = 3 (niveau suivant)
+        this.exit = new Exit(this.scene, this.grid, {x: 0, y: 3, z: 0}, 3);
     }
 }
