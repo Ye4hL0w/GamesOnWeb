@@ -40,7 +40,7 @@ export class Level3 extends BaseLevel {
 
         const ghostY = floorY - 100;
         this.ghosts.push(
-            new Ghost(750, ghostY, "Tu es arrivé au seuil… Regarde autour de toi. Dream Land brille au loin, mais l'ombre refuse de te laisser partir. La dernière énigme est la plus cruelle : sais-tu vraiment ce que tu cherches ?")
+            new Ghost(750, ghostY, "Tu es arrivé au seuil… Regarde autour de toi. Dream Land brille au loin, mais les gardiens refusent de te laisser partir. La dernière énigme est la plus cruelle.")
         );
 
         this.ghosts.push(

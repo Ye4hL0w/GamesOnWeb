@@ -39,7 +39,7 @@ export class Level1 extends BaseLevel {
         );
 
         this.ghosts.push(
-            new Ghost(this.levelWidth - 600, ghostY, "Tu as franchi la première épreuve… mais ce n'était qu'une illusion. Les ombres testent ta volonté, elles murmurent des mensonges. Écoute bien… tout ici a un double sens.")
+            new Ghost(this.levelWidth - 600, ghostY, "Tu as franchi la première épreuve… mais ce n'était qu'une illusion. Je suis un ange déchu… J'étais comme toi, autrefois en quête de lumière. Maintenant, j'erre sans fin, piégé entre le rêve et la nuit.")
         );
 
         this.exit = new Exit(this.levelWidth - 150, floorY - 100, 80, 80);

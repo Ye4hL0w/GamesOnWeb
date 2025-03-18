@@ -43,11 +43,11 @@ export class Level2 extends BaseLevel {
 
         const ghostY = floorY - 100;
         this.ghosts.push(
-            new Ghost(this.canvas.width - 150, ghostY, "Tu sens leur présence, n'est-ce pas ? Les anges déchus… Ils étaient comme toi, autrefois en quête de lumière. Maintenant, ils errent sans fin, piégés entre le rêve et la nuit. Ne fais pas leurs erreurs.")
+            new Ghost(this.canvas.width - 150, ghostY, "Tu ressens sa présence, n'est-ce pas ? Ce brouillard teste ta volonté. Écoute bien… tout ici a un double sens.")
         );
 
         this.ghosts.push(
-            new Ghost(this.levelWidth - 400, ghostY, "Tu as percé leurs secrets… mais cela suffira-t-il ? Chaque énigme dévoile un morceau de la vérité. Et certaines vérités… devraient rester enfouies. Prépare-toi, le prochain pas est sans retour.")
+            new Ghost(this.levelWidth - 400, ghostY, "Tu as percé son secret… mais cela suffira-t-il ?  Prépare-toi, le prochain pas est sans retour.")
         );
 
         this.exit = new Exit(this.levelWidth - 200, floorY - 100, 80, 80);
