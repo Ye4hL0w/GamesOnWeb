@@ -11,6 +11,42 @@ class Player {
     }
     
     createPlayerMesh() {
+        // Charger le modèle Samouraï depuis le fichier FBX
+        BABYLON.SceneLoader.ImportMesh("", "models/characters/", "samourai-high.glb", this.scene, (meshes) => {
+            // Groupe tous les mesh importés sous un parent
+            this.mesh = new BABYLON.Mesh("playerContainer", this.scene);
+            
+            // Ajout de tous les meshes importés comme enfants du container
+            meshes.forEach(mesh => {
+                mesh.parent = this.mesh;
+            });
+            
+            // Ajustement de l'échelle si nécessaire
+            
+            // Positionner le modèle
+            this.mesh.position = new BABYLON.Vector3(
+                this.position.x,
+                this.position.y + 1,
+                this.position.z
+            );
+            
+            // Ajustement de la rotation si nécessaire
+            this.mesh.rotation.y = Math.PI; // Orienter le modèle dans la bonne direction
+            
+            console.log("Modèle Samouraï chargé avec succès");
+        }, 
+        // Fonction de progression
+        null, 
+        // Fonction d'erreur
+        (scene, message) => {
+            console.error("Erreur lors du chargement du modèle Samouraï:", message);
+            // Créer une sphère en cas d'échec de chargement du modèle
+            this.createFallbackMesh();
+        });
+    }
+    
+    // Méthode de secours si le chargement du modèle échoue
+    createFallbackMesh() {
         this.mesh = BABYLON.MeshBuilder.CreateSphere("player", {
             diameter: 0.8
         }, this.scene);
@@ -27,11 +63,12 @@ class Player {
             this.position.z
         );
         
+        console.log("Utilisation du mesh de secours (sphère)");
     }
     
     setPosition(x, y, z) {
         this.position = { x, y, z };
-        this.mesh.position = new BABYLON.Vector3(x, y + 0.5, z);
+        this.mesh.position = new BABYLON.Vector3(x, y + 1, z);
         this.updateParent();
     }
     
@@ -663,7 +700,7 @@ class Player {
             // Préparer les points pour le chemin
             const pathPoints = [this.mesh.position.clone(), ...path.map(pos => new BABYLON.Vector3(
                 pos.x,
-                pos.y + 0.5, // Élever au-dessus du sol
+                pos.y + 1, //------------
                 pos.z
             ))];
             

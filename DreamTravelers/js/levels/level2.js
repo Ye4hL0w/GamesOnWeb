@@ -70,66 +70,6 @@ class Level2 extends BaseLevel {
         // À implémenter si nécessaire
     }
     
-    addStairBlock(x, y, z, rotation = 0) {
-        const key = `${x},${y},${z}`;
-        
-        // Création du bloc principal
-        const stairParent = this.grid.addGridElement(x, y, z, 'stair');
-        
-        // Création du bloc de base
-        const stairBase = BABYLON.MeshBuilder.CreateBox(
-            `stairBase_${key}`,
-            { width: 1, height: 0.5, depth: 1 },
-            this.scene
-        );
-        stairBase.position = new BABYLON.Vector3(0, 0.25, 0);
-        stairBase.parent = stairParent;
-        
-        // Création de la rampe avec une meilleure géométrie
-        const ramp = BABYLON.MeshBuilder.CreateBox(
-            `ramp_${key}`,
-            { width: 1, height: 0.1, depth: 1.2 },
-            this.scene
-        );
-        
-        // Ajustement de la position et rotation de la rampe
-        ramp.position = new BABYLON.Vector3(0, 0.3, 0.1);
-        ramp.rotation.x = Math.PI / 6; // 30 degrés pour une pente plus douce
-        ramp.parent = stairParent;
-        
-        // Application de la rotation au parent
-        stairParent.rotation.y = rotation * Math.PI / 2;
-        
-        // Application du matériau avec un style plus Monument Valley
-        const material = new BABYLON.StandardMaterial(`stairMat_${key}`, this.scene);
-        material.diffuseColor = new BABYLON.Color3(0.8, 0.6, 0.4); // Couleur plus chaude
-        material.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1); // Moins brillant
-        material.emissiveColor = new BABYLON.Color3(0.1, 0.08, 0.06); // Légère lueur
-        stairBase.material = material;
-        ramp.material = material;
-        
-        // Stocker plus d'informations pour le pathfinding
-        this.grid.grid[key].rotation = rotation;
-        this.grid.grid[key].nextPosition = this.getNextStairPosition(x, y, z, rotation);
-        
-        return stairParent;
-    }
-    
-    getNextStairPosition(x, y, z, rotation) {
-        // Calculer la position du bloc suivant en fonction de la rotation
-        switch (rotation) {
-            case 0: // Nord
-                return { x: x, y: y + 1, z: z - 1 };
-            case 1: // Est
-                return { x: x + 1, y: y + 1, z: z };
-            case 2: // Sud
-                return { x: x, y: y + 1, z: z + 1 };
-            case 3: // Ouest
-                return { x: x - 1, y: y + 1, z: z };
-            default:
-                return { x: x, y: y + 1, z: z - 1 };
-        }
-    }
 
     createLevel() {
         // Base principale
@@ -151,37 +91,58 @@ class Level2 extends BaseLevel {
         this.grid.addGridElement(1, 0, 0);
         this.grid.addGridElement(2, 0, 0);
         
-        // Chemin en arc-de-cercle
         this.grid.addGridElement(2, 0, 1);
-        this.grid.addGridElement(2, 0, 2);
-        this.grid.addGridElement(1, 0, 3);
-        this.grid.addGridElement(0, 0, 3);
-        this.grid.addGridElement(-1, 0, 3);
-        this.grid.addGridElement(-2, 0, 2);
         this.grid.addGridElement(-2, 0, 1);
-        
-        // Plateforme centrale
-        this.grid.addGridElement(0, 0, 2);
-        
-        // Escaliers en spirale
-        this.addStairBlock(0, 0, 1, 2);
-        this.grid.addGridElement(0, 1, 2);
-        this.addStairBlock(1, 1, 2, 3);
-        this.grid.addGridElement(0, 2, 2);
-        this.addStairBlock(0, 2, 1, 0);
-        this.grid.addGridElement(0, 3, 0);
 
-        // Création de plateformes rotatives
-        const platform1 = new RotatingPlatform(this.scene, new BABYLON.Vector3(-1, 0, 2), 2);
-        this.rotatingPlatforms.push(platform1);
+        this.grid.addGridElement(2, 0, 2);
+        this.grid.addGridElement(-2, 0, 2);
+
+        this.grid.addGridElement(-2, 0, 3);
+        this.grid.addGridElement(2, 0, 3);
+
+        this.grid.addGridElement(-2, 0, 4);
+        this.grid.addGridElement(2, 0, 4);
+        this.grid.addGridElement(-1, 0, 4);
+        this.grid.addGridElement(0, 0, 4)
+        this.grid.addGridElement(1, 0, 4);
+
+        this.grid.addGridElement(0, 0, -1);
+        this.grid.addGridElement(0, 0, -2);
+        this.grid.addGridElement(0, 0, -3);
+        this.grid.addGridElement(0, 0, -4);
+
         
-        const platform2 = new RotatingPlatform(this.scene, new BABYLON.Vector3(1, 0, 1), 2);
-        this.rotatingPlatforms.push(platform2);
+        const stairs = new Stairs(this.scene, this.grid);
+        stairs.create(-1, 1, 3, 1);
+
+        this.grid.addGridElement(0, 1, 3);
+        this.grid.addGridElement(1, 1, 3);
+
+        stairs.create(1, 2, 2, 2);
+
+        this.grid.addGridElement(1, 2, 1);
+
+        stairs.create(0, 3, 1, 3);
+
+        this.grid.addGridElement(-1, 3, 1);
+
+        stairs.create(-1, 4, 2, 4);
+
+        this.grid.addGridElement(-1, 4, 3);
+
+        stairs.create(0, 5, 3, 1);
+
+        this.grid.addGridElement(1, 5, 3);
+
+        stairs.create(1, 6, 2, 2);
+        
+        this.grid.addGridElement(0, 6, 2);
+
 
         // Placer le joueur à la position initiale
-        this.player.setPosition(0, 0, 0);
+        this.player.setPosition(0, 0, -4);
         
         // Créer la sortie du niveau - NextLevelId = 3 (niveau suivant)
-        this.exit = new Exit(this.scene, this.grid, {x: 0, y: 3, z: 0}, 3);
+        this.exit = new Exit(this.scene, this.grid, {x: 0, y: 6, z: 2}, 3);
     }
 }
