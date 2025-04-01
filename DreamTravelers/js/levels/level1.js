@@ -10,7 +10,7 @@ class Level1 extends BaseLevel {
         
         // Système de fragments
         this.fragments = [];
-        this.requiredFragments = 3; // Nombre de fragments requis pour ce niveau
+        this.requiredFragments = 3;
         this.collectedFragments = 0;
         
         this.createGridLines(this.grid.gridSize);

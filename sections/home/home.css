@@ -15,14 +15,15 @@
 }
 
 .content {
-    padding: 40px 5%;
-    min-height: 70vh;
+    padding: 0;
+    min-height: 81vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, var(--shadow-dark), var(--shadow-medium));
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
 
 .content::before {
@@ -79,14 +80,14 @@
 }
 
 /* The Awakening Button */
-.button:nth-child(1) {
+.awakening-button {
     background: linear-gradient(135deg, var(--awakening-dark), var(--awakening-medium));
     color: var(--text-light);
     border: 1px solid var(--awakening-light);
     box-shadow: 0 0 18px rgba(106, 69, 173, 0.5);
 }
 
-.button:nth-child(1)::before {
+.awakening-button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -101,26 +102,26 @@
     z-index: -1;
 }
 
-.button:nth-child(1):hover {
+.awakening-button:hover {
     background: linear-gradient(135deg, var(--awakening-medium), var(--awakening-dark));
     transform: scale(1.05) translateY(-5px);
     box-shadow: 0 10px 25px rgba(106, 69, 173, 0.7);
 }
 
-.button:nth-child(1):hover::before {
+.awakening-button:hover::before {
     transform: scale(2.5);
     opacity: 1;
 }
 
 /* Shadow Travelers Button */
-.button:nth-child(2) {
+.shadow-button {
     background: linear-gradient(135deg, var(--shadow-dark), var(--shadow-medium));
     color: var(--text-light);
     border: 1px solid var(--shadow-light);
     box-shadow: 0 0 18px rgba(46, 58, 79, 0.5);
 }
 
-.button:nth-child(2)::before {
+.shadow-button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -132,7 +133,7 @@
     z-index: -1;
 }
 
-.button:nth-child(2):hover {
+.shadow-button:hover {
     background: linear-gradient(135deg, var(--shadow-medium), var(--shadow-dark));
     transform: scale(1.05) translateY(-5px);
     box-shadow: 0 10px 25px rgba(46, 58, 79, 0.7);
@@ -140,19 +141,19 @@
     text-shadow: 0 0 10px rgba(166, 187, 217, 0.8);
 }
 
-.button:nth-child(2):hover::before {
+.shadow-button:hover::before {
     left: 100%;
 }
 
 /* Dream Travelers Button */
-.button:nth-child(3) {
+.dream-button {
     background: linear-gradient(135deg, var(--dream-dark), var(--dream-medium));
     color: var(--text-light);
     border: 1px solid var(--dream-light);
     box-shadow: 0 0 18px rgba(127, 212, 239, 0.5);
 }
 
-.button:nth-child(3)::before {
+.dream-button::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -166,14 +167,14 @@
     z-index: -1;
 }
 
-.button:nth-child(3):hover {
+.dream-button:hover {
     background: linear-gradient(135deg, var(--dream-medium), var(--dream-dark));
     transform: scale(1.05) translateY(-5px);
     box-shadow: 0 10px 25px rgba(127, 212, 239, 0.7);
     text-shadow: 0 0 10px rgba(240, 246, 255, 0.8);
 }
 
-.button:nth-child(3):hover::before {
+.dream-button:hover::before {
     transform: scale(1);
     opacity: 1;
 }
@@ -188,5 +189,89 @@
         width: 80%;
         text-align: center;
         padding: 15px 20px;
+    }
+}
+
+.game-sections {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    scrollbar-width: none; /* Pour Firefox */
+    -ms-overflow-style: none; /* Pour Internet Explorer et Edge */
+}
+
+/* Masquer la barre de défilement pour Chrome, Safari et Opera */
+.game-sections::-webkit-scrollbar {
+    display: none;
+}
+
+.game-section {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    width: 100%;
+}
+
+.game-content {
+    max-width: 1200px;
+    width: 90%;
+    text-align: center;
+    color: var(--text-light);
+}
+
+.game-content h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 3em;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 15px rgba(240, 246, 255, 0.5);
+}
+
+.game-description {
+    background: rgba(17, 25, 39, 0.8);
+    padding: 2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 2rem;
+}
+
+.game-description p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: var(--text-medium);
+}
+
+/* Styles spécifiques pour chaque section */
+#awakening {
+    background: linear-gradient(135deg, var(--awakening-dark), var(--awakening-medium));
+}
+
+#shadow {
+    background: linear-gradient(135deg, var(--shadow-dark), var(--shadow-medium));
+}
+
+#dream {
+    background: linear-gradient(135deg, var(--dream-dark), var(--dream-medium));
+}
+
+@media screen and (max-width: 640px) {
+    .game-content h2 {
+        font-size: 2em;
+    }
+
+    .game-description {
+        padding: 1rem;
+    }
+
+    .game-description p {
+        font-size: 1em;
     }
 }

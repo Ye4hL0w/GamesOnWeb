@@ -21,6 +21,30 @@ class Player {
                 mesh.parent = this.mesh;
             });
             
+            // Récupérer les animations disponibles dans le modèle
+            this.skeleton = meshes[0].skeleton;
+            
+            // Charger l'animation de marche séparément
+            BABYLON.SceneLoader.ImportAnimations("", "models/animations/", "walking.glb", this.scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Clean, (scene) => {
+                console.log("Animation de marche chargée avec succès");
+                
+                // Récupérer le groupe d'animation
+                this.walkAnimation = scene.animationGroups[0];
+                
+                // Assigner l'animation au skeleton du personnage
+                if (this.walkAnimation && this.skeleton) {
+                    this.walkAnimation.stop();
+                    this.walkAnimation.targetedAnimations.forEach(targetAnim => {
+                        // Modifier la cible pour cibler notre skeleton
+                        if (targetAnim.target.constructor.name === "Skeleton") {
+                            targetAnim.target = this.skeleton;
+                        }
+                    });
+                }
+            }, null, (scene, message) => {
+                console.error("Erreur lors du chargement de l'animation de marche:", message);
+            });
+            
             // Ajustement de l'échelle si nécessaire
             
             // Positionner le modèle
@@ -149,7 +173,6 @@ class Player {
         // CORRECTION: Vérifier si la destination est un escalier
         const isStair = targetElement && targetElement.type === 'stair';
         
-        // NOUVELLE APPROCHE: Pour monter à un niveau supérieur
         if (target.y > this.position.y) {
             console.log("Tentative de monter à un niveau supérieur (y = " + target.y + ")");
             
@@ -687,6 +710,12 @@ class Player {
         try {
             this.isMoving = true;
             
+            // Démarrer l'animation de marche si disponible
+            if (this.walkAnimation) {
+                this.walkAnimation.start(true, 1.0);
+                console.log("Animation de marche démarrée");
+            }
+            
             // Sauvegarder la position mondiale actuelle
             const worldPos = this.mesh.getAbsolutePosition();
             this.mesh.parent = null;
@@ -777,6 +806,12 @@ class Player {
                 false,
                 1.0,
                 () => {
+                    // Arrêter l'animation de marche
+                    if (this.walkAnimation) {
+                        this.walkAnimation.stop();
+                        console.log("Animation de marche arrêtée");
+                    }
+                    
                     // Nettoyer après l'animation
                     if (this.pathLine) {
                         this.pathLine.dispose();
@@ -799,6 +834,12 @@ class Player {
         } catch (error) {
             // En cas d'erreur, annuler le mouvement et rétablir l'état
             console.error("Erreur lors du déplacement:", error);
+            
+            // Arrêter l'animation de marche en cas d'erreur
+            if (this.walkAnimation) {
+                this.walkAnimation.stop();
+            }
+            
             this.isMoving = false;
             if (this.pathLine) {
                 this.pathLine.dispose();
