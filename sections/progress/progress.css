@@ -45,6 +45,7 @@ body::before {
 .progress-container {
     max-width: 1200px;
     margin: 0 auto;
+    margin-top: 5%;
     position: relative;
     z-index: 10;
     padding: 0 20px;

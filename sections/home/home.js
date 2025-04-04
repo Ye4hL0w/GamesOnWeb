@@ -1,10 +1,23 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+    initGameSections();
+});
+
+function initGameSections() {
     const gameContainer = document.querySelector('.game-sections');
     const sections = document.querySelectorAll('.game-section');
+    const indicators = document.querySelectorAll('.indicator-dot');
     let isScrolling = false;
     let currentSection = 0;
     let touchStartY = 0;
     let touchEndY = 0;
+
+    // Vérifier si les éléments existent
+    if (!gameContainer || sections.length === 0 || indicators.length === 0) {
+        console.error("Éléments introuvables pour l'initialisation des sections");
+        return;
+    }
+
+    console.log("Initialisation des sections de jeu");
 
     // Fonction pour faire défiler vers une section spécifique
     const scrollToSection = (index) => {
@@ -14,23 +27,40 @@ document.addEventListener('DOMContentLoaded', () => {
         currentSection = index;
 
         sections.forEach((section, i) => {
+            section.style.position = 'fixed';
+            section.style.top = '0';
+            section.style.left = '0';
+            section.style.width = '100%';
+            section.style.height = '100vh';
             section.style.transform = `translateY(${(i - index) * 100}vh)`;
             section.style.transition = 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
         });
+
+        // Mettre à jour l'indicateur
+        updateIndicator(index);
 
         setTimeout(() => {
             isScrolling = false;
         }, 800);
     };
 
-    // Initialisation des positions
-    sections.forEach((section, i) => {
-        section.style.position = 'fixed';
-        section.style.top = '0';
-        section.style.left = '0';
-        section.style.transform = `translateY(${(i - currentSection) * 100}vh)`;
-        section.style.width = '100%';
-        section.style.height = '100vh';
+    // Fonction pour mettre à jour l'indicateur
+    const updateIndicator = (index) => {
+        indicators.forEach((dot, i) => {
+            if (i === index) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    };
+
+    // Ajouter des écouteurs d'événements pour les indicateurs
+    indicators.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+            console.log(`Clic sur l'indicateur ${i}`);
+            scrollToSection(i);
+        });
     });
 
     // Gestion de la molette de souris
@@ -83,6 +113,25 @@ document.addEventListener('DOMContentLoaded', () => {
     gameContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
     document.addEventListener('keydown', handleKeydown);
 
-    // Initialisation de la première section
-    scrollToSection(0);
-});
+    // Initialisation des positions
+    sections.forEach((section, i) => {
+        section.style.position = 'fixed';
+        section.style.top = '0';
+        section.style.left = '0';
+        section.style.transform = `translateY(${(i - currentSection) * 100}vh)`;
+        section.style.width = '100%';
+        section.style.height = '100vh';
+    });
+
+    // Initialisation de l'indicateur
+    updateIndicator(currentSection);
+}
+
+// S'assurer que le script s'exécute même si le DOMContentLoaded a déjà été déclenché
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        initGameSections();
+    });
+} else {
+    initGameSections();
+}

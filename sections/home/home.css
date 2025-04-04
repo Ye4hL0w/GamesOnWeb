@@ -275,3 +275,62 @@
         font-size: 1em;
     }
 }
+
+/* Indicateur de position des slides */
+.slide-indicator {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 100;
+}
+
+.indicator-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(240, 246, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator-dot.active {
+    width: 16px;
+    height: 16px;
+    transform: translateX(-2px);
+}
+
+/* Couleurs spécifiques pour chaque indicateur actif */
+.indicator-dot[data-index="0"].active {
+    background-color: var(--awakening-light);
+    box-shadow: 0 0 10px var(--awakening-light);
+}
+
+.indicator-dot[data-index="1"].active {
+    background-color: var(--shadow-light);
+    box-shadow: 0 0 10px var(--shadow-light);
+}
+
+.indicator-dot[data-index="2"].active {
+    background-color: var(--dream-light);
+    box-shadow: 0 0 10px var(--dream-light);
+}
+
+@media screen and (max-width: 640px) {
+    .slide-indicator {
+        right: 15px;
+    }
+    
+    .indicator-dot {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .indicator-dot.active {
+        width: 14px;
+        height: 14px;
+    }
+}
