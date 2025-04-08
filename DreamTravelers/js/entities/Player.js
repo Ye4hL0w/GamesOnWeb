@@ -25,7 +25,7 @@ class Player {
             this.skeleton = meshes[0].skeleton;
             
             // Charger l'animation de marche séparément
-            BABYLON.SceneLoader.ImportAnimations("", "models/animations/", "walking.glb", this.scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Clean, (scene) => {
+            BABYLON.SceneLoader.ImportAnimations("", "models/animations/", "sans_nom.glb", this.scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Clean, (scene) => {
                 console.log("Animation de marche chargée avec succès");
                 
                 // Récupérer le groupe d'animation

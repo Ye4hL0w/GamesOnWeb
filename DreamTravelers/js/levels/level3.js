@@ -10,7 +10,7 @@ class Level3 extends BaseLevel {
         
         // Initialiser le niveau
         this.createGridLines(this.grid.gridSize);
-        this.clouds = new Clouds(this.scene);
+        // Pas de nuages qui tournent dans le niveau 3
         this.player = new Player(this.scene, this.grid);
         
         // Créer le niveau spécifique

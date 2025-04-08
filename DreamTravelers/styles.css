@@ -342,4 +342,107 @@ h2 {
     border-radius: 5px;
     font-family: 'Poppins', sans-serif;
     z-index: 1000;
+}
+
+/* Volume control styles */
+#volumeControl {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 15px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+#volumeControl:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateY(-2px);
+}
+
+.volume-icon {
+    margin-right: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.volume-icon:hover {
+    transform: scale(1.1);
+}
+
+.volume-icon i {
+    color: white;
+    font-size: 18px;
+    display: block;
+    position: static;
+    line-height: 1;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100px;
+    height: 5px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    outline: none;
+    transition: opacity 0.2s;
+    position: relative;
+    vertical-align: middle;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    background: #f0f0f0;
+    transform: scale(1.2);
+}
+
+.slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.slider::-moz-range-thumb:hover {
+    background: #f0f0f0;
+    transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+    #volumeControl {
+        bottom: 15px;
+        right: 15px;
+        padding: 8px 12px;
+    }
+    
+    .slider {
+        width: 80px;
+    }
 } 
