@@ -7,14 +7,14 @@ class Clouds {
     
     create() {
         // Créer un parent vide pour faire tourner tous les nuages
-        this.cloudsParent = new BABYLON.TransformNode("cloudsParent", this.scene);
-        this.cloudsParent.position.y = 10;
+        const cloudsParent = new BABYLON.TransformNode("cloudsParent", this.scene);
+        cloudsParent.position.y = 8;
 
         // Créer 4 nuages
         for (let i = 0; i < 4; i++) {
             // Créer un conteneur pour chaque nuage
             const cloudContainer = new BABYLON.TransformNode("cloudContainer", this.scene);
-            cloudContainer.parent = this.cloudsParent;
+            cloudContainer.parent = cloudsParent;
             
             // Positionner le conteneur en cercle
             const angle = (i * Math.PI * 2) / 4;
@@ -59,7 +59,7 @@ class Clouds {
 
         // Animation de rotation
         this.scene.registerBeforeRender(() => {
-            this.cloudsParent.rotation.y += 0.002; // Vitesse de rotation
+            cloudsParent.rotation.y += 0.002; // Vitesse de rotation
         });
     }
 }

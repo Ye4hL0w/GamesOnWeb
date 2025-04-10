@@ -166,9 +166,11 @@ class Level2 extends BaseLevel {
         this.createSurroundingClouds();
         
         // Créer un effet de brume légère
+        //--------------
         const fogLayer = new BABYLON.FogLayer("fogLayer", this.scene);
         fogLayer.color = new BABYLON.Color3(0.9, 0.9, 1.0);
         fogLayer.density = 0.01;
+        //--------------
         this.scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
         this.scene.fogDensity = 0.01;
         this.scene.fogColor = new BABYLON.Color3(0.9, 0.9, 1.0);

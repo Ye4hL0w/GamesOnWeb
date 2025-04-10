@@ -15,7 +15,7 @@ class Level1 extends BaseLevel {
         
         this.createGridLines(this.grid.gridSize);
         // Créer les nuages qui tournent autour (spécifique au niveau 1)
-        this.spinningClouds = this.createClouds();
+        this.spinningClouds = new Clouds(this.scene);
         this.player = new Player(this.scene, this.grid);
         
         this.createLevel();
@@ -178,14 +178,14 @@ class Level1 extends BaseLevel {
 
     createWaterEffect() {
         // Création du plan d'eau
-        const waterMesh = BABYLON.MeshBuilder.CreateGround("waterMesh", { width: 200, height: 200 }, this.scene);
+        const waterMesh = BABYLON.MeshBuilder.CreateGround("waterMesh", { width: 400, height: 400 }, this.scene);
         waterMesh.position = new BABYLON.Vector3(0, -1, 0);
         
         // Création du matériau d'eau simple
         const waterMaterial = new BABYLON.StandardMaterial("waterMaterial", this.scene);
         const waterTexture = new BABYLON.Texture("assets/textures/waterbump.jpg", this.scene);
-        waterTexture.uScale = 8;
-        waterTexture.vScale = 8;
+        waterTexture.uScale = 16;
+        waterTexture.vScale = 16;
         waterMaterial.diffuseTexture = waterTexture;
         waterMaterial.alpha = 0.8;
         waterMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
@@ -204,65 +204,5 @@ class Level1 extends BaseLevel {
         ambientLight.intensity = 0.7;
         ambientLight.groundColor = new BABYLON.Color3(0.1, 0.3, 0.5);
         ambientLight.diffuse = new BABYLON.Color3(0.7, 0.8, 1);
-    }
-
-    createClouds() {
-        // Créer un parent vide pour faire tourner tous les nuages
-        const cloudsParent = new BABYLON.TransformNode("cloudsParent", this.scene);
-        cloudsParent.position.y = 8;
-
-        // Créer 4 nuages
-        for (let i = 0; i < 4; i++) {
-            // Créer un conteneur pour chaque nuage
-            const cloudContainer = new BABYLON.TransformNode("cloudContainer", this.scene);
-            cloudContainer.parent = cloudsParent;
-            
-            // Positionner le conteneur en cercle
-            const angle = (i * Math.PI * 2) / 4;
-            cloudContainer.position = new BABYLON.Vector3(
-                Math.cos(angle) * 8, // Rayon de 8 unités
-                0,
-                Math.sin(angle) * 8
-            );
-
-            // Créer les parties du nuage (style low-poly)
-            const parts = Math.random() * 2 + 3; // 3-5 parties par nuage
-            for (let j = 0; j < parts; j++) {
-                const cloudPart = BABYLON.MeshBuilder.CreatePolyhedron(
-                    "cloudPart",
-                    { type: 1, size: 0.5 + Math.random() }, // Type 1 est un octaèdre
-                    this.scene
-                );
-                cloudPart.parent = cloudContainer;
-                
-                // Position aléatoire autour du centre du conteneur
-                cloudPart.position = new BABYLON.Vector3(
-                    (Math.random() - 0.5) * 2,
-                    (Math.random() - 0.5),
-                    (Math.random() - 0.5) * 2
-                );
-                
-                // Rotation aléatoire
-                cloudPart.rotation = new BABYLON.Vector3(
-                    Math.random() * Math.PI,
-                    Math.random() * Math.PI,
-                    Math.random() * Math.PI
-                );
-
-                // Matériau blanc semi-transparent
-                const cloudMaterial = new BABYLON.StandardMaterial("whiteCloud", this.scene);
-                cloudMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
-                cloudMaterial.alpha = 0.8;
-                cloudMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-                cloudPart.material = cloudMaterial;
-            }
-        }
-
-        // Animation de rotation
-        this.scene.registerBeforeRender(() => {
-            cloudsParent.rotation.y += 0.002; // Vitesse de rotation
-        });
-        
-        return cloudsParent;
     }
 }
