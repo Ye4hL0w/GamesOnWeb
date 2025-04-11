@@ -165,6 +165,7 @@ class Player {
         console.log("Position actuelle:", this.position);
         console.log("Position cible:", target);
         
+        // Utiliser le pathfinding normal même pour les sliders
         const gridElements = this.grid.getAllElements();
         
         // Si on monte (y augmente), on utilise la recherche inverse
@@ -295,6 +296,21 @@ class Player {
             const element = gridElements[posKey];
             if (element && element.type === 'stair') {
                 return true;
+            }
+            
+            // Vérifier si c'est un slider
+            const sliders = this.scene.meshes.filter(mesh => mesh.name === "slider");
+            for (const slider of sliders) {
+                // Vérifier si la position est sur ou proche d'un slider
+                const sliderPos = slider.position;
+                const dx = Math.abs(pos.x - Math.round(sliderPos.x));
+                const dy = Math.abs(pos.y - Math.round(sliderPos.y));
+                const dz = Math.abs(pos.z - Math.round(sliderPos.z));
+                
+                if (dx <= 0.5 && dy <= 1 && dz <= 0.5) {
+                    console.log("Position sur un slider détectée dans le pathfinding:", pos);
+                    return true;
+                }
             }
             
             return false;

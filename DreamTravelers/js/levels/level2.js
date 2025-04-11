@@ -9,6 +9,8 @@ class Level2 extends BaseLevel {
         this.isRotating = false;
         this.playerPosition = { x: 0, y: 0, z: 0 };
         this.pathLine = null;
+        this.sliderZ = null;
+        this.sliderY = null;
         
         // Assombrir le ciel
         this.scene.clearColor = new BABYLON.Color4(0.3, 0.4, 0.6, 1);
@@ -18,6 +20,9 @@ class Level2 extends BaseLevel {
         // Créer les étoiles qui tournent autour
         this.spinningStars = this.createSpinningStars();
         
+        // Important: attacher la grille à la scène pour que les sliders puissent y accéder
+        this.scene.level = this;
+        
         // Créer le joueur et attendre qu'il soit initialisé
         this.player = new Player(this.scene, this.grid);
         this.scene.onReadyObservable.addOnce(() => {
@@ -25,10 +30,6 @@ class Level2 extends BaseLevel {
             this.createLevel();
             this.createSkyEnvironment();
         });
-        
-        // Ajouter les événements
-        this.scene.onPointerDown = (evt) => this.handleClick(evt);
-        window.addEventListener("keydown", (evt) => this.handleKeyboard(evt));
     }
 
     startLevel(levelId) {
@@ -36,50 +37,6 @@ class Level2 extends BaseLevel {
         const levelManager = new LevelManager();
         levelManager.startLevel(levelId, this.scene);
     }
-
-    handleClick(evt) {
-        if (this.player.isMoving) return;
-        
-        const pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-        if (pickResult.hit) {
-            if (pickResult.pickedMesh.name === "rotateButton") {
-                // Trouver la plateforme correspondante
-                for (const platform of this.rotatingPlatforms) {
-                    if (platform.mesh === pickResult.pickedMesh.parent) {
-                        platform.rotate();
-                        return;
-                    }
-                }
-                return;
-            }
-            
-            if (pickResult.pickedMesh.name.startsWith('cube') || pickResult.pickedMesh.name === "rotatingPlatform") {
-                const targetPosition = pickResult.pickedMesh.position.clone();
-                
-                // Si c'est une plateforme rotative, ajuster la position cible en fonction de sa rotation
-                if (pickResult.pickedMesh.name === "rotatingPlatform") {
-                    const localHitPoint = pickResult.pickedPoint.subtract(pickResult.pickedMesh.position);
-                    const rotationMatrix = BABYLON.Matrix.RotationY(-pickResult.pickedMesh.rotation.y);
-                    const rotatedPoint = BABYLON.Vector3.TransformCoordinates(localHitPoint, rotationMatrix);
-                    targetPosition.x = Math.round(targetPosition.x + rotatedPoint.x);
-                    targetPosition.z = Math.round(targetPosition.z + rotatedPoint.z);
-                }
-                
-                const path = this.player.findPath(
-                    {x: targetPosition.x, y: targetPosition.y, z: targetPosition.z}
-                );
-                
-                if (path) {
-                    this.player.moveAlongPath(path);
-                }
-            }
-        }
-    }
-
-    handleKeyboard(evt) {
-        // À implémenter si nécessaire
-    }
-    
 
     createLevel() {
         // Base principale
@@ -94,7 +51,7 @@ class Level2 extends BaseLevel {
         baseMaterial.alpha = 0.9; // Presque opaque
         base.material = baseMaterial;
 
-        // Niveau 2 : Géométrie différente
+        // Éléments de grille pour la plateforme principale
         this.grid.addGridElement(-2, 0, 0);
         this.grid.addGridElement(-1, 0, 0);
         this.grid.addGridElement(0, 0, 0);
@@ -107,20 +64,38 @@ class Level2 extends BaseLevel {
         this.grid.addGridElement(2, 0, 2);
         this.grid.addGridElement(-2, 0, 2);
 
+        // Créer un slider qui se déplace sur l'axe Z
+        this.sliderZ = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(-1, 0, -4), // Position (x, y, z)
+            'z',                          // Axe de déplacement
+            -6,                           // Valeur minimale
+            6                             // Valeur maximale
+        );
+        
+        // Créer un slider qui se déplace sur l'axe Y
+        this.sliderY = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(1, 0, -4), // Position (x, y, z)
+            'y',                          // Axe de déplacement
+            -1,                           // Valeur minimale
+            3                             // Valeur maximale
+        );
+        
+        // Éléments de grille du niveau
         this.grid.addGridElement(-2, 0, 3);
         this.grid.addGridElement(2, 0, 3);
-
+        
         this.grid.addGridElement(-2, 0, 4);
         this.grid.addGridElement(2, 0, 4);
         this.grid.addGridElement(-1, 0, 4);
-        this.grid.addGridElement(0, 0, 4)
+        this.grid.addGridElement(0, 0, 4);
         this.grid.addGridElement(1, 0, 4);
-
+        
         this.grid.addGridElement(0, 0, -1);
         this.grid.addGridElement(0, 0, -2);
         this.grid.addGridElement(0, 0, -3);
         this.grid.addGridElement(0, 0, -4);
-
         
         const stairs = new Stairs(this.scene, this.grid);
         stairs.create(-1, 1, 3, 1);
@@ -166,11 +141,7 @@ class Level2 extends BaseLevel {
         this.createSurroundingClouds();
         
         // Créer un effet de brume légère
-        //--------------
-        const fogLayer = new BABYLON.FogLayer("fogLayer", this.scene);
-        fogLayer.color = new BABYLON.Color3(0.9, 0.9, 1.0);
-        fogLayer.density = 0.01;
-        //--------------
+        // Utiliser uniquement la brume standard de Babylon.js (sans FogLayer qui n'existe pas)
         this.scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
         this.scene.fogDensity = 0.01;
         this.scene.fogColor = new BABYLON.Color3(0.9, 0.9, 1.0);
