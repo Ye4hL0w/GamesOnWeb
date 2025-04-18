@@ -56,7 +56,7 @@ class Level2 extends BaseLevel {
         this.grid.addGridElement(-1, 0, 0);
         this.grid.addGridElement(0, 0, 0);
         this.grid.addGridElement(1, 0, 0);
-        this.grid.addGridElement(2, 0, 0);
+        //this.grid.addGridElement(2, 0, 0);
         
         this.grid.addGridElement(2, 0, 1);
         this.grid.addGridElement(-2, 0, 1);
@@ -64,7 +64,6 @@ class Level2 extends BaseLevel {
         this.grid.addGridElement(2, 0, 2);
         this.grid.addGridElement(-2, 0, 2);
 
-        // Créer un slider qui se déplace sur l'axe Z
         this.sliderZ = new Slider(
             this.scene, 
             new BABYLON.Vector3(-1, 0, -4), // Position (x, y, z)
@@ -73,13 +72,20 @@ class Level2 extends BaseLevel {
             6                             // Valeur maximale
         );
         
-        // Créer un slider qui se déplace sur l'axe Y
         this.sliderY = new Slider(
             this.scene, 
-            new BABYLON.Vector3(1, 0, -4), // Position (x, y, z)
+            new BABYLON.Vector3(0, 0, 2), // Position (x, y, z)
             'y',                          // Axe de déplacement
-            -1,                           // Valeur minimale
-            3                             // Valeur maximale
+            0,                           // Valeur minimale
+            6                             // Valeur maximale
+        );
+
+        this.sliderY = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(5, 6, 1), // Position (x, y, z)
+            'x',                          // Axe de déplacement
+            1,                           // Valeur minimale
+            5                             // Valeur maximale
         );
         
         // Éléments de grille du niveau
@@ -121,14 +127,14 @@ class Level2 extends BaseLevel {
 
         stairs.create(1, 6, 2, 2);
         
-        this.grid.addGridElement(0, 6, 2);
+        this.grid.addGridElement(0, 6, 1); // Exit Grid Element
 
 
         // Placer le joueur à la position initiale
         this.player.setPosition(0, 0, -4);
         
         // Créer la sortie du niveau - NextLevelId = 3 (niveau suivant)
-        this.exit = new Exit(this.scene, this.grid, {x: 0, y: 6, z: 2}, 3);
+        this.exit = new Exit(this.scene, this.grid, {x: 0, y: 6, z: 1}, 3);
     }
 
     createSkyEnvironment() {

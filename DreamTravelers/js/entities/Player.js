@@ -165,6 +165,49 @@ class Player {
         console.log("Position actuelle:", this.position);
         console.log("Position cible:", target);
         
+        // Vérification pour empêcher les chemins traversant des vides
+        // Cette vérification n'est faite que si les positions sont sur le même axe Y
+        if (target.y === this.position.y) {
+            const dx = Math.abs(target.x - this.position.x);
+            const dz = Math.abs(target.z - this.position.z);
+            
+            // Si les positions sont alignées sur un axe et à distance > 1
+            if ((dx > 1 && dz === 0) || (dz > 1 && dx === 0)) {
+                console.log("Vérification de chemin continu sur une ligne droite");
+                
+                // Détermine les pas entre les positions
+                const stepX = dx === 0 ? 0 : (target.x - this.position.x) / dx;
+                const stepZ = dz === 0 ? 0 : (target.z - this.position.z) / dz;
+                
+                // Vérifier chaque point intermédiaire
+                let pointsValides = true;
+                for (let i = 1; i < Math.max(dx, dz); i++) {
+                    const intermediatePos = {
+                        x: this.position.x + Math.round(stepX * i),
+                        y: this.position.y,
+                        z: this.position.z + Math.round(stepZ * i)
+                    };
+                    
+                    // Vérifier si ce point est valide
+                    const intermediateKey = `${intermediatePos.x},${intermediatePos.y},${intermediatePos.z}`;
+                    const isValid = this.grid.grid[intermediateKey] !== undefined ||
+                                    this.grid.isValidPlatformPosition(intermediatePos);
+                    
+                    if (!isValid) {
+                        console.log("Détection d'un vide sur le chemin à la position:", intermediatePos);
+                        pointsValides = false;
+                        break;
+                    }
+                }
+                
+                // Si un point n'est pas valide, retourner un chemin vide
+                if (!pointsValides) {
+                    console.log("Chemin traversant un vide détecté - mouvement impossible");
+                    return [];
+                }
+            }
+        }
+        
         // Utiliser le pathfinding normal même pour les sliders
         const gridElements = this.grid.getAllElements();
         

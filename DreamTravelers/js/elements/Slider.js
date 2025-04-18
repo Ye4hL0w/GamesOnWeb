@@ -8,16 +8,7 @@ class Slider {
         this.isDragging = false;
         this.playerOnSlider = null;
         this.cameraState = null;
-        this.pendingGridRegistration = true; // Nouvelle propriété pour indiquer que l'enregistrement dans la grille est en attente
-        
-        // DEBUG: Vérifier si le niveau et la grille sont disponibles dès la création
-        console.log("=== INITIALISATION SLIDER ===");
-        console.log("Scene disponible:", !!this.scene);
-        console.log("Level disponible:", !!(this.scene && this.scene.level));
-        console.log("Grid disponible:", !!(this.scene && this.scene.level && this.scene.level.grid));
-        console.log("Position initiale:", position);
-        console.log("Axe:", this.axis);
-        console.log("Limites:", this.minValue, this.maxValue);
+        this.pendingGridRegistration = true;
         
         // Création du mesh
         this.createMesh();
@@ -29,15 +20,11 @@ class Slider {
         this.scene.onReadyObservable.addOnce(() => {
             // Vérifier si le niveau et la grille sont disponibles
             if (this.scene.level && this.scene.level.grid) {
-                console.log("Niveau et grille disponibles, enregistrement du slider");
                 this.registerInGrid();
             } else {
-                console.log("Niveau ou grille non disponibles, attente...");
-                
                 // Vérifier régulièrement si le niveau et la grille sont disponibles
                 const checkInterval = setInterval(() => {
                     if (this.scene.level && this.scene.level.grid) {
-                        console.log("Niveau et grille maintenant disponibles, enregistrement du slider");
                         this.registerInGrid();
                         clearInterval(checkInterval);
                     }
@@ -54,8 +41,6 @@ class Slider {
             const x = Math.round(this.mesh.position.x);
             const y = Math.round(this.mesh.position.y);
             const z = Math.round(this.mesh.position.z);
-            
-            console.log(`Slider position enregistrée (${x}, ${y}, ${z})`);
             
             this.pendingGridRegistration = false; // Marquer comme enregistré
         }
@@ -76,8 +61,6 @@ class Slider {
             Math.round(this.position.z)
         );
         
-        console.log(`Slider créé à la position (${this.mesh.position.x}, ${this.mesh.position.y}, ${this.mesh.position.z})`);
-        
         // Activer les collisions pour que le joueur puisse marcher dessus
         this.mesh.checkCollisions = true;
         
@@ -86,13 +69,6 @@ class Slider {
         
         // Marquer comme slider pour la détection
         this.mesh.isSlider = true;
-        
-        // DEBUG: Vérifier que toutes les propriétés sont correctement définies
-        console.log("=== VÉRIFICATION DU MESH ===");
-        console.log("Mesh créé:", !!this.mesh);
-        console.log("Collisions activées:", this.mesh.checkCollisions);
-        console.log("Mesh walkable:", this.mesh.isWalkable);
-        console.log("Mesh type slider:", this.mesh.isSlider);
         
         // Matériau bleu vif pour plus de visibilité
         const material = new BABYLON.StandardMaterial("sliderMaterial", this.scene);
@@ -247,15 +223,12 @@ class Slider {
                 
                 // Si c'est une poignée, activer le mode glissement
                 if (this.handles.includes(pickResult.pickedMesh)) {
-                    console.log("Poignée de slider cliquée - Mode glissement activé");
                     this.startDragging();
                     return;
                 }
                 
                 // Si c'est le corps du slider lui-même, utiliser le pathfinding normal
                 if (pickResult.pickedMesh === this.mesh) {
-                    console.log("Corps du slider cliqué - Utilisation du pathfinding");
-                    
                     if (this.scene.level && this.scene.level.player) {
                         const player = this.scene.level.player;
                         // Calculer la position cible sur le slider
@@ -395,8 +368,6 @@ class Slider {
             // Détacher les contrôles de la caméra
             this.scene.activeCamera.detachControl();
             this.cameraState.detached = true;
-            
-            console.log("Caméra verrouillée pendant le déplacement du slider");
         }
     }
     
@@ -427,7 +398,6 @@ class Slider {
             const canvas = this.scene.getEngine().getRenderingCanvas();
             if (canvas) {
                 this.scene.activeCamera.attachControl(canvas);
-                console.log("Contrôles de la caméra restaurés");
             }
             this.cameraState.detached = false;
         }
@@ -483,14 +453,10 @@ class Slider {
         const newX = Math.round(newPos.x);
         const newY = Math.round(newPos.y);
         const newZ = Math.round(newPos.z);
-        
-        console.log(`Position du slider mise à jour : (${oldX},${oldY},${oldZ}) -> (${newX},${newY},${newZ})`);
     }
     
     // Méthode pour animer le recalibrage du slider
     animateSnap(targetPosition) {
-        console.log(`Recalibrage du slider vers la position: (${targetPosition.x}, ${targetPosition.y}, ${targetPosition.z})`);
-        
         // Créer une animation
         const animation = new BABYLON.Animation(
             "sliderSnap",
@@ -547,7 +513,7 @@ class Slider {
             // Nettoyer l'observer une fois l'animation terminée
             this.scene.onBeforeRenderObservable.remove(observer);
             
-            // Mettre à jour les poignées - pas besoin de mettre à jour le bouton de contrôle qui n'existe pas
+            // Mettre à jour les poignées
             this.updateHandlePositions();
         });
     }
@@ -613,12 +579,6 @@ class Slider {
         if (this.axis === 'z') {
             // Pour le slider Z, on vérifie uniquement la position X
             isOnSlider = Math.abs(playerMesh.position.x - this.mesh.position.x) < 0.5;
-            
-            // Debug logs
-            console.log("Slider Z - Position joueur:", playerMesh.position);
-            console.log("Slider Z - Position slider:", this.mesh.position);
-            console.log("Slider Z - isOnSlider:", isOnSlider);
-            
         } else if (this.axis === 'y') {
             // Pour le slider Y, vérifier X et Z
             isOnSlider = Math.abs(playerMesh.position.x - this.mesh.position.x) < 0.5 && 
@@ -642,13 +602,8 @@ class Slider {
             if (this.axis === 'z') {
                 playerMesh.position.x = this.mesh.position.x;
             }
-            
-            console.log("Joueur détecté sur le slider", this.axis.toUpperCase());
         } else {
             // Le joueur n'est plus sur le slider
-            if (this.playerOnSlider) {
-                console.log("Joueur a quitté le slider", this.axis.toUpperCase());
-            }
             this.playerOnSlider = null;
         }
     }
@@ -675,7 +630,6 @@ class Slider {
     addHelpText() {
         // Vérifier d'abord si BABYLON.GUI est disponible
         if (!BABYLON.GUI || !BABYLON.GUI.AdvancedDynamicTexture) {
-            console.log("BABYLON.GUI non disponible, texte d'aide désactivé");
             return;
         }
         
@@ -715,7 +669,7 @@ class Slider {
                 }
             });
         } catch (error) {
-            console.log("Erreur lors de la création du texte d'aide:", error);
+            // Gestion silencieuse des erreurs
         }
     }
     
