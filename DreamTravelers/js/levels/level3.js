@@ -10,11 +10,20 @@ class Level3 extends BaseLevel {
         
         // Initialiser le niveau
         this.createGridLines(this.grid.gridSize);
-        // Pas de nuages qui tournent dans le niveau 3
+        
+        // Créer le joueur
         this.player = new Player(this.scene, this.grid);
         
-        // Créer le niveau spécifique
-        this.createLevel();
+        // Important: attacher la grille à la scène
+        this.scene.level = this;
+        
+        // Attendre que la scène soit prête avant de créer le niveau et positionner le joueur
+        this.scene.onReadyObservable.addOnce(() => {
+            console.log("Scène prête, création du niveau...");
+            this.createLevel();
+            // Placer le joueur à la position initiale une fois que tout est prêt
+            this.player.setPosition(0, 0, 2);
+        });
         
         // Ajouter les événements
         this.scene.onPointerDown = (evt) => this.handleClick(evt);
@@ -187,9 +196,6 @@ class Level3 extends BaseLevel {
         const platform3 = new RotatingPlatform(this.scene, new BABYLON.Vector3(-2, 3, 0), 2);
         this.rotatingPlatforms.push(platform3);
 
-        // Placer le joueur à la position initiale
-        this.player.setPosition(0, 0, 2);
-        
         // Créer la sortie au sommet de la tour
         // Niveau 3 étant le dernier, on renvoie vers index.html (niveau 0)
         this.exit = new Exit(this.scene, this.grid, {x: 0, y: 5, z: 0}, 0);
