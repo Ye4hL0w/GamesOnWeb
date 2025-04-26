@@ -5,10 +5,10 @@ export class Ghost extends PNJ {
         super(x, y, 100, 100, text);
         
         // Animation de flottement
-        this.floatAmplitude = 10; // Amplitude du mouvement de flottement
-        this.floatSpeed = 0.01; // Vitesse de l'animation
-        this.floatOffset = 0; // Offset pour l'animation
-        this.initialY = y; // Position Y initiale
+        this.floatAmplitude = 10;
+        this.floatSpeed = 0.01;
+        this.floatOffset = 0;
+        this.initialY = y;
         
         // Chargement des sprites
         this.spriteLeft = new Image();

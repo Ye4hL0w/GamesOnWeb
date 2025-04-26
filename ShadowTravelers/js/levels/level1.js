@@ -123,7 +123,6 @@ export class Level1 extends BaseLevel {
             );
         }
         
-        // Ajouter un effet visuel de "fondu" avant la transition
         const canvas = this.canvas;
         const context = this.context;
         
@@ -139,27 +138,11 @@ export class Level1 extends BaseLevel {
                 // Stocker le niveau suivant dans localStorage
                 localStorage.setItem('selectedLevel', 2);
                 
-                // Rediriger vers le niveau 2
+                // rediriger vers le niveau 2
                 setTimeout(() => {
                     window.location.href = 'level2.html';
                 }, 500);
             }
         }, 50);
-    }
-    
-    // Méthode pour calculer le score du joueur
-    calculateScore() {
-        // Score de base pour avoir terminé le niveau
-        let score = 1000;
-        
-        // Bonus basé sur le temps (moins de temps = plus de points)
-        // Exemple: 30 secondes de base - temps écoulé (plafonné à 0)
-        const timeBonus = Math.max(0, 30 - (this.elapsedTime / 1000)) * 50;
-        
-        // Bonus pour les collectibles (le cas échéant)
-        const collectiblesBonus = this.collectibles ? this.collectibles.filter(c => c.collected).length * 100 : 0;
-        
-        // Score total
-        return Math.round(score + timeBonus + collectiblesBonus);
     }
 }

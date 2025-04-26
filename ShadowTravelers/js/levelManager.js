@@ -4,14 +4,14 @@ import { Level3 } from './levels/level3.js';
 
 class LevelManager {
     constructor() {
-        // Initialisation du gestionnaire de niveau
+        // init du gestionnaire de niveau
         this.canvas = document.getElementById('myCanvas');
         this.context = this.canvas.getContext('2d');
         this.currentLevel = null;
     }
 
     startLevel(levelId) {
-        // Logique pour démarrer un niveau spécifique
+        // démarrer un niveau spécifique
         this.clearCanvas();
         switch(levelId) {
             case 1:

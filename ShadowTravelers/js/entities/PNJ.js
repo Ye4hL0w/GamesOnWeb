@@ -10,12 +10,12 @@ export class PNJ {
         this.textColor = 'white';
         this.textBackground = 'rgba(0, 0, 0, 0.7)';
         this.textPadding = 5;
-        this.textOffsetY = -30; // Distance au-dessus du PNJ
+        this.textOffsetY = -30;
         this.font = '16px Arial';
 
         // Distance d'apparition du texte
-        this.textVisibilityDistance = 500; // Distance en pixels
-        this.showText = false; // État de visibilité du texte
+        this.textVisibilityDistance = 500;
+        this.showText = false;
         
         // Largeur maximale du texte
         this.maxTextWidth = 250;

@@ -6,19 +6,19 @@ export class Guardian {
         this.height = 80;
         
         // Paramètres de vitesse et poursuite
-        this.baseSpeed = 3; // Vitesse normale
-        this.maxChaseSpeed = 6; // Vitesse maximale de poursuite
-        this.speed = this.baseSpeed; // Vitesse actuelle
-        this.acceleration = 0.1; // Taux d'accélération par frame
-        this.detectionRange = 600; // Distance de détection du joueur
+        this.baseSpeed = 3;
+        this.maxChaseSpeed = 6;
+        this.speed = this.baseSpeed;
+        this.acceleration = 0.1;
+        this.detectionRange = 600;
         this.isChasing = false;
-        this.chaseTime = 0; // Temps de poursuite (pour l'accélération progressive)
+        this.chaseTime = 0;
         this.direction = 'right';
         
         // Animation
         this.frameIndex = 0;
-        this.frameCount = 8; // Nombre total de frames d'animation
-        this.frameDelay = 5; // Délai entre les changements de frame
+        this.frameCount = 8;
+        this.frameDelay = 5;
         this.frameCounter = 0;
         
         // Chargement des frames d'animation (droite et gauche)
@@ -77,7 +77,6 @@ export class Guardian {
             let collision = false;
             for (let i = 0; i < obstacles.length; i++) {
                 const obstacle = obstacles[i];
-                // Vérifier si l'obstacle a les propriétés x, y, width, height
                 if (obstacle && 
                     typeof obstacle.x === 'number' && 
                     typeof obstacle.y === 'number' && 
@@ -101,7 +100,6 @@ export class Guardian {
                 this.frameCounter = 0;
                 this.frameIndex = (this.frameIndex + 1) % this.frameCount;
                 
-                // Sélectionner la frame selon la direction
                 if (this.direction === 'left') {
                     this.currentFrame = this.framesLeft[this.frameIndex];
                 } else {
@@ -110,11 +108,11 @@ export class Guardian {
             }
         } else {
             this.isChasing = false;
-            this.speed = this.baseSpeed; // Réinitialiser la vitesse
+            this.speed = this.baseSpeed; // réinitialiser la vitesse
         }
     }
     
-    // Méthode simple pour vérifier la collision avec un obstacle
+    // vérifier la collision avec un obstacle
     checkCollisionWithObstacle(obstacle) {
         return (
             this.x < obstacle.x + obstacle.width &&

@@ -11,28 +11,33 @@ function startGame(levelId) {
     localStorage.setItem('selectedLevel', levelId);
     window.location.href = `level${levelId}.html`;
     
-    // Redimensionner d'abord le canvas
+    // redimensionner le canvas
     resizeCanvas();
     
-    // Attendre un court instant pour s'assurer que le redimensionnement est effectué
+    // attendre un instant pour s'assurer que le redimensionnement est effectué
     setTimeout(() => {
-        // Créer le niveau avec le canvas correctement dimensionné
+        // créer le niveau avec le canvas
         const canvas = document.getElementById('myCanvas');
         const context = canvas.getContext('2d');
                 
-        // Créer le niveau approprié
+        // créer le niveau approprié
         let level;
         switch(levelId) {
             case 1:
                 level = new Level1(context, canvas);
                 break;
-            // ... autres cas ...
+            case 2:
+                level = new Level2(context, canvas);
+                break;
+            case 3:
+                level = new Level3(context, canvas);
+                break;
         }
         
-        // Stocker le niveau actuel pour le resize
+        // stocker le niveau actuel
         window.currentLevel = level;
         
-        // Initialiser et démarrer le niveau
+        // init et démarrer le niveau
         level.initialize();
         level.gameLoop();
     }, 100);
@@ -46,7 +51,7 @@ if (document.getElementById('myCanvas')) {
 
 window.startGame = startGame;
 
-// Fonction pour redimensionner le canvas
+// fonction pour redimensionner le canvas
 function resizeCanvas() {
     const canvas = document.getElementById('myCanvas');
     if (canvas) {
@@ -57,13 +62,13 @@ function resizeCanvas() {
     return null;
 }
 
-// Simplifier l'initialisation pour éviter les doubles instances
+// simplifier l'initialisation, éviter les doubles instances
 function initializeLevel() {
-    // Éviter les initialisations simultanées
+    // éviter les initialisations simultanées
     if (isInitializing) return;
     isInitializing = true;
 
-    // Nettoyer toute instance précédente
+    // nettoyer toutes les instances précédentes
     if (currentLevel) {
         if (gameLoopId) {
             cancelAnimationFrame(gameLoopId);
@@ -72,25 +77,25 @@ function initializeLevel() {
         currentLevel = null;
     }
 
-    // Redimensionner d'abord le canvas
+    // redimensionner d'abord le canvas
     const canvas = resizeCanvas();
     if (!canvas) {
         isInitializing = false;
         return;
     }
 
-    // Attendre que le redimensionnement soit appliqué
+    // attendre que le redimensionnement soit appliqué
     setTimeout(() => {
         const context = canvas.getContext('2d');
         
-        // Vérifier que le canvas a bien les bonnes dimensions
+        // vérifier que le canvas a bien les bonnes dimensions
         if (canvas.width <= 300 || canvas.height <= 150) {
             setTimeout(initializeLevel, 100);
             isInitializing = false;
             return;
         }
                 
-        // Créer le niveau approprié
+        // créer le niveau approprié
         const url = window.location.href;
         if (url.includes('level1')) {
             currentLevel = new Level1(context, canvas);
@@ -101,14 +106,14 @@ function initializeLevel() {
         }
         
         if (currentLevel) {
-            // Initialiser le niveau
+            // init le niveau
             currentLevel.initialize();
             
-            // Démarrer une NOUVELLE boucle de jeu
+            // démarrer une nouvelle boucle de jeu
             currentLevel.isRunning = true;
             gameLoopId = requestAnimationFrame(gameLoop);
             
-            // Configurer l'écouteur de redimensionnement
+            // config l'écouteur de redimensionnement
             window.removeEventListener('resize', handleResize);
             window.addEventListener('resize', handleResize);
         }
@@ -117,7 +122,7 @@ function initializeLevel() {
     }, 100);
 }
 
-// Modification de la fonction gameLoop pour limiter à 60 FPS
+// modif de la fonction gameLoop pour limiter à 60 FPS
 function gameLoop() {
     if (!currentLevel || !currentLevel.isRunning) {
         gameLoopId = requestAnimationFrame(gameLoop);
@@ -127,11 +132,11 @@ function gameLoop() {
     const now = performance.now();
     const deltaTime = now - currentLevel.lastTime;
     
-    // Limiter à 60 FPS (environ 16.67ms par frame)
+    // limiter à 60 FPS
     if (deltaTime >= 1000 / 60) {
         currentLevel.lastTime = now;
         
-        // Convertir le delta en secondes pour des calculs de vitesse cohérents
+        // convertir le delta en secondes
         currentLevel.update(deltaTime / 1000);
         currentLevel.draw();
     }
@@ -139,35 +144,34 @@ function gameLoop() {
     gameLoopId = requestAnimationFrame(gameLoop);
 }
 
-// Gestionnaire de redimensionnement simplifié
 let resizeTimeout;
 function handleResize() {
     clearTimeout(resizeTimeout);
     
-    // Mettre en pause le jeu pendant le redimensionnement
+    // mettre en pause pendant le redimensionnement
     if (currentLevel) {
         currentLevel.isRunning = false;
     }
     
-    // Redimensionner avec un délai
+    // redimensionner avec un délai
     resizeTimeout = setTimeout(() => {
         const canvas = resizeCanvas();
         
         if (currentLevel && canvas) {
-            // Mettre à jour la référence au canvas
+            // mettre à jour la ref au canvas
             currentLevel.canvas = canvas;
             
-            // Recalculer les positions sans réinitialiser
+            // recalcul des positions sans réinitialiser
             currentLevel.handleResize();
             
-            // Redémarrer le jeu
+            // redémarre le jeu
             currentLevel.isRunning = true;
         }
     }, 200);
 }
 
-// Nettoyer les écouteurs et initialiser
+// nettoyer les écouteurs et initialiser
 window.addEventListener('load', () => {
-    // S'assurer que le navigateur a fini de calculer les dimensions
+    // verifier que le navigateur a fini de calculer les dimensions
     setTimeout(initializeLevel, 100);
 });

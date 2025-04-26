@@ -25,9 +25,8 @@ export class Level2 extends BaseLevel {
         
         this.player = new Player(this.canvas);
         this.player.inShadowZone = false;
-        // Ajout de variables pour la transition progressive de l'inversion des contrôles
-        this.player.shadowInfluence = 0; // 0 = contrôles normaux, 1 = contrôles complètement inversés
-        this.shadowTransitionRate = 0.03; // Ralentir la transition pour une expérience plus fluide
+        this.player.shadowInfluence = 0; // 0 = contrôles normaux, 1 = contrôles inversés
+        this.shadowTransitionRate = 0.03;
         
         const obstacleHeight = 100;
         this.obstacles.push(
@@ -58,24 +57,21 @@ export class Level2 extends BaseLevel {
     }
 
     update() {
-        // Ne pas appeler super.update() car nous voulons personnaliser ce comportement
+        // pas d'appel à super.update() car nous voulons personnaliser ce comportement
 
-        // Implémentation personnalisée équivalente à super.update() mais avec inversion des contrôles
         if (this.player) {
             const playerAbsoluteX = this.player.x + this.cameraX;
             
-            // Mettre à jour et vérifier si le joueur est dans une zone d'ombre (faire cela en premier)
+            // vérifier si le joueur est dans une zone d'ombre
             const wasInShadow = this.player.inShadowZone;
             this.player.inShadowZone = false;
             
-            // Réduire légèrement la taille effective des zones d'ombre pour 
-            // faciliter l'entrée/sortie (créer une marge de détection)
-            const detectionMargin = 5; // marge de 5 pixels
+            const detectionMargin = 5;
             
             for (const zone of this.shadowZones) {
                 zone.update();
                 
-                // Vérifier la collision avec une marge pour faciliter les transitions
+                // Vérifier la collision
                 const playerRect = {
                     x: this.player.x + detectionMargin,
                     y: this.player.y + detectionMargin,
@@ -83,7 +79,7 @@ export class Level2 extends BaseLevel {
                     height: this.player.height - 2 * detectionMargin
                 };
                 
-                // Zone effective légèrement plus petite que la zone visuelle
+                // Zone d'effet légèrement plus petite que la zone visuelle
                 const zoneEffective = {
                     x: zone.x + detectionMargin,
                     y: zone.y + detectionMargin,
@@ -96,40 +92,38 @@ export class Level2 extends BaseLevel {
                     
                     // Si le joueur vient d'entrer dans la zone, on pourrait jouer un son
                     if (!wasInShadow) {
-                        // Ici on pourrait ajouter un système de son: this.playSound('shadow');
-                        console.log("Le joueur commence à entrer dans une zone d'ombre"); // Pour déboguer
+                        console.log("Le joueur commence à entrer dans une zone d'ombre");
                     }
                 }
             }
             
-            // Gérer la transition progressive de l'effet d'ombre
+            // gérer la transition de l'effet d'ombre
             if (this.player.inShadowZone && this.player.shadowInfluence < 1) {
                 // Augmenter progressivement l'influence de l'ombre
                 this.player.shadowInfluence = Math.min(1, this.player.shadowInfluence + this.shadowTransitionRate);
                 if (this.player.shadowInfluence >= 1) {
-                    console.log("Contrôles complètement inversés"); // Pour déboguer
+                    console.log("Contrôles complètement inversés");
                 }
             } else if (!this.player.inShadowZone && this.player.shadowInfluence > 0) {
                 // Diminuer progressivement l'influence de l'ombre
                 this.player.shadowInfluence = Math.max(0, this.player.shadowInfluence - this.shadowTransitionRate);
                 if (this.player.shadowInfluence <= 0) {
-                    console.log("Contrôles redevenus normaux"); // Pour déboguer
+                    console.log("Contrôles redevenus normaux");
                 }
             }
             
             // Si le joueur vient de sortir d'une zone d'ombre
             if (wasInShadow && !this.player.inShadowZone) {
-                // Ici on pourrait jouer un autre son: this.playSound('light');
-                console.log("Le joueur commence à sortir d'une zone d'ombre"); // Pour déboguer
+                console.log("Le joueur commence à sortir d'une zone d'ombre");
             }
             
             // Gestion des contrôles avec transition progressive
             if (this.player.shadowInfluence > 0) {
-                // Calculer le mélange des contrôles en fonction de l'influence de l'ombre
+                // Calcul du mélange des contrôles en fonction de l'influence de l'ombre
                 const normalLeftInfluence = 1 - this.player.shadowInfluence;
                 const invertedLeftInfluence = this.player.shadowInfluence;
                 
-                // Créer un "mélange" des touches gauche/droite
+                // "mélange" des touches gauche/droite
                 const effectiveLeftKey = 
                     (this.keys.ArrowLeft * normalLeftInfluence) + 
                     (this.keys.ArrowRight * invertedLeftInfluence);
@@ -138,10 +132,9 @@ export class Level2 extends BaseLevel {
                     (this.keys.ArrowRight * normalLeftInfluence) + 
                     (this.keys.ArrowLeft * invertedLeftInfluence);
                 
-                // Utiliser ces valeurs pour mettre à jour le joueur avec des contrôles mixtes
                 this.player.update({
-                    ArrowLeft: effectiveLeftKey > 0.5,  // Convertir en booléen
-                    ArrowRight: effectiveRightKey > 0.5, // Convertir en booléen
+                    ArrowLeft: effectiveLeftKey > 0.5,
+                    ArrowRight: effectiveRightKey > 0.5,
                     Space: this.keys.Space,
                     ArrowUp: this.keys.ArrowUp
                 }, this.floorHeight);
@@ -169,10 +162,9 @@ export class Level2 extends BaseLevel {
                     }
                 }
             } else {
-                // Mise à jour normale si le joueur n'est pas du tout sous l'influence de l'ombre
+                // si le joueur n'est pas sous l'influence de l'ombre maj normale
                 this.player.update(this.keys, this.floorHeight);
                 
-                // Gestion normale du défilement de la caméra
                 if (this.player.x > this.canvas.width * 0.6 && this.keys.ArrowRight) {
                     const scrollAmount = 15;
                     if (this.cameraX + this.canvas.width < this.levelWidth) {
@@ -190,7 +182,7 @@ export class Level2 extends BaseLevel {
                 }
             }
 
-            // Gestion des limites du jeu
+            // limites du jeu
             if (this.player.x < 0 && this.cameraX === 0) {
                 this.player.x = 0;
             }
@@ -221,7 +213,7 @@ export class Level2 extends BaseLevel {
             for (const obstacle of this.directionalObstacles) {
                 obstacle.update();
                 
-                // Transition progressive pour les obstacles directionnels également
+                // Transition pour les obstacles directionnels également
                 if (this.player.shadowInfluence > 0.5) {
                     // Principalement inversés
                     if (this.keys.ArrowRight) {
@@ -287,7 +279,6 @@ export class Level2 extends BaseLevel {
     onLevelComplete() {
         console.log('Niveau 2 terminé ! Passage au niveau suivant...');
         
-        // Sauvegarder la progression du jeu (Shadow Travelers = jeu 1, niveau 2)
         if (window.GameProgress) {
             window.GameProgress.saveGameProgress(
                 window.GameProgress.GAME_IDS.SHADOW_TRAVELERS,
@@ -298,11 +289,11 @@ export class Level2 extends BaseLevel {
             console.error('Module GameProgress non disponible');
         }
         
-        // Ajouter un effet visuel de "fondu" avant la transition
+        // ajouter un effet visuel de "fondu" avant la transition
         const canvas = this.canvas;
         const context = this.context;
         
-        // Créer un effet de fondu en noir
+        // créer l'effet de fondu en noir
         let opacity = 0;
         const fadeEffect = setInterval(() => {
             opacity += 0.05;
@@ -312,10 +303,10 @@ export class Level2 extends BaseLevel {
             if (opacity >= 1) {
                 clearInterval(fadeEffect);
                 
-                // Stocker le niveau suivant dans localStorage
+                // stocker le niveau suivant dans localStorage
                 localStorage.setItem('selectedLevel', 3);
                 
-                // Rediriger vers le niveau 3
+                // rediriger vers le niveau 3
                 setTimeout(() => {
                     window.location.href = 'level3.html';
                 }, 500);
@@ -323,9 +314,9 @@ export class Level2 extends BaseLevel {
         }, 50);
     }
 
-    // Ajouter une méthode personnalisée de détection de collisions pour les zones d'ombre
+    // méthode personnalisée de détection de collisions pour les zones d'ombre
     checkCollisionCustom(player, obstacle) {
-        // Pour la détection de collision avec les zones d'ombre, on utilise la position absolue
+        // on utilise la position absolue
         const adjustedObstacleX = obstacle.x - this.cameraX;
         
         return player.x < adjustedObstacleX + obstacle.width &&
