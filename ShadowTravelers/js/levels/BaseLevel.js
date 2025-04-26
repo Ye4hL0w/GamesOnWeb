@@ -13,11 +13,12 @@ export class BaseLevel {
         
         this.cameraX = 0;
         this.scrollSpeed = 5;
+        this.scrollAmount = 15
         this.scrollThreshold = this.canvas.width * 0.4;
         
         this.obstacles = [];
         this.platforms = [];
-        this.levelWidth = 5000;
+        this.levelWidth = 10000;
         
         this.keys = {
             ArrowLeft: false,
@@ -65,18 +66,16 @@ export class BaseLevel {
             this.player.update(this.keys, this.floorHeight);
 
             if (this.player.x > this.canvas.width * 0.6 && this.keys.ArrowRight) {
-                const scrollAmount = 10;
                 if (this.cameraX + this.canvas.width < this.levelWidth) {
-                    this.cameraX += scrollAmount;
-                    this.player.x -= scrollAmount;
+                    this.cameraX += this.scrollAmount;
+                    this.player.x -= this.scrollAmount;
                 }
             }
             
             if (this.player.x < this.canvas.width * 0.2 && this.keys.ArrowLeft) {
-                const scrollAmount = 10;
                 if (this.cameraX > 0) {
-                    this.cameraX -= scrollAmount;
-                    this.player.x += scrollAmount;
+                    this.cameraX -= this.scrollAmount;
+                    this.player.x += this.scrollAmount;
                 }
             }
 

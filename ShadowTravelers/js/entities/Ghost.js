@@ -14,8 +14,8 @@ export class Ghost extends PNJ {
         this.spriteLeft = new Image();
         this.spriteRight = new Image();
         
-        this.spriteLeft.src = './assets/pnj/ghost-left.png';
-        this.spriteRight.src = './assets/pnj/ghost-right.png';
+        this.spriteLeft.src = './assets/pnj/ghost/ghost-left.png';
+        this.spriteRight.src = './assets/pnj/ghost/ghost-right.png';
         this.currentSprite = this.spriteRight;
     }
 

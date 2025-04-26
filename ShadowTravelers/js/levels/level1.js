@@ -21,28 +21,28 @@ export class Level1 extends BaseLevel {
         const obstacleHeight = 100;
         
         this.obstacles.push(
-            { x: 1500, y: floorY - obstacleHeight, width: 50, height: obstacleHeight },
-            { x: 2000, y: floorY - obstacleHeight, width: 300, height: obstacleHeight },
-            { x: 2750, y: floorY - obstacleHeight, width: 50, height: obstacleHeight }
+            { x: 2800, y: floorY - obstacleHeight, width: 50, height: obstacleHeight },
+            { x: 8000, y: floorY - 200, width: 50, height: 200 },
         );
 
         this.jumpingObstacles.push(
-            new JumpingObstacle(3200, 0, 70, floorY, 200, 8)
+            new JumpingObstacle(4000, 0, 70, floorY, 200, 8),
+            new JumpingObstacle(8000, floorY - 300, 50, 100, 200, 8)
         );
         this.directionalObstacles.push(
-            new DirectionalObstacle(3800, 0, 70, floorY, 200, 8)
+            new DirectionalObstacle(6000, 0, 70, floorY, 200, 8)
         );
 
         const ghostY = floorY - 100;
         this.ghosts.push(
-            new Ghost(750, ghostY, "Bienvenue, voyageur de l'entre-deux mondes! Je sens que tu viens de t'éveiller... Ce royaume n'est qu'un passage vers Dream Land. Méfie-toi des ombres qui rôdent par ici.")
+            new Ghost(this.canvas.width - 150, ghostY, "Bienvenue, voyageur perdu… Tu as quitté le néant, mais ton chemin est encore obscur. Ce monde est un labyrinthe façonné par l'oubli. Seuls ceux qui perçoivent l'invisible peuvent avancer…")
         );
 
         this.ghosts.push(
-            new Ghost(this.levelWidth - 400, ghostY, "Tu as atteint la fin de ce passage obscur... *murmure* Si tu continues ta quête, arme-toi de courage. Le véritable voyage ne fait que commencer...")
+            new Ghost(this.levelWidth - 600, ghostY, "Tu as franchi la première épreuve… mais ce n'était qu'une illusion. Je suis un ange déchu… J'étais comme toi, autrefois en quête de lumière. Maintenant, j'erre sans fin, piégé entre le rêve et la nuit.")
         );
 
-        this.exit = new Exit(this.levelWidth - 200, floorY - 100, 80, 80);
+        this.exit = new Exit(this.levelWidth - 150, floorY - 100, 80, 80);
     }
 
     update() {
@@ -115,6 +115,14 @@ export class Level1 extends BaseLevel {
     onLevelComplete() {
         console.log('Niveau 1 terminé ! Passage au niveau suivant...');
         
+        // Sauvegarder la progression si GameProgress est disponible
+        if (typeof window.GameProgress !== 'undefined') {
+            window.GameProgress.saveGameProgress(
+                window.GameProgress.GAME_IDS.SHADOW_TRAVELERS,
+                1  // niveau 1 complété
+            );
+        }
+        
         // Ajouter un effet visuel de "fondu" avant la transition
         const canvas = this.canvas;
         const context = this.context;
@@ -137,5 +145,21 @@ export class Level1 extends BaseLevel {
                 }, 500);
             }
         }, 50);
+    }
+    
+    // Méthode pour calculer le score du joueur
+    calculateScore() {
+        // Score de base pour avoir terminé le niveau
+        let score = 1000;
+        
+        // Bonus basé sur le temps (moins de temps = plus de points)
+        // Exemple: 30 secondes de base - temps écoulé (plafonné à 0)
+        const timeBonus = Math.max(0, 30 - (this.elapsedTime / 1000)) * 50;
+        
+        // Bonus pour les collectibles (le cas échéant)
+        const collectiblesBonus = this.collectibles ? this.collectibles.filter(c => c.collected).length * 100 : 0;
+        
+        // Score total
+        return Math.round(score + timeBonus + collectiblesBonus);
     }
 }

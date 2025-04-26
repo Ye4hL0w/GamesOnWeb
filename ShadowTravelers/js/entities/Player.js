@@ -16,9 +16,12 @@ export class Player {
         this.velocityY = 0;
         this.groundY = 0;
         this.frameCount = 0;
-        this.animationSpeed = 10;
+        this.animationSpeed = 8;
         this.lastTime = performance.now();
         this.canJump = true;
+        this.moveDistance = 15;
+        this.jumpVelocity = -25;
+        this.gravityValue = 1.2;
 
         this.sprites = {
             runRight: new Image(),
@@ -60,14 +63,14 @@ export class Player {
         this.isMoving = false;
         
         if (keys.ArrowLeft) {
-            this.x -= 10;
+            this.x -= this.moveDistance;
             this.direction = 'left';
             this.lastDirection = 'left';
             this.isMoving = true;
             this.frameCount++;
         }
         if (keys.ArrowRight) {
-            this.x += 10;
+            this.x += this.moveDistance;
             this.direction = 'right';
             this.lastDirection = 'right';
             this.isMoving = true;
@@ -81,11 +84,11 @@ export class Player {
         if ((keys.Space || keys.ArrowUp) && this.canJump) {
             this.isJumping = true;
             this.canJump = false;
-            this.velocityY = -20;
+            this.velocityY = this.jumpVelocity;
         }
         
         if (this.isJumping) {
-            this.velocityY += 0.8;
+            this.velocityY += this.gravityValue;
             this.y += this.velocityY;
             
             if (this.y >= this.groundY) {

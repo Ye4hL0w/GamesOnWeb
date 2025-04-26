@@ -6,7 +6,7 @@ export class JumpingObstacle {
         this.height = height;
         this.initialY = y;
         this.riseHeight = riseHeight;
-        this.riseSpeed = riseSpeed;
+        this.riseSpeed = riseSpeed * 1.5;
         this.isRising = false;
         this.targetY = y;
         this.color = 'black';

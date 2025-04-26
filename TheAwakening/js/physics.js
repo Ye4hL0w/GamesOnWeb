@@ -70,7 +70,7 @@ class Physics {
         // Vérification des collisions
         const playerRect = spirit.getBoundingClientRect();
         const adjustedHitbox = this.getAdjustedHitbox(playerRect);
-        
+
         // Récupérer toutes les collisions possibles
         const collisions = levelManager.getAllCollisions(adjustedHitbox);
         let hasFragmentCollision = false;
@@ -89,15 +89,15 @@ class Physics {
                 const isVerticalCollision = this.isVerticalCollision(adjustedHitbox, collision.rect);
                 if (!isVerticalCollision) {
                     continue;
-                }
             }
-
+        }
+        
             // Traiter la collision en fonction de son type
             if (collision.type === 'platform') {
                 this.handlePlatformCollision(collision, controls, adjustedHitbox);
             } else if (collision.type === 'obstacle') {
                 this.handleObstacleCollision(collision, controls, adjustedHitbox);
-            }
+        }
         }
 
         // Vérification de la mort par chute
@@ -130,21 +130,21 @@ class Physics {
     }
 
     handlePlatformCollision(collision, controls, adjustedHitbox) {
-        if (this.velocityY > 0 && adjustedHitbox.bottom > collision.rect.top &&
-            adjustedHitbox.bottom < collision.rect.top + 20) {
+                if (this.velocityY > 0 && adjustedHitbox.bottom > collision.rect.top &&
+                    adjustedHitbox.bottom < collision.rect.top + 20) {
             // Atterrissage sur une plateforme
-            this.playerY = collision.rect.top - adjustedHitbox.height;
-            this.velocityY = 0;
-            controls.isJumping = false;
-            controls.canJump = true;
+                    this.playerY = collision.rect.top - adjustedHitbox.height;
+                    this.velocityY = 0;
+                    controls.isJumping = false;
+                    controls.canJump = true;
             this.isOnGround = true;
             controls.wasOnGroundWhenDashStarted = !controls.isDashing; // Met à jour l'état au sol si on ne dash pas
-        } else if (this.velocityY < 0 && adjustedHitbox.top < collision.rect.bottom &&
-                  adjustedHitbox.top > collision.rect.bottom - 20) {
+                } else if (this.velocityY < 0 && adjustedHitbox.top < collision.rect.bottom &&
+                          adjustedHitbox.top > collision.rect.bottom - 20) {
             // Collision avec le dessous d'une plateforme
-            this.playerY = collision.rect.bottom;
-            this.velocityY = 0;
-        }
+                    this.playerY = collision.rect.bottom;
+                    this.velocityY = 0;
+                }
     }
 
     handleObstacleCollision(collision, controls, adjustedHitbox) {

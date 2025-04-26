@@ -458,3 +458,55 @@ footer p:hover::after, footer a:hover::after {
     transform: scale(1);
     opacity: 1;
 }
+
+.user-info {
+    display: none;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.user-greeting {
+    margin-right: 15px;
+    font-weight: bold;
+}
+
+/* Styles pour le bouton déconnexion - identiques à connexion */
+#deconnexion {
+    background: linear-gradient(135deg, var(--awakening-dark), var(--awakening-medium));
+    color: white;
+    border: none;
+    transition: all 0.4s ease;
+    padding: 8px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(92, 61, 153, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+#deconnexion::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(111, 195, 223, 0.3) 0%, rgba(111, 195, 223, 0) 70%);
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.6s, opacity 0.6s;
+}
+
+#deconnexion:hover {
+    background: linear-gradient(135deg, var(--awakening-medium), var(--dream-medium));
+    color: var(--text-light);
+    box-shadow: 0 0 20px rgba(111, 195, 223, 0.7);
+    transform: translateY(-2px);
+}
+
+#deconnexion:hover::before {
+    transform: scale(1);
+    opacity: 1;
+}

@@ -21,7 +21,7 @@ body {
 }
 
 h1 {
-    font-size: 4.5rem;
+    font-size: 4rem;
     letter-spacing: 2px;
     background: linear-gradient(45deg, #fff, #7ee7f7, #7ef7c4);
     -webkit-background-clip: text;
@@ -197,4 +197,252 @@ h2 {
 
 .level-card:hover::before {
     transform: rotate(45deg) translate(50%, 50%);
+}
+
+/* Nouveaux styles pour l'interface simplifiée */
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+}
+
+.back-button a {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    transition: background 0.3s;
+    display: inline-block;
+}
+
+.back-button a:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#menu-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.menu-content {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    text-align: center;
+    max-width: 600px;
+}
+
+.level-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.menu-btn {
+    padding: 1.2rem 2rem;
+    background: linear-gradient(45deg, rgba(126, 231, 247, 0.3), rgba(126, 247, 196, 0.3));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    transition: transform 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+}
+
+.menu-btn:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(45deg, rgba(126, 231, 247, 0.5), rgba(126, 247, 196, 0.5));
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.menu-btn span {
+    display: block;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+.menu-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 1.5rem;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid rgba(255, 255, 255, 0.8);
+    border-right: 2px solid rgba(255, 255, 255, 0.8);
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.lore-text {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin-top: 2rem;
+    text-align: justify;
+}
+
+/* Media queries pour la responsivité */
+@media (max-width: 768px) {
+    .menu-content {
+        padding: 2rem;
+        margin: 0 1rem;
+    }
+    
+    .menu-btn {
+        padding: 1rem 1.5rem;
+    }
+    
+    h1 {
+        font-size: 3rem;
+    }
+}
+
+/* Style pour les messages de fragments requis */
+.floating-message {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    pointer-events: none;
+    transform: translate(-50%, -100%);
+    z-index: 1000;
+    transition: opacity 0.5s;
+}
+
+.floating-message.fadeOut {
+    opacity: 0;
+}
+
+/* Style pour les messages de fragments collectés */
+.fragment-message {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #FFD700;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    z-index: 1000;
+}
+
+/* Volume control styles */
+#volumeControl {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 15px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+#volumeControl:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateY(-2px);
+}
+
+.volume-icon {
+    margin-right: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.volume-icon:hover {
+    transform: scale(1.1);
+}
+
+.volume-icon i {
+    color: white;
+    font-size: 18px;
+    display: block;
+    position: static;
+    line-height: 1;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100px;
+    height: 5px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    outline: none;
+    transition: opacity 0.2s;
+    position: relative;
+    vertical-align: middle;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    background: #f0f0f0;
+    transform: scale(1.2);
+}
+
+.slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.slider::-moz-range-thumb:hover {
+    background: #f0f0f0;
+    transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+    #volumeControl {
+        bottom: 15px;
+        right: 15px;
+        padding: 8px 12px;
+    }
+    
+    .slider {
+        width: 80px;
+    }
 } 

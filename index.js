@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', function() {
             nav.style.transform = "translateY(0)";
         }
     });
+
+    // Initialiser l'interface utilisateur
+    initUserInterface();
 });
 
 async function loadSection(section) {
@@ -94,5 +97,30 @@ async function loadSection(section) {
         } else {
             nav.classList.remove('active');
         }
+    });
+}
+
+// Gestion de l'affichage utilisateur et déconnexion
+function initUserInterface() {
+    const currentUserEmail = localStorage.getItem('currentUser');
+    if (currentUserEmail) {
+        // Récupérer les données de l'utilisateur
+        const userData = JSON.parse(localStorage.getItem(currentUserEmail));
+        if (userData) {
+            // Afficher le nom d'utilisateur et le bouton de déconnexion
+            document.getElementById('user-greeting').textContent = `Bonjour ${userData.name}`;
+            document.getElementById('user-info').style.display = 'flex';
+            document.getElementById('connexion-li').style.display = 'none';
+        }
+    }
+    
+    // Gérer la déconnexion
+    document.getElementById('deconnexion').addEventListener('click', function() {
+        localStorage.removeItem('currentUser');
+        document.getElementById('user-info').style.display = 'none';
+        document.getElementById('connexion-li').style.display = 'block';
+        alert('Vous avez été déconnecté');
+        // Recharger la page
+        window.location.reload();
     });
 }

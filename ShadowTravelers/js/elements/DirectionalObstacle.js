@@ -62,14 +62,6 @@ export class DirectionalObstacle {
         if (adjustedX + this.width > 0 && adjustedX < context.canvas.width) {
             context.fillStyle = this.color;
             context.fillRect(adjustedX, this.y, this.width, this.height);
-            
-            // Ajouter une flèche pour indiquer que l'obstacle réagit à la direction
-            context.fillStyle = '#FFFFFF';
-            context.beginPath();
-            context.moveTo(adjustedX + this.width * 0.25, this.y + this.height * 0.5);
-            context.lineTo(adjustedX + this.width * 0.75, this.y + this.height * 0.5);
-            context.lineTo(adjustedX + this.width * 0.5, this.y + this.height * 0.7);
-            context.fill();
         }
     }
 } 
