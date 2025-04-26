@@ -37,12 +37,12 @@ export class BaseLevel {
         
         // Propriétés pour l'animation du titre
         this.levelTitle = "Niveau";
-        this.titleY = this.canvas.height / 2; // Position initiale au centre
-        this.targetTitleY = 50; // Position finale en haut
+        this.titleY = this.canvas.height / 2;
+        this.targetTitleY = 50;
         this.titleAnimationDone = false;
         this.titleAnimationStarted = false;
-        this.titleAnimationSpeed = 2; // Vitesse de l'animation
-        this.titleDisplayTime = 0; // Compteur pour retarder le début de l'animation
+        this.titleAnimationSpeed = 2;
+        this.titleDisplayTime = 0;
         
         this.bindEvents();
     }
@@ -216,14 +216,13 @@ export class BaseLevel {
 
     updateElementPositions() {
         if (this.player) {
-            // Positionner le joueur plus vers la gauche (environ 20% de la largeur du canvas)
             this.player.x = this.canvas.width * 0.1;
             
-            // S'assurer que le joueur est au bon niveau vertical
+            // verifier que le joueur est au bon niveau vertical
             this.player.y = this.canvas.height - this.floorHeight - this.player.height + 10;
         }
         
-        // Recalculer les positions d'autres éléments si nécessaire
+        // recalcul des positions d'autres éléments si nécessaire
         if (this.exit) {
             // Maintenir la position de la sortie relative à la taille du canvas
             this.exit.y = this.canvas.height - this.floorHeight - this.exit.height;

@@ -20,7 +20,6 @@ export class ShadowZone {
             context.fillStyle = `rgba(0, 0, 0, ${this.opacity})`;
             context.fillRect(adjustedX, this.y, this.width, this.height);
             
-            // Ajouter une bordure subtile pour délimiter la zone
             context.strokeStyle = 'rgba(50, 50, 50, 0.5)';
             context.lineWidth = 2;
             context.strokeRect(adjustedX, this.y, this.width, this.height);

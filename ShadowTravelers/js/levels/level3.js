@@ -60,7 +60,7 @@ export class Level3 extends BaseLevel {
     }
 
     resetPlayerPosition() {
-        // Réinitialiser la position du joueur au début du niveau
+        // réinitialiser la position du joueur au début du niveau
         if (this.player) {
             this.player.x = this.playerStartX;
             this.player.y = this.playerStartY - this.player.height + 10;
@@ -77,7 +77,7 @@ export class Level3 extends BaseLevel {
                 ghost.update(playerAbsoluteX);
             }
             
-            // Mise à jour des gardiens
+            // maj des gardiens
             for (const guardian of this.guardians) {
                 const allObstacles = [...this.obstacles, ...this.directionalObstacles, ...this.jumpingObstacles];
                 guardian.update(
@@ -88,14 +88,14 @@ export class Level3 extends BaseLevel {
                     allObstacles
                 );
                 
-                // Vérifier si le gardien a attrapé le joueur
+                // vérifier si le gardien a attrapé le joueur
                 if (guardian.checkCollision(
                     playerAbsoluteX, 
                     this.player.y, 
                     this.player.width, 
                     this.player.height
                 )) {
-                    // Téléporter le joueur au début du niveau
+                    // téléporter le joueur au début du niveau
                     this.resetPlayerPosition();
                 }
             }
@@ -179,7 +179,7 @@ export class Level3 extends BaseLevel {
             console.error('Module GameProgress non disponible');
         }
         
-        // Créer un effet de fondu
+        // créer un effet de fondu
         const canvas = this.canvas;
         const context = this.context;
         
@@ -191,9 +191,9 @@ export class Level3 extends BaseLevel {
             
             if (opacity >= 1) {
                 clearInterval(fadeEffect);
-                // Rediriger vers un écran de fin ou menu principal
+                // retour au menu principal
                 setTimeout(() => {
-                    window.location.href = 'index.html'; // Retour au menu principal
+                    window.location.href = 'index.html';
                 }, 500);
             }
         }, 50);
