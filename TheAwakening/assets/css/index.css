@@ -99,12 +99,21 @@ body {
     position: relative;
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-image: url('../image.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    overflow: hidden;
-    
+    filter: blur(1.5px); /* Ajustez la valeur selon vos préférences */
+    z-index: 1; /* S'assure que le fond soit derrière tous les autres éléments */
 }
 
 .background-tutorial{
@@ -128,7 +137,7 @@ body {
     background: none;
     border-radius: 0;
     box-shadow: none;
-    background-image: url('../player/spirit-left.png');
+    background-image: url('../player/spirit-right.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -163,16 +172,20 @@ body {
     background-image: url('../player/spirit-walk-right-2.png');
 }
 
-.spirit.evolved.dashing-right{
-    width: 100px;
-    height: 100px;
+#spirit.evolved.dashing-right{
+    width: 150px;
+    height: 150px;
     background-image: url('../player/spirit-dash-right.png');
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
-.spirit.evolved.dashing-left{
-    width: 100px;
-    height: 100px;
+#spirit.evolved.dashing-left{
+    width: 150px;
+    height: 150px;
     background-image: url('../player/spirit-dash-left.png');
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .memory-fragment {
@@ -190,7 +203,12 @@ body {
 
 .platform {
     position: absolute;
-    background: rgba(42, 42, 74, 0.8);
+    background-image: url('../textures/ground.png');
+    background-repeat: repeat;
+    width: 100%;
+    height: 100px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    border: 5px solid rgba(0, 0, 0, 0.5);
     border-top: 2px solid rgba(74, 74, 106, 0.8);
     z-index: 2;
 }
@@ -206,13 +224,17 @@ body {
 }
 
 .obstacle.shadow {
-    background: rgba(43, 42, 42, 0.7);
+    background-image: url('../textures/wall-1.png');
+    background-size: cover;
+    background-repeat: repeat;
     box-shadow: 0 0 15px rgba(143, 143, 143, 0.5);
     border: 2px solid rgba(143, 143, 143, 0.5);
 }
 
 .obstacle.white {
-    background: rgba(255, 255, 255, 0.3);
+    background-image: url('../textures/wall-2.png');
+    background-size: cover;
+    background-repeat: repeat;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
     border: 2px solid rgba(255, 255, 255, 0.5);
 }

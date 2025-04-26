@@ -1,15 +1,20 @@
 class Physics {
     constructor() {
-        this.gravity = 1.2;
-        this.jumpForce = -20;
-        this.moveSpeed = 8;
-        this.dashSpeed = 15;
+        // Constantes de base (pixels par seconde)
+        this.gravity = 2600; // Augmentation de la gravité
+        this.jumpForce = -900;
+        this.moveSpeed = 500;
+        this.dashSpeed = 800;
         this.friction = 0.82;
         
+        // État du mouvement
         this.velocityX = 0;
         this.velocityY = 0;
         this.playerX = 0;
         this.playerY = 0;
+        this.lastTime = performance.now();
+        this.maxFallSpeed = 1200;
+        this.isOnGround = false; // Nouvel état pour tracker si le personnage est au sol
     }
 
     getAdjustedHitbox(playerRect) {
@@ -27,89 +32,144 @@ class Physics {
     update(controls, spirit, levelManager, onDeath) {
         if (!controls.isEvolved) return;
 
-        this.velocityX = controls.keys.left ? -this.moveSpeed : (controls.keys.right ? this.moveSpeed : 0);
-        if (controls.isDashing) this.velocityX = Math.sign(this.velocityX) * this.dashSpeed;
+        const currentTime = performance.now();
+        const deltaTime = Math.min((currentTime - this.lastTime) / 1000, 0.017);
+        this.lastTime = currentTime;
 
-        this.velocityY += this.gravity;
+        // Réinitialise l'état au sol
+        this.isOnGround = false;
+
+        // Mouvement horizontal avec deltaTime
+        if (controls.isDashing) {
+            const dashVelocity = this.dashSpeed * deltaTime;
+            this.velocityX = controls.keys.left ? -dashVelocity : (controls.keys.right ? dashVelocity : 0);
+            
+            // Si on était au sol au début du dash, on maintient la vélocité Y à 0
+            if (controls.wasOnGroundWhenDashStarted) {
+                this.velocityY = 0;
+            } else {
+                // En l'air, on applique une gravité réduite pendant le dash
+                this.velocityY += (this.gravity * 0.5) * deltaTime;
+            }
+        } else {
+            const moveVelocity = this.moveSpeed * deltaTime;
+            this.velocityX = controls.keys.left ? -moveVelocity : (controls.keys.right ? moveVelocity : 0);
+            // Application normale de la gravité
+            this.velocityY += this.gravity * deltaTime;
+        }
+        
+        // Limite la vitesse de chute
+        if (this.velocityY > this.maxFallSpeed) {
+            this.velocityY = this.maxFallSpeed;
+        }
+
+        // Mise à jour des positions
         this.playerX += this.velocityX;
-        this.playerY += this.velocityY;
+        this.playerY += this.velocityY * deltaTime;
 
+        // Vérification des collisions
         const playerRect = spirit.getBoundingClientRect();
         const adjustedHitbox = this.getAdjustedHitbox(playerRect);
-
-        const collision = levelManager.checkCollisions(adjustedHitbox);
         
-        if (collision) {
-            if (!(controls.isDashing && collision.type === 'obstacle' && collision.element.classList.contains('white'))) {
-                this.handleCollision(collision, controls, adjustedHitbox);
+        // Récupérer toutes les collisions possibles
+        const collisions = levelManager.getAllCollisions(adjustedHitbox);
+        let hasFragmentCollision = false;
+
+        // Traiter chaque type de collision
+        for (const collision of collisions) {
+            if (collision.type === 'fragment') {
+                hasFragmentCollision = true;
+                collision.element.style.display = 'none';
+                continue;
+            }
+
+            // Pour les obstacles blancs en mode dash, on ignore la collision SEULEMENT si c'est une collision latérale
+            if (controls.isDashing && collision.type === 'obstacle' && 
+                collision.element.classList.contains('white')) {
+                const isVerticalCollision = this.isVerticalCollision(adjustedHitbox, collision.rect);
+                if (!isVerticalCollision) {
+                    continue;
+                }
+            }
+
+            // Traiter la collision en fonction de son type
+            if (collision.type === 'platform') {
+                this.handlePlatformCollision(collision, controls, adjustedHitbox);
+            } else if (collision.type === 'obstacle') {
+                this.handleObstacleCollision(collision, controls, adjustedHitbox);
             }
         }
 
+        // Vérification de la mort par chute
         if (this.playerY > window.innerHeight) {
             onDeath();
             return;
         }
 
+        // Limites de l'écran
         this.playerX = Math.max(0, Math.min(this.playerX, window.innerWidth - 100));
+        
+        // Application des positions
         spirit.style.left = `${this.playerX}px`;
         spirit.style.top = `${this.playerY}px`;
 
-        return collision;
+        return hasFragmentCollision ? { type: 'fragment' } : null;
     }
 
-    handleCollision(collision, controls, adjustedHitbox) {
-        switch (collision.type) {
-            case 'platform':
-                if (this.velocityY > 0 && adjustedHitbox.bottom > collision.rect.top &&
-                    adjustedHitbox.bottom < collision.rect.top + 20) {
-                    // Collision par le haut de la plateforme (le joueur atterrit dessus)
-                    this.playerY = collision.rect.top - adjustedHitbox.height;
-                    this.velocityY = 0;
-                    controls.isJumping = false;
-                    controls.canJump = true;
-                } else if (this.velocityY < 0 && adjustedHitbox.top < collision.rect.bottom &&
-                          adjustedHitbox.top > collision.rect.bottom - 20) {
-                    // Collision par le bas de la plateforme (le joueur se cogne la tête)
-                    this.playerY = collision.rect.bottom;
-                    this.velocityY = 0;
-                }
-                break;
+    isVerticalCollision(playerRect, obstacleRect) {
+        const verticalOverlap = Math.min(
+            Math.abs(playerRect.bottom - obstacleRect.top),
+            Math.abs(playerRect.top - obstacleRect.bottom)
+        );
+        const horizontalOverlap = Math.min(
+            Math.abs(playerRect.right - obstacleRect.left),
+            Math.abs(playerRect.left - obstacleRect.right)
+        );
+        
+        return verticalOverlap < horizontalOverlap;
+    }
 
-            case 'fragment':
-                collision.element.style.display = 'none';
-                break;
-
-            case 'obstacle':
-                if (!(collision.element.classList.contains('white') && controls.isDashing)) {
-                    this.resolveObstacleCollision(collision.rect, adjustedHitbox, controls);
-                }
-                break;
+    handlePlatformCollision(collision, controls, adjustedHitbox) {
+        if (this.velocityY > 0 && adjustedHitbox.bottom > collision.rect.top &&
+            adjustedHitbox.bottom < collision.rect.top + 20) {
+            // Atterrissage sur une plateforme
+            this.playerY = collision.rect.top - adjustedHitbox.height;
+            this.velocityY = 0;
+            controls.isJumping = false;
+            controls.canJump = true;
+            this.isOnGround = true;
+            controls.wasOnGroundWhenDashStarted = !controls.isDashing; // Met à jour l'état au sol si on ne dash pas
+        } else if (this.velocityY < 0 && adjustedHitbox.top < collision.rect.bottom &&
+                  adjustedHitbox.top > collision.rect.bottom - 20) {
+            // Collision avec le dessous d'une plateforme
+            this.playerY = collision.rect.bottom;
+            this.velocityY = 0;
         }
     }
 
-    resolveObstacleCollision(obstacleRect, adjustedHitbox, controls) {
+    handleObstacleCollision(collision, controls, adjustedHitbox) {
         const overlap = {
-            top: adjustedHitbox.bottom - obstacleRect.top,
-            bottom: obstacleRect.bottom - adjustedHitbox.top,
-            left: adjustedHitbox.right - obstacleRect.left,
-            right: obstacleRect.right - adjustedHitbox.left,
+            top: adjustedHitbox.bottom - collision.rect.top,
+            bottom: collision.rect.bottom - adjustedHitbox.top,
+            left: adjustedHitbox.right - collision.rect.left,
+            right: collision.rect.right - adjustedHitbox.left,
         };
         
         const minOverlap = Math.min(overlap.top, overlap.bottom, overlap.left, overlap.right);
 
         if (minOverlap === overlap.top && this.velocityY >= 0) {
-            this.playerY = obstacleRect.top - adjustedHitbox.height;
+            this.playerY = collision.rect.top - adjustedHitbox.height;
             this.velocityY = 0;
             controls.isJumping = false;
             controls.canJump = true;
         } else if (minOverlap === overlap.bottom && this.velocityY <= 0) {
-            this.playerY = obstacleRect.bottom;
+            this.playerY = collision.rect.bottom;
             this.velocityY = 0;
         } else if (minOverlap === overlap.left && this.velocityX >= 0) {
-            this.playerX = obstacleRect.left - adjustedHitbox.width;
+            this.playerX = collision.rect.left - adjustedHitbox.width;
             this.velocityX = 0;
         } else if (minOverlap === overlap.right && this.velocityX <= 0) {
-            this.playerX = obstacleRect.right;
+            this.playerX = collision.rect.right;
             this.velocityX = 0;
         }
     }

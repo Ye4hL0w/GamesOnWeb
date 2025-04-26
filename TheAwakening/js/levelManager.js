@@ -132,34 +132,36 @@ class LevelManager {
         this.movingPlatforms = [];
     }
 
-    checkCollisions(playerRect) {
-        // Check platform collisions
+    getAllCollisions(playerRect) {
+        const collisions = [];
+
+        // Vérifier les collisions avec les plateformes
         for (const platform of this.platforms) {
             const platformRect = platform.getBoundingClientRect();
             if (this.isColliding(playerRect, platformRect)) {
-                return { type: 'platform', element: platform, rect: platformRect };
+                collisions.push({ type: 'platform', element: platform, rect: platformRect });
             }
         }
         
-        // Check fragment collisions
+        // Vérifier les collisions avec les fragments
         for (const fragment of this.fragments) {
             if (fragment.style.display !== 'none') {
                 const fragmentRect = fragment.getBoundingClientRect();
                 if (this.isColliding(playerRect, fragmentRect)) {
-                    return { type: 'fragment', element: fragment, rect: fragmentRect };
+                    collisions.push({ type: 'fragment', element: fragment, rect: fragmentRect });
                 }
             }
         }
         
-        // Check obstacle collisions
+        // Vérifier les collisions avec les obstacles
         for (const obstacle of this.obstacles) {
             const obstacleRect = obstacle.getBoundingClientRect();
             if (this.isColliding(playerRect, obstacleRect)) {
-                return { type: 'obstacle', element: obstacle, rect: obstacleRect };
+                collisions.push({ type: 'obstacle', element: obstacle, rect: obstacleRect });
             }
         }
         
-        return null;
+        return collisions;
     }
 
     isColliding(rect1, rect2) {
@@ -168,4 +170,4 @@ class LevelManager {
                 rect1.bottom < rect2.top || 
                 rect1.top > rect2.bottom);
     }
-} 
+}

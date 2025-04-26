@@ -30,6 +30,11 @@ class Game {
             this.ui.showGame();
             this.startDirectLevel2();
         });
+
+        document.getElementById('level3-btn').addEventListener('click', () => {
+            this.ui.showGame();
+            this.startDirectLevel3();
+        });
     }
 
     resetGameState() {
@@ -84,6 +89,17 @@ class Game {
         this.ui.showLives(true);
         
         this.loadLevel(level2);
+        this.initializeControls();
+    }
+
+    startDirectLevel3() {
+        this.resetGameState();
+        this.controls.isEvolved = true;
+        this.spirit.classList.add('evolved');
+        this.controls.canDash = true;
+        this.ui.showLives(true);
+
+        this.loadLevel(level3);
         this.initializeControls();
     }
 
@@ -172,7 +188,7 @@ class Game {
         this.controls.isJumping = false;
         this.controls.canJump = true;
         
-        this.ui.showMessage(levelData.message, 2000);
+        this.ui.showMessage(levelData.message, 5000);
         this.currentLevel = levelData;
     }
 
@@ -213,9 +229,15 @@ class Game {
         setTimeout(() => {
             if (this.currentLevel === level1) {
                 this.controls.canDash = true;
-                this.ui.showMessage("Nouveau pouvoir débloqué : Dash ! Appuyez rapidement deux fois sur ←/→ pour traverser les murs blancs !", 2000);
-                setTimeout(() => this.startDirectLevel2(), 2000);
-            } else {
+                this.ui.showMessage("Nouveau pouvoir débloqué : Dash ! Appuyez rapidement deux fois sur ←/→ pour traverser les murs blancs !", 4000);
+                setTimeout(() => this.startDirectLevel2(), 3000);
+            } 
+            if(this.currentLevel === level2) {
+                this.controls.canDash = true;
+                this.ui.showMessage("Nouveau pouvoir débloqué : Téléportation ! Appuyez sur Espace pour vous téléporter à l'endroit où vous regardez !", 4000);
+                setTimeout(() => this.startDirectLevel3(), 2000);
+            }
+            if (this.currentLevel === level3) {
                 this.ui.showMessage("Félicitations ! Vous avez terminé le jeu !", 3000);
                 setTimeout(() => {
                     this.resetGameState();
