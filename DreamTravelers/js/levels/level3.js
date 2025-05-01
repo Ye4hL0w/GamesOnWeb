@@ -8,6 +8,9 @@ class Level3 extends BaseLevel {
         this.playerPosition = { x: 0, y: 0, z: 0 };
         this.pathLine = null;
         
+        // Assombrir le ciel pour un effet spatial
+        this.scene.clearColor = new BABYLON.Color4(0.05, 0.05, 0.1, 1); // Bleu très foncé presque noir
+        
         // Initialiser le niveau
         this.createGridLines(this.grid.gridSize);
         
@@ -16,6 +19,9 @@ class Level3 extends BaseLevel {
         
         // Important: attacher la grille à la scène
         this.scene.level = this;
+        
+        // Ajouter les étoiles en arrière-plan
+        this.createDistantStars();
         
         // Attendre que la scène soit prête avant de créer le niveau et positionner le joueur
         this.scene.onReadyObservable.addOnce(() => {
@@ -199,5 +205,43 @@ class Level3 extends BaseLevel {
         // Créer la sortie au sommet de la tour
         // Niveau 3 étant le dernier, on renvoie vers index.html (niveau 0)
         this.exit = new Exit(this.scene, this.grid, {x: 0, y: 5, z: 0}, 0);
+    }
+
+    createDistantStars() {
+        // Nombre d'étoiles à créer (augmenté)
+        const numStars = 1500;
+        
+        // Rayon réduit pour rapprocher les étoiles
+        const radius = 150;
+        
+        // Matériau commun pour toutes les étoiles avec plus de luminosité
+        const starMaterial = new BABYLON.StandardMaterial("starMaterial", this.scene);
+        starMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1); // Brillant
+        starMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
+        
+        // Ajouter une lueur pour augmenter l'intensité lumineuse
+        const glowLayer = new BABYLON.GlowLayer("starGlow", this.scene);
+        glowLayer.intensity = 1.0;
+        
+        // Créer des étoiles à des positions aléatoires
+        for (let i = 0; i < numStars; i++) {
+            // Créer une petite sphère pour chaque étoile, légèrement plus grande
+            const star = BABYLON.MeshBuilder.CreateSphere(
+                "star" + i, 
+                { diameter: 0.3 }, 
+                this.scene
+            );
+            
+            // Positionner l'étoile sur une sphère de rayon 'radius'
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.random() * Math.PI;
+            
+            star.position.x = radius * Math.sin(phi) * Math.cos(theta);
+            star.position.y = radius * Math.cos(phi);
+            star.position.z = radius * Math.sin(phi) * Math.sin(theta);
+            
+            // Appliquer le matériau
+            star.material = starMaterial;
+        }
     }
 } 

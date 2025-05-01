@@ -12,7 +12,7 @@ class Player {
     
     createPlayerMesh() {
         // Charger le modèle Samouraï depuis le fichier FBX
-        BABYLON.SceneLoader.ImportMesh("", "models/characters/", "samourai-high.glb", this.scene, (meshes) => {
+        BABYLON.SceneLoader.ImportMesh("", "models/characters/", "samourai_floating.glb", this.scene, (meshes) => {
             // Groupe tous les mesh importés sous un parent
             this.mesh = new BABYLON.Mesh("playerContainer", this.scene);
             
@@ -46,6 +46,7 @@ class Player {
             });
             
             // Ajustement de l'échelle si nécessaire
+            this.mesh.scaling = new BABYLON.Vector3(2, 2, 2); // Agrandir le modèle de 2 fois
             
             // Positionner le modèle
             this.mesh.position = new BABYLON.Vector3(
@@ -54,8 +55,9 @@ class Player {
                 this.position.z
             );
             
-            // Ajustement de la rotation si nécessaire
-            this.mesh.rotation.y = Math.PI; // Orienter le modèle dans la bonne direction
+            // redresser le modèle
+            this.mesh.rotation.x = Math.PI / 2;
+            this.mesh.rotation.y = Math.PI;
             
             console.log("Modèle Samouraï chargé avec succès");
         }, 

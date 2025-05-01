@@ -573,21 +573,14 @@ class Slider {
         const player = this.scene.level.player;
         const playerMesh = player.mesh;
         
-        // Vérification selon l'axe du slider
+        // Nouvelle vérification plus stricte
         let isOnSlider = false;
         
-        if (this.axis === 'z') {
-            // Pour le slider Z, on vérifie uniquement la position X
-            isOnSlider = Math.abs(playerMesh.position.x - this.mesh.position.x) < 0.5;
-        } else if (this.axis === 'y') {
-            // Pour le slider Y, vérifier X et Z
-            isOnSlider = Math.abs(playerMesh.position.x - this.mesh.position.x) < 0.5 && 
-                        Math.abs(playerMesh.position.z - this.mesh.position.z) < 0.5;
-            
-        } else { // axe X
-            // Pour le slider X, vérifier Y et Z
-            isOnSlider = Math.abs(playerMesh.position.z - this.mesh.position.z) < 0.5;
-        }
+        // Vérifier si le joueur est exactement sur le slider ou à y+1 au-dessus
+        isOnSlider = (Math.abs(playerMesh.position.x - this.mesh.position.x) < 0.5 &&
+                      (Math.abs(playerMesh.position.y - this.mesh.position.y) < 0.5 || 
+                       Math.abs(playerMesh.position.y - (this.mesh.position.y + 1)) < 0.5) &&
+                      Math.abs(playerMesh.position.z - this.mesh.position.z) < 0.5);
         
         if (isOnSlider) { 
             // Le joueur est sur le slider
@@ -596,11 +589,6 @@ class Slider {
             // Activer les collisions pour permettre au joueur de rester sur le slider
             if (!this.mesh.checkCollisions) {
                 this.mesh.checkCollisions = true;
-            }
-            
-            // Pour le slider Z, forcer la position X
-            if (this.axis === 'z') {
-                playerMesh.position.x = this.mesh.position.x;
             }
         } else {
             // Le joueur n'est plus sur le slider

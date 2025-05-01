@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initCardParallax();
     initParticles();
     
-    // Animation d'entrée pour le menu
     const menuContent = document.querySelector('.menu-content');
     gsap.from(menuContent, {
         opacity: 0,
@@ -102,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     });
     
-    // Animation pour les boutons
     const buttons = document.querySelectorAll('.menu-btn');
     buttons.forEach((button, index) => {
         gsap.from(button, {
