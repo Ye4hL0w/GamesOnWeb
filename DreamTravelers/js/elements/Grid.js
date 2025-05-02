@@ -109,8 +109,21 @@ class Grid {
     
     // Vérifier si une position est valide pour une plateforme (utilisé pour la pathfinding)
     isValidPlatformPosition(pos) {
+        // Utiliser les plateformes rotatives configurées avec notre nouveau système
+        if (this.scene.rotatingPlatforms) {
+            for (const platform of this.scene.rotatingPlatforms) {
+                if (platform.isPositionValid(pos)) {
+                    return true;
+                }
+            }
+        }
+        
+        // Méthode de secours si les plateformes ne sont pas configurées avec le nouveau système
         const platforms = this.scene.meshes.filter(mesh => mesh.name === "rotatingPlatform");
         for (let platform of platforms) {
+            // Si la plateforme a une instance associée, on l'a déjà vérifiée ci-dessus
+            if (platform.platformInstance) continue;
+            
             const worldMatrix = platform.getWorldMatrix();
             const invWorldMatrix = worldMatrix.clone();
             invWorldMatrix.invert();
@@ -120,13 +133,30 @@ class Grid {
                 invWorldMatrix
             );
             
-            // Vérifier si la position est sur l'une des trois positions valides de la plateforme
-            // On arrondit la position locale pour gérer les imprécisions numériques
-            const roundedX = Math.round(localPos.x);
-            if (Math.abs(roundedX) <= 1 && Math.abs(localPos.z) <= 0.5) {
-                return true;
+            // Utiliser une tolérance pour les positions valides
+            // Pour une plateforme de taille 3x1, les positions valides sont
+            // le centre et les extrémités (-1,0,1 sur l'axe principal)
+            const tolerance = 0.2;
+            
+            // Vérifier en fonction de la rotation (déterminée par l'angle Y)
+            const rotY = platform.rotation.y % (Math.PI * 2);
+            if (Math.abs(rotY) < tolerance || Math.abs(rotY - Math.PI) < tolerance) {
+                // Horizontal sur l'axe X (état 0 ou 2)
+                if (Math.abs(localPos.z) < tolerance && 
+                    (Math.abs(localPos.x) < tolerance || Math.abs(localPos.x - 1) < tolerance || Math.abs(localPos.x + 1) < tolerance) &&
+                    Math.abs(localPos.y) < 0.6) {
+                    return true;
+                }
+            } else {
+                // Horizontal sur l'axe Z (état 1 ou 3)
+                if (Math.abs(localPos.x) < tolerance && 
+                    (Math.abs(localPos.z) < tolerance || Math.abs(localPos.z - 1) < tolerance || Math.abs(localPos.z + 1) < tolerance) &&
+                    Math.abs(localPos.y) < 0.6) {
+                    return true;
+                }
             }
         }
+        
         return false;
     }
     

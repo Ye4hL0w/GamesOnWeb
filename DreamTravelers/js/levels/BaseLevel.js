@@ -191,28 +191,52 @@ class BaseLevel {
                             }
                         }
                     } else if (pickResult.pickedMesh.name === "rotatingPlatform") {
-                        // Gestion des plateformes rotatives inchangée
+                        // Gestion des plateformes rotatives
                         const hitPoint = pickResult.pickedPoint;
                         let platformHit = null;
                         
-                        for (const platform of this.rotatingPlatforms || []) {
-                            if (platform.mesh === pickResult.pickedMesh) {
-                                platformHit = platform;
-                                break;
+                        // Récupérer la plateforme soit depuis l'instance, soit depuis la liste
+                        if (pickResult.pickedMesh.platformInstance) {
+                            platformHit = pickResult.pickedMesh.platformInstance;
+                        } else {
+                            for (const platform of this.rotatingPlatforms || []) {
+                                if (platform.mesh === pickResult.pickedMesh) {
+                                    platformHit = platform;
+                                    break;
+                                }
                             }
                         }
                         
                         if (platformHit) {
-                            const localHitPoint = hitPoint.subtract(platformHit.mesh.position);
+                            // Trouver la position valide la plus proche du point de clic
                             const rotationMatrix = BABYLON.Matrix.RotationY(-platformHit.mesh.rotation.y);
+                            const localHitPoint = hitPoint.subtract(platformHit.mesh.position);
                             const rotatedPoint = BABYLON.Vector3.TransformCoordinates(localHitPoint, rotationMatrix);
                             
-                            const gridX = Math.round(platformHit.mesh.position.x + rotatedPoint.x);
-                            const gridZ = Math.round(platformHit.mesh.position.z + rotatedPoint.z);
+                            // Position du clic dans l'espace de la scène
+                            const clickWorldPos = new BABYLON.Vector3(
+                                platformHit.mesh.position.x + rotatedPoint.x,
+                                platformHit.mesh.position.y,
+                                platformHit.mesh.position.z + rotatedPoint.z
+                            );
                             
-                            targetPosition.x = gridX;
-                            targetPosition.z = gridZ;
-                            targetPosition.y = platformHit.mesh.position.y;
+                            console.log("Position du clic sur la plateforme:", clickWorldPos);
+                            
+                            // Obtenir la position valide la plus proche
+                            const nearest = platformHit.getNearestValidPosition(clickWorldPos);
+                            
+                            if (nearest.position && nearest.distance < 1.5) {
+                                targetPosition.x = nearest.position.x;
+                                targetPosition.y = nearest.position.y;
+                                targetPosition.z = nearest.position.z;
+                                console.log("Position valide la plus proche:", nearest.position, "distance:", nearest.distance);
+                            } else {
+                                // Méthode de secours - arrondir les coordonnées du clic
+                                targetPosition.x = Math.round(clickWorldPos.x);
+                                targetPosition.y = platformHit.mesh.position.y;
+                                targetPosition.z = Math.round(clickWorldPos.z);
+                                console.log("Aucune position valide trouvée, utilisation de la position arrondie:", targetPosition);
+                            }
                         }
                     } else {
                         // Cubes et autres éléments

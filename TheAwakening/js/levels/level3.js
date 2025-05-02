@@ -34,8 +34,8 @@ const level3 = {
         { x: 1180, y: window.innerHeight - 510 }
     ],
     playerStart: { x: 150, y: window.innerHeight - 200 },
-    nextLevel: "level3",
-    message: "Niveau 2 : Les murs noirs sont infranchissables, mais vous pouvez traverser les murs blancs en utilisant le dash (double-tap flèches) !",
+    nextLevel: "endgame", // This is the final level
+    message: "Niveau 3 : Les murs noirs sont infranchissables, mais vous pouvez traverser les murs blancs en utilisant le dash (double-tap flèches) !",
     requiredFragments: 7,
     obstacles: [
         // Murs blancs verticaux (traversables)

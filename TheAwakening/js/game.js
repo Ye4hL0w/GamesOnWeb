@@ -226,6 +226,28 @@ class Game {
 
     transitionToNextLevel() {
         this.isGameLoopRunning = false;
+        
+        // Save game progress if GameProgress system is available
+        if (typeof window.GameProgress !== 'undefined') {
+            let levelCompleted = 0;
+            if (this.currentLevel === level1) {
+                levelCompleted = 1;
+            } else if (this.currentLevel === level2) {
+                levelCompleted = 2;
+            } else if (this.currentLevel === level3) {
+                levelCompleted = 3;
+            }
+            
+            if (levelCompleted > 0) {
+                window.GameProgress.saveGameProgress(
+                    window.GameProgress.GAME_IDS.THE_AWAKENING,
+                    levelCompleted
+                );
+                console.log(`Progression du jeu TheAwakening sauvegardée: niveau ${levelCompleted} terminé`);
+                this.ui.showMessage(`Niveau ${levelCompleted} terminé et sauvegardé !`, 1500);
+            }
+        }
+        
         setTimeout(() => {
             if (this.currentLevel === level1) {
                 this.controls.canDash = true;
@@ -238,7 +260,7 @@ class Game {
                 setTimeout(() => this.startDirectLevel3(), 2000);
             }
             if (this.currentLevel === level3) {
-                this.ui.showMessage("Félicitations ! Vous avez terminé le jeu !", 3000);
+                this.ui.showMessage("Félicitations ! Vous avez terminé tous les niveaux de TheAwakening !", 3000);
                 setTimeout(() => {
                     this.resetGameState();
                     this.ui.showMenu();
@@ -262,7 +284,6 @@ class Game {
             this.ui.updateFragments(this.collectedFragments);
             
             if (this.currentLevel && this.collectedFragments === this.currentLevel.requiredFragments) {
-                this.ui.showMessage("Niveau terminé !", 1000);
                 this.transitionToNextLevel();
             }
         }

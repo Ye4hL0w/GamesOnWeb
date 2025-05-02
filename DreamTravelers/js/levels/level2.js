@@ -1,8 +1,6 @@
 class Level2 extends BaseLevel {
     constructor() {
-        super();
-        console.log("Initialisation du niveau 2...");
-        
+        super();        
         this.grid = new Grid(this.scene);
         this.player = null;
         this.rotatingPlatforms = [];
@@ -19,7 +17,7 @@ class Level2 extends BaseLevel {
         this.collectedFragments = 0;
         
         // init level
-        this.createGridLines(this.grid.gridSize);
+        // this.createGridLines(this.grid.gridSize);
         this.spinningStars = this.createSpinningStars();
         
         // attacher la grille à la scène pour que les sliders puissent y accéder
