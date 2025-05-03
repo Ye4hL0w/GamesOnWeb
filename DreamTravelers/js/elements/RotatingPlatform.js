@@ -1,13 +1,19 @@
 class RotatingPlatform {
-    constructor(scene, position, size) {
+    constructor(scene, position, size, initialRotation = 0) {
         this.scene = scene;
         this.position = position;
         this.size = size;
         this.isRotating = false;
-        this.mesh = this.createPlatform();
         
         // état de rotation (0 = initial, 1 = 90°, 2 = 180°, 3 = 270°)
-        this.rotationState = 0;
+        this.rotationState = initialRotation % 4;
+        
+        this.mesh = this.createPlatform();
+        
+        // appliquer la rotation initiale sans animation
+        if (this.rotationState > 0) {
+            this.mesh.rotation.y = this.rotationState * Math.PI/2;
+        }
         
         // positions valides sur la plateforme selon l'état de rotation
         // format: {worldX, worldY, worldZ}
@@ -26,7 +32,7 @@ class RotatingPlatform {
     createPlatform() {
         // création de la plateforme rotative
         const platform = BABYLON.MeshBuilder.CreateBox("rotatingPlatform", {
-            width: 3,
+            width: this.size,
             height: 1,
             depth: 1
         }, this.scene);

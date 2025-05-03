@@ -7,6 +7,9 @@ class Level3 extends BaseLevel {
         this.isRotating = false;
         this.playerPosition = { x: 0, y: 0, z: 0 };
         this.pathLine = null;
+        this.sliderX = null;
+        this.sliderY = null;
+        this.sliderZ = null;
         
         this.scene.clearColor = new BABYLON.Color4(0.05, 0.05, 0.1, 1);
         
@@ -52,6 +55,7 @@ class Level3 extends BaseLevel {
         baseMaterial.alpha = 0.5;
         base.material = baseMaterial;
 
+        // structure
         // base circulaire
         for (let i = -3; i <= 3; i++) {
             for (let j = -3; j <= 3; j++) {
@@ -61,7 +65,53 @@ class Level3 extends BaseLevel {
                 }
             }
         }
+        this.grid.removeGridElement(0, 0, 0);
+        this.sliderY = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(0, 0, 0), // position (x, y, z)
+            'y',                          // axe de déplacement
+            0,                           // valeur minimale
+            4                             // valeur maximale
+        );
+        
 
+        // piliers
+        // Nord
+        for (let y = 1; y <= 3; y++) {
+            this.grid.addGridElement(0, y, -3);
+        }
+        // Sud 
+        for (let y = 1; y <= 3; y++) {
+            this.grid.addGridElement(0, y, 3);
+        }
+        // Est
+        for (let y = 1; y <= 3; y++) {
+            this.grid.addGridElement(3, y, 0);
+        }
+        // Ouest
+        for (let y = 1; y <= 3; y++) {
+            this.grid.addGridElement(-3, y, 0);
+        }
+
+        // Piliers des coins
+        // Nord-Est
+        for (let y = 1; y <= 3; y++) {
+            this.grid.addGridElement(2, y, -2);
+        }
+        // Nord-Ouest
+        for (let y = 1; y <= 3; y++) {
+            this.grid.addGridElement(-2, y, -2);
+        }
+        // Sud-Est
+        for (let y = 1; y <= 3; y++) {
+            this.grid.addGridElement(2, y, 2);
+        }
+        // Sud-Ouest
+        for (let y = 1; y <= 3; y++) {
+            this.grid.addGridElement(-2, y, 2);
+        }
+
+        // toit circulaire
         for (let i = -3; i <= 3; i++) {
             for (let j = -3; j <= 3; j++) {
                 if (Math.sqrt(i*i + j*j) <= 3) {
@@ -69,29 +119,120 @@ class Level3 extends BaseLevel {
                 }
             }
         }
+        this.grid.removeGridElement(0, 4, 0);
+
+        // fragment 1
+        this.sliderX = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(15, 4, -3),
+            'x',
+            1,
+            15
+        );
+
+        this.sliderY = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(5, 15, -4),
+            'y',
+            0,
+            15
+        );
+
+        // fragment 2
+        this.sliderZ = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(0, 4, -15),
+            'z',
+            -15,
+            -4
+        );
+
+        const platform1 = new RotatingPlatform(this.scene, new BABYLON.Vector3(-2, 4, -15), 3, 1);
+        this.rotatingPlatforms.push(platform1);
+
+        this.sliderY = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(-4, 4, -15),
+            'y',
+            0,
+            4
+        );
+
+        this.sliderZ = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(-5, 0, -18),
+            'z',
+            -20,
+            -6
+        );
+
+        //fragment 3
+        this.sliderZ = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(5, 15, 14),
+            'z',
+            -3,
+            14
+        );
+
+        this.sliderY = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(4, 15, 14),
+            'y',
+            0,
+            15
+        );
+
+        this.sliderZ = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(5, 0, 20),
+            'z',
+            6,
+            25
+        );
+
+        // fragment 4
+        const platform2 = new RotatingPlatform(this.scene, new BABYLON.Vector3(5, 0, 27), 3, 0);
+        this.rotatingPlatforms.push(platform2);
+        
+        const platform3 = new RotatingPlatform(this.scene, new BABYLON.Vector3(2, 0, 27), 3, 1);
+        this.rotatingPlatforms.push(platform3);
+        
+        const platform4 = new RotatingPlatform(this.scene, new BABYLON.Vector3(2, 0, 30), 3, 0);
+        this.rotatingPlatforms.push(platform4);
+
+        this.sliderX = new Slider(
+            this.scene, 
+            new BABYLON.Vector3(0, 0, 30),
+            'x',
+            -4,
+            0
+        );
+
+        this.sliderZ= new Slider(
+            this.scene, 
+            new BABYLON.Vector3(-5, 0, 30),
+            'z',
+            6,
+            30
+        );
+
+        // escalier
+        // const stairs = new Stairs(this.scene, this.grid);
+        //stairs.create(1, 1, 1, 1);
+        
 
         this.grid.addGridElement(-5, 0, -5);
         this.grid.addGridElement(5, 0, -5);
         this.grid.addGridElement(-5, 0, 5);
         this.grid.addGridElement(5, 0, 5);
 
-
-
-        
-        // escalier
-        const stairs = new Stairs(this.scene, this.grid);
-        //stairs.create(1, 1, 1, 1);
-        
-        // plateforme rotative
-        // const platform1 = new RotatingPlatform(this.scene, new BABYLON.Vector3(2, 0, 0), 2);
-        // this.rotatingPlatforms.push(platform1);
-        
         this.fragments.push(new Fragment(this.scene, this.grid, {x: -5, y: 0, z: -5}));
         this.fragments.push(new Fragment(this.scene, this.grid, {x: 5, y: 0, z: -5}));
         this.fragments.push(new Fragment(this.scene, this.grid, {x: -5, y: 0, z: 5}));
         this.fragments.push(new Fragment(this.scene, this.grid, {x: 5, y: 0, z: 5}));
         
-        this.exit = new Exit(this.scene, this.grid, {x: 0, y: 0, z: 1}, 0, this.requiredFragments);
+        this.exit = new Exit(this.scene, this.grid, {x: 0, y: 4, z: 3}, 0, this.requiredFragments);
     }
 
     createDistantStars() {

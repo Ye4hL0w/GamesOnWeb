@@ -151,6 +151,25 @@ class Player {
         console.log("Position actuelle:", this.position);
         console.log("Position cible:", target);
         
+        // bloquer la montée verticale à travers des piliers
+        if (target.y > this.position.y) {
+            const sameXZ = target.x === this.position.x && target.z === this.position.z;
+            
+            if (sameXZ) {
+                // on essaie de monter verticalement - vérifier s'il s'agit d'un escalier
+                const targetKey = `${target.x},${target.y},${target.z}`;
+                const gridElements = this.grid.getAllElements();
+                const targetElement = gridElements[targetKey];
+                
+                // si ce n'est pas un escalier, interdire le mouvement
+                if (!targetElement || targetElement.type !== 'stair') {
+                    console.log("Tentative de montée verticale à travers un pilier bloquée");
+                    return [];
+                }
+            }
+            
+        }
+        
         // empêcher les chemins traversant du vide
         if (target.y === this.position.y) {
             const dx = Math.abs(target.x - this.position.x);
@@ -212,6 +231,44 @@ class Player {
                         ascendingPath[i].z === undefined) {
                         console.error("chemin invalide détecté à l'index", i, ascendingPath);
                         return []; // chemin vide plutôt qu'un chemin avec des points invalides
+                    }
+                }
+                
+                // on vérifie strictement que le chemin ne monte que via des escaliers
+                if (this.scene.level && this.scene.level.constructor.name === "Level3") {
+                    console.log("Niveau 3 détecté, vérification stricte du chemin de montée");
+                    let isValidAscendingPath = true;
+                    for (let i = 1; i < ascendingPath.length; i++) {
+                        const prevPoint = ascendingPath[i-1];
+                        const currPoint = ascendingPath[i];
+                        
+                        // si on monte entre ces deux points
+                        if (currPoint.y > prevPoint.y) {
+                            // vérifier que le point précédent est un escalier
+                            const prevKey = `${prevPoint.x},${prevPoint.y},${prevPoint.z}`;
+                            const prevElement = gridElements[prevKey];
+                            
+                            if (!prevElement || prevElement.type !== 'stair') {
+                                console.log("Chemin de montée invalide détecté - point non-escalier:", prevPoint);
+                                isValidAscendingPath = false;
+                                break;
+                            }
+                            
+                            // vérifier que la montée correspond à la prochaine position de l'escalier
+                            if (!prevElement.nextPosition || 
+                                prevElement.nextPosition.x !== currPoint.x || 
+                                prevElement.nextPosition.y !== currPoint.y || 
+                                prevElement.nextPosition.z !== currPoint.z) {
+                                console.log("Chemin de montée invalide - point ne correspond pas à la prochaine position de l'escalier:", prevPoint, currPoint);
+                                isValidAscendingPath = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (!isValidAscendingPath) {
+                        console.log("Chemin de montée rejeté car il ne passe pas uniquement par des escaliers");
+                        return [];
                     }
                 }
                 
@@ -383,24 +440,48 @@ class Player {
                 }
             }
             
+            // Pour la descente
             if (pos.y > target.y) {
-                const directionsDescente = [
-                    { x: 0, y: -1, z: 0 },
-                    { x: 1, y: -1, z: 0 },
-                    { x: -1, y: -1, z: 0 },
-                    { x: 0, y: -1, z: 1 },
-                    { x: 0, y: -1, z: -1 }
-                ];
-                
-                for (const dir of directionsDescente) {
-                    const posDescente = {
-                        x: pos.x + dir.x,
-                        y: pos.y + dir.y,
-                        z: pos.z + dir.z
-                    };
+                if (currentElement && currentElement.type === 'stair') {
+                    // Si on est sur un escalier, on peut descendre directement
+                    const directionsDescente = [
+                        { x: 0, y: -1, z: 0 },
+                        { x: 1, y: -1, z: 0 },
+                        { x: -1, y: -1, z: 0 },
+                        { x: 0, y: -1, z: 1 },
+                        { x: 0, y: -1, z: -1 }
+                    ];
                     
-                    if (isValidMove(posDescente)) {
-                        neighbors.push(posDescente);
+                    for (const dir of directionsDescente) {
+                        const posDescente = {
+                            x: pos.x + dir.x,
+                            y: pos.y + dir.y,
+                            z: pos.z + dir.z
+                        };
+                        
+                        if (isValidMove(posDescente)) {
+                            neighbors.push(posDescente);
+                        }
+                    }
+                }
+                else {
+                    const directionsDescenteDiagonale = [
+                        { x: 1, y: -1, z: 0 },
+                        { x: -1, y: -1, z: 0 },
+                        { x: 0, y: -1, z: 1 },
+                        { x: 0, y: -1, z: -1 }
+                    ];
+                    
+                    for (const dir of directionsDescenteDiagonale) {
+                        const posDescente = {
+                            x: pos.x + dir.x,
+                            y: pos.y + dir.y,
+                            z: pos.z + dir.z
+                        };
+                        
+                        if (isValidMove(posDescente)) {
+                            neighbors.push(posDescente);
+                        }
                     }
                 }
             }
@@ -490,6 +571,37 @@ class Player {
         // si pas de chemin, vérifier accès direct
         const distance = Math.abs(start.x - target.x) + Math.abs(start.z - target.z) + Math.abs(start.y - target.y);
         if (distance <= 2 && isValidMove(target)) {
+            // vérifier que le chemin direct est valide
+            // pour un déplacement diagonal x et z changent
+            const diagonalMove = Math.abs(start.x - target.x) > 0 && Math.abs(start.z - target.z) > 0;
+            
+            if (diagonalMove) {
+                // points possibles pour un déplacement diagonal
+                const intermediatePoints = [
+                    { x: start.x, y: target.y, z: target.z }, // passage par x puis z
+                    { x: target.x, y: target.y, z: start.z }  // passage par z puis x
+                ];
+                
+                let hasValidPath = false;
+                
+                // vérifier si un des chemins intermédiaires est valide
+                for (const point of intermediatePoints) {
+                    const pointKey = `${point.x},${point.y},${point.z}`;
+                    const isValid = this.grid.grid[pointKey] !== undefined ||
+                                   this.grid.isValidPlatformPosition(point);
+                    
+                    if (isValid) {
+                        hasValidPath = true;
+                        break;
+                    }
+                }
+                
+                if (!hasValidPath) {
+                    console.log("Déplacement diagonal bloqué - aucun chemin intermédiaire valide trouvé");
+                    return [];
+                }
+            }
+            
             console.log("Chemin direct utilisé vers la cible à proximité");
             return [{ ...target }];
         }

@@ -7,8 +7,9 @@ class Level2 extends BaseLevel {
         this.isRotating = false;
         this.playerPosition = { x: 0, y: 0, z: 0 };
         this.pathLine = null;
-        this.sliderZ = null;
+        this.sliderX = null;
         this.sliderY = null;
+        this.sliderZ = null;
         
         this.scene.clearColor = new BABYLON.Color4(0.3, 0.4, 0.6, 1);
 
@@ -64,7 +65,7 @@ class Level2 extends BaseLevel {
         this.grid.addGridElement(-2, 0, 2);
 
         // sliders
-        this.sliderZ = new Slider(
+        this.sliderX = new Slider(
             this.scene, 
             new BABYLON.Vector3(-1, 0, -3), // position (x, y, z)
             'x',                          // axe de déplacement
@@ -80,7 +81,7 @@ class Level2 extends BaseLevel {
             8
         );
 
-        this.sliderY = new Slider(
+        this.sliderZ = new Slider(
             this.scene, 
             new BABYLON.Vector3(1, 6, -4),
             'z',

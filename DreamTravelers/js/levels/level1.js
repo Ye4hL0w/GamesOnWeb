@@ -75,11 +75,11 @@ class Level1 extends BaseLevel {
         stairs.create(1, 2, 3, 1);
 
         // plateforme rotative
-        const platform1 = new RotatingPlatform(this.scene, new BABYLON.Vector3(0, 0, -2), 3);
+        const platform1 = new RotatingPlatform(this.scene, new BABYLON.Vector3(0, 0, -2), 3, 0);
         this.rotatingPlatforms.push(platform1);
         
         // plateforme rotative
-        const platform2 = new RotatingPlatform(this.scene, new BABYLON.Vector3(-2, 0, -4), 2);
+        const platform2 = new RotatingPlatform(this.scene, new BABYLON.Vector3(-2, 0, -4), 3, 1);
         this.rotatingPlatforms.push(platform2);
 
         if (this.player && this.player.mesh) {
