@@ -38,9 +38,8 @@ class Stairs {
             
             // matériau
             const marcheMaterial = new BABYLON.StandardMaterial(`marcheMat_${i}_${key}`, this.scene);
-            marcheMaterial.diffuseColor = new BABYLON.Color3(0.85, 0.65, 0.45);
-            marcheMaterial.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-            marcheMaterial.emissiveColor = new BABYLON.Color3(0.1, 0.08, 0.06);
+            marcheMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
+
             marche.material = marcheMaterial;
         }
         

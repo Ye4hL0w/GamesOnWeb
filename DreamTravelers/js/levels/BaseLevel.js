@@ -51,31 +51,6 @@ class BaseLevel {
             this.scene
         );
         dirLight.intensity = 0.5;
-        
-        // Affichage des axes
-        const axisX = BABYLON.MeshBuilder.CreateLines("axisX", {
-            points: [
-                new BABYLON.Vector3(0, 0, 0),
-                new BABYLON.Vector3(5, 0, 0)
-            ]
-        }, this.scene);
-        axisX.color = new BABYLON.Color3(1, 0, 0); // Rouge pour X
-
-        const axisY = BABYLON.MeshBuilder.CreateLines("axisY", {
-            points: [
-                new BABYLON.Vector3(0, 0, 0),
-                new BABYLON.Vector3(0, 5, 0)
-            ]
-        }, this.scene);
-        axisY.color = new BABYLON.Color3(0, 1, 0); // Vert pour Y
-
-        const axisZ = BABYLON.MeshBuilder.CreateLines("axisZ", {
-            points: [
-                new BABYLON.Vector3(0, 0, 0),
-                new BABYLON.Vector3(0, 0, 5)
-            ]
-        }, this.scene);
-        axisZ.color = new BABYLON.Color3(0, 0, 1); // Bleu pour Z
     }
 
     createGridLines(gridSize = 10) {

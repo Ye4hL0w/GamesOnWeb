@@ -4,6 +4,7 @@ import { Exit } from '../elements/Exit.js';
 import { Ghost } from '../entities/Ghost.js';
 import { JumpingObstacle } from '../elements/JumpingObstacle.js';
 import { DirectionalObstacle } from '../elements/DirectionalObstacle.js';
+import { ShadowZone } from '../elements/ShadowZone.js';
 import { Guardian } from '../entities/Guardian.js';
 
 export class Level3 extends BaseLevel {

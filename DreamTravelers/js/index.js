@@ -44,7 +44,7 @@ function initParticles() {
     particlesJS("particles-js", {
         particles: {
             number: { value: 100 },
-            color: { value: ["#ffffff", "#7ee7f7", "#7ef7c4"] },
+            color: { value: ["#ffffff", "#a1e4ff", "#9d4ddb", "#7e35b8", "#c27ff0"] },
             shape: { type: "circle" },
             opacity: {
                 value: 0.6,
@@ -75,6 +75,77 @@ function initParticles() {
     });
 }
 
+function initControlsInfo() {
+    const controlsInfo = document.getElementById('controlsInfo');
+    
+    // Animation d'entrée
+    gsap.from(controlsInfo, {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        delay: 1.5,
+        ease: "power3.out"
+    });
+    
+    // Rendre le panneau cliquable pour réduire/agrandir
+    const controlsHeader = document.querySelector('.controls-header');
+    const controlItems = document.querySelectorAll('.control-item');
+    
+    let isCollapsed = false;
+    
+    controlsHeader.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+        
+        if (isCollapsed) {
+            gsap.to(controlItems, {
+                height: 0,
+                opacity: 0,
+                marginTop: 0,
+                paddingTop: 0,
+                paddingBottom: 0,
+                duration: 0.3,
+                ease: "power2.out",
+                stagger: 0.05,
+                onComplete: () => {
+                    controlItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                }
+            });
+            
+            // Ajouter une classe pour indiquer que c'est réduit
+            controlsInfo.classList.add('collapsed');
+            
+        } else {
+            controlItems.forEach(item => {
+                item.style.display = 'flex';
+            });
+            
+            gsap.to(controlItems, {
+                height: 'auto',
+                opacity: 1,
+                marginTop: 'auto',
+                paddingTop: 4,
+                paddingBottom: 4,
+                duration: 0.4,
+                ease: "power2.out",
+                stagger: 0.05
+            });
+            
+            // Enlever la classe 
+            controlsInfo.classList.remove('collapsed');
+        }
+    });
+    
+    // Ajouter un indicateur visuel que c'est cliquable
+    controlsHeader.style.cursor = 'pointer';
+    
+    // Ajouter une info-bulle
+    const infoIcon = document.createElement('i');
+    infoIcon.className = 'fa-solid fa-angle-up info-toggle';
+    controlsHeader.appendChild(infoIcon);
+}
+
 function startGame(levelId) {
     const menuContent = document.querySelector('.menu-content');
     
@@ -92,6 +163,7 @@ function startGame(levelId) {
 document.addEventListener('DOMContentLoaded', () => {
     initCardParallax();
     initParticles();
+    initControlsInfo();
     
     const menuContent = document.querySelector('.menu-content');
     gsap.from(menuContent, {

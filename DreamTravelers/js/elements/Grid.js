@@ -30,16 +30,6 @@ class Grid {
             const material = new BABYLON.StandardMaterial(`mat_${key}`, this.scene);
             material.diffuseColor = new BABYLON.Color3(1, 1, 1);
             mesh.material = material;
-        } else if (type === 'sphere') {
-            mesh = BABYLON.MeshBuilder.CreateSphere(
-                `sphere_${key}`,
-                { diameter: 1 },
-                this.scene
-            );
-            
-            const material = new BABYLON.StandardMaterial(`mat_${key}`, this.scene);
-            material.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.2);
-            mesh.material = material;
         } else if (type === 'stair') {
             // noeud parent pour les escaliers
             mesh = new BABYLON.TransformNode(`stair_${key}`, this.scene);

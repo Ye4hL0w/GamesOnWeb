@@ -17,23 +17,14 @@ class LevelManager {
     }
 
     setupLevel1(scene) {
-        const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
-        const groundMaterial = new BABYLON.StandardMaterial("groundMat", scene);
-        groundMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-        ground.material = groundMaterial;
+        
     }
 
     setupLevel2(scene) {
-        const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
-        const groundMaterial = new BABYLON.StandardMaterial("groundMat", scene);
-        groundMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-        ground.material = groundMaterial;
+        
     }
 
     setupLevel3(scene) {
-        const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 10}, scene);
-        const groundMaterial = new BABYLON.StandardMaterial("groundMat", scene);
-        groundMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-        ground.material = groundMaterial;
+        
     }
 }

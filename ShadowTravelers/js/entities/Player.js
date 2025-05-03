@@ -24,7 +24,7 @@ export class Player {
         this.gravityValue = 1.2;
 
         // footsteps
-        this.footstepSound = new Audio('./assets/sounds/hallway_footstepsx2.mp3');
+        this.footstepSound = new Audio('./assets/sounds/none.mp3');
         this.footstepSound.loop = true;
         this.footstepSound.volume = 0.5;
         this.isPlayingFootsteps = false;

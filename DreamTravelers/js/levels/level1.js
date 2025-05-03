@@ -12,7 +12,7 @@ class Level1 extends BaseLevel {
         this.requiredFragments = 3;
         this.collectedFragments = 0;
         
-        this.createGridLines(this.grid.gridSize);
+        //this.createGridLines(this.grid.gridSize);
         this.spinningClouds = new Clouds(this.scene);
         this.player = new Player(this.scene, this.grid);
         
@@ -22,6 +22,13 @@ class Level1 extends BaseLevel {
         window.addEventListener("keydown", (evt) => this.handleKeyboard(evt));
         
         this.scene.level = this;
+        
+        // Initialiser le modèle après la création du niveau
+        this.initializeModel();
+    }
+    
+    async initializeModel() {
+        await this.loadModel();
     }
 
     startLevel(levelId) {
@@ -33,20 +40,39 @@ class Level1 extends BaseLevel {
     handleKeyboard(evt) {
     }
 
-    async loadIslandModel() {
+    async loadModel() {
+        try {
+            const result = await BABYLON.SceneLoader.ImportMeshAsync("", "models/level1/", "minecraft_boat.glb", this.scene);
+            
+            const boatModel = result.meshes[0];
+            
+            boatModel.scaling = new BABYLON.Vector3(15, 15, 15);
+            boatModel.position = new BABYLON.Vector3(0, -3, -2);
+            boatModel.rotation = new BABYLON.Vector3(0, Math.PI / 2, 0);
+            
+            boatModel.checkCollisions = true;
+            boatModel.isPickable = true;
+            
+            this.islandModel = boatModel;
+            console.log("Boat model loaded at position:", boatModel.position);
+        } catch (error) {
+            console.error("Error loading boat model:", error);
+        }
     }
 
     createLevel() {
         // base principale
         const base = BABYLON.MeshBuilder.CreateBox(
             "base",
-            { width: this.grid.gridSize, height: 1, depth: this.grid.gridSize },
+            { width: 10, height: 1, depth: 14.6 },
             this.scene
         );
         base.position.y = -0.5;
+        base.position.x = -0.5;
+        base.position.z = -0.55;
         const baseMaterial = new BABYLON.StandardMaterial("baseMat", this.scene);
-        baseMaterial.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
-        baseMaterial.alpha = 0.5;
+        baseMaterial.diffuseColor = new BABYLON.Color3(101/255, 67/255, 33/255);
+        // baseMaterial.alpha = 0.5;
         base.material = baseMaterial;
 
         // cubes
@@ -112,13 +138,13 @@ class Level1 extends BaseLevel {
 
     createWaterEffect() {
         // plan d'eau
-        const waterMesh = BABYLON.MeshBuilder.CreateGround("waterMesh", { width: 400, height: 400 }, this.scene);
+        const waterMesh = BABYLON.MeshBuilder.CreateGround("waterMesh", { width: 1600, height: 1600 }, this.scene);
         waterMesh.position = new BABYLON.Vector3(0, -1, 0);
         
         const waterMaterial = new BABYLON.StandardMaterial("waterMaterial", this.scene);
         const waterTexture = new BABYLON.Texture("assets/textures/waterbump.jpg", this.scene);
-        waterTexture.uScale = 16;
-        waterTexture.vScale = 16;
+        waterTexture.uScale = 64;
+        waterTexture.vScale = 64;
         waterMaterial.diffuseTexture = waterTexture;
         waterMaterial.alpha = 0.8;
         waterMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);

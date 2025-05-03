@@ -44,7 +44,7 @@ class RotatingPlatform {
         
         // matériau
         const platformMaterial = new BABYLON.StandardMaterial("platformMat", this.scene);
-        platformMaterial.diffuseColor = new BABYLON.Color3(0.6, 0.3, 0.1);
+        platformMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.6, 0.9);
         platform.material = platformMaterial;
         
         // petit bouton de rotation au centre
@@ -56,10 +56,11 @@ class RotatingPlatform {
         rotateButton.position = new BABYLON.Vector3(0, 0.35, 0);
         rotateButton.parent = platform;
         
-        // matériau du bouton en rouge
+        // matériau du bouton
         const buttonMaterial = new BABYLON.StandardMaterial("buttonMat", this.scene);
-        buttonMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
-        buttonMaterial.emissiveColor = new BABYLON.Color3(0.5, 0, 0);
+        buttonMaterial.diffuseColor = new BABYLON.Color3(1, 0.8, 0.0);
+        buttonMaterial.emissiveColor = new BABYLON.Color3(0.5, 0.4, 0.0);
+        
         rotateButton.material = buttonMaterial;
         
         return platform;

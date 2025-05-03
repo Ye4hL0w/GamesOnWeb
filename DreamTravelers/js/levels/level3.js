@@ -18,7 +18,7 @@ class Level3 extends BaseLevel {
         this.requiredFragments = 4;
         this.collectedFragments = 0;
         
-        this.createGridLines(this.grid.gridSize);
+        //this.createGridLines(this.grid.gridSize);
         
         this.player = new Player(this.scene, this.grid);
         
@@ -43,18 +43,6 @@ class Level3 extends BaseLevel {
     }
 
     createLevel() {
-        // base principale
-        const base = BABYLON.MeshBuilder.CreateBox(
-            "base",
-            { width: this.grid.gridSize, height: 1, depth: this.grid.gridSize },
-            this.scene
-        );
-        base.position.y = -0.5;
-        const baseMaterial = new BABYLON.StandardMaterial("baseMat", this.scene);
-        baseMaterial.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
-        baseMaterial.alpha = 0.5;
-        base.material = baseMaterial;
-
         // structure
         // base circulaire
         for (let i = -3; i <= 3; i++) {
