@@ -106,7 +106,6 @@ export class BaseLevel {
             this.player.draw(this.context);
         }
 
-        // Dessiner le titre du niveau
         this.drawLevelTitle();
     }
 
@@ -206,7 +205,6 @@ export class BaseLevel {
     }
 
     handleResize() {
-        // Recalculer floorY
         this.floorY = this.canvas.height - this.floorHeight;
         
         this.updateElementPositions();
@@ -224,7 +222,7 @@ export class BaseLevel {
         
         // recalcul des positions d'autres éléments si nécessaire
         if (this.exit) {
-            // Maintenir la position de la sortie relative à la taille du canvas
+            // garder la position de la sortie relative à la taille du canvas
             this.exit.y = this.canvas.height - this.floorHeight - this.exit.height;
         }
     }

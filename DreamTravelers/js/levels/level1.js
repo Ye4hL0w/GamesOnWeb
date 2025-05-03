@@ -133,7 +133,7 @@ class Level1 extends BaseLevel {
         
         // lumière ambiante
         const ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), this.scene);
-        ambientLight.intensity = 0.7;
+        ambientLight.intensity = 0.5;
         ambientLight.groundColor = new BABYLON.Color3(0.1, 0.3, 0.5);
         ambientLight.diffuse = new BABYLON.Color3(0.7, 0.8, 1);
     }

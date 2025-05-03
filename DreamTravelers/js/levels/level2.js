@@ -156,9 +156,9 @@ class Level2 extends BaseLevel {
         this.scene.fogColor = new BABYLON.Color3(0.9, 0.9, 1.0);
         
         // simuler le soleil
-        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -2, 1), this.scene);
-        sunLight.intensity = 1.2;
-        sunLight.diffuse = new BABYLON.Color3(1, 0.95, 0.8);
+        // const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -2, 1), this.scene);
+        // sunLight.intensity = 1.2;
+        // sunLight.diffuse = new BABYLON.Color3(1, 0.95, 0.8);
         
         console.log("Création de l'environnement céleste terminée.");
     }

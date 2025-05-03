@@ -6,49 +6,48 @@ class Clouds {
     }
     
     create() {
-        // Créer un parent vide pour faire tourner tous les nuages
+        // parent vide pour tous les nuages
         const cloudsParent = new BABYLON.TransformNode("cloudsParent", this.scene);
         cloudsParent.position.y = 8;
 
-        // Créer 4 nuages
+        // création de 4 nuages
         for (let i = 0; i < 4; i++) {
-            // Créer un conteneur pour chaque nuage
             const cloudContainer = new BABYLON.TransformNode("cloudContainer", this.scene);
             cloudContainer.parent = cloudsParent;
             
-            // Positionner le conteneur en cercle
+            // position en cercle
             const angle = (i * Math.PI * 2) / 4;
             cloudContainer.position = new BABYLON.Vector3(
-                Math.cos(angle) * 8, // Rayon de 8 unités
+                Math.cos(angle) * 8, // rayon de 8
                 0,
                 Math.sin(angle) * 8
             );
 
-            // Créer les parties du nuage (style low-poly)
-            const parts = Math.random() * 2 + 3; // 3-5 parties par nuage
+            // parties du nuage
+            const parts = Math.random() * 2 + 3;
             for (let j = 0; j < parts; j++) {
                 const cloudPart = BABYLON.MeshBuilder.CreatePolyhedron(
                     "cloudPart",
-                    { type: 1, size: 0.5 + Math.random() }, // Type 1 est un octaèdre
+                    { type: 1, size: 0.5 + Math.random() },
                     this.scene
                 );
                 cloudPart.parent = cloudContainer;
                 
-                // Position aléatoire autour du centre du conteneur
+                // position aléatoire
                 cloudPart.position = new BABYLON.Vector3(
                     (Math.random() - 0.5) * 2,
                     (Math.random() - 0.5),
                     (Math.random() - 0.5) * 2
                 );
                 
-                // Rotation aléatoire
+                // rotation aléatoire
                 cloudPart.rotation = new BABYLON.Vector3(
                     Math.random() * Math.PI,
                     Math.random() * Math.PI,
                     Math.random() * Math.PI
                 );
 
-                // Matériau blanc semi-transparent
+                // matériau
                 const cloudMaterial = new BABYLON.StandardMaterial("whiteCloud", this.scene);
                 cloudMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
                 cloudMaterial.alpha = 0.8;
@@ -57,9 +56,9 @@ class Clouds {
             }
         }
 
-        // Animation de rotation
+        // rotation
         this.scene.registerBeforeRender(() => {
-            cloudsParent.rotation.y += 0.002; // Vitesse de rotation
+            cloudsParent.rotation.y += 0.002;
         });
     }
 }

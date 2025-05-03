@@ -55,9 +55,17 @@ class Level3 extends BaseLevel {
         // base circulaire
         for (let i = -3; i <= 3; i++) {
             for (let j = -3; j <= 3; j++) {
-                // créer un cercle (distance au centre ≤ 3)
+                // cercle (distance au centre ≤ 3)
                 if (Math.sqrt(i*i + j*j) <= 3) {
                     this.grid.addGridElement(i, 0, j);
+                }
+            }
+        }
+
+        for (let i = -3; i <= 3; i++) {
+            for (let j = -3; j <= 3; j++) {
+                if (Math.sqrt(i*i + j*j) <= 3) {
+                    this.grid.addGridElement(i, 4, j);
                 }
             }
         }
