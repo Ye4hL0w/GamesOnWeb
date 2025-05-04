@@ -96,6 +96,6 @@ Chaque jeu possède sa propre logique encapsulée dans son répertoire. Voici le
 *   **Portail (`index.js` & `gameProgress.js` à la racine)** :
     *   Voir descriptions précédentes si besoin (chargement dynamique des sections, gestion globale de la progression et de l'utilisateur).
 
-## 🤝 Contribution
+## 📄 Licence
 
 Tous les contenus (images, modèles 3D et sons) utilisés dans ce projet sont libres de droits ou créés spécifiquement pour le projet. Aucune restriction d'utilisation n'est appliquée sur ces ressources.
