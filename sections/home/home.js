@@ -11,7 +11,7 @@ function initGameSections() {
     let touchStartY = 0;
     let touchEndY = 0;
 
-    // Vérifier si les éléments existent
+    // vérifier si les éléments existent
     if (!gameContainer || sections.length === 0 || indicators.length === 0) {
         console.error("Éléments introuvables pour l'initialisation des sections");
         return;
@@ -19,7 +19,7 @@ function initGameSections() {
 
     console.log("Initialisation des sections de jeu");
 
-    // Fonction pour faire défiler vers une section spécifique
+    //faire défiler vers une section
     const scrollToSection = (index) => {
         if (isScrolling) return;
         
@@ -36,7 +36,6 @@ function initGameSections() {
             section.style.transition = 'transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
         });
 
-        // Mettre à jour l'indicateur
         updateIndicator(index);
 
         setTimeout(() => {
@@ -44,7 +43,6 @@ function initGameSections() {
         }, 800);
     };
 
-    // Fonction pour mettre à jour l'indicateur
     const updateIndicator = (index) => {
         indicators.forEach((dot, i) => {
             if (i === index) {
@@ -55,7 +53,7 @@ function initGameSections() {
         });
     };
 
-    // Ajouter des écouteurs d'événements pour les indicateurs
+
     indicators.forEach((dot, i) => {
         dot.addEventListener('click', () => {
             console.log(`Clic sur l'indicateur ${i}`);
@@ -63,7 +61,7 @@ function initGameSections() {
         });
     });
 
-    // Gestion de la molette de souris
+    // molette de souris
     const handleWheel = (e) => {
         e.preventDefault();
         if (isScrolling) return;
@@ -76,7 +74,7 @@ function initGameSections() {
         }
     };
 
-    // Gestion du tactile
+    // tactile
     const handleTouchStart = (e) => {
         touchStartY = e.touches[0].clientY;
     };
@@ -85,7 +83,7 @@ function initGameSections() {
         touchEndY = e.changedTouches[0].clientY;
         const diff = touchStartY - touchEndY;
 
-        if (Math.abs(diff) > 50) { // Seuil minimum pour le swipe
+        if (Math.abs(diff) > 50) {
             if (diff > 0 && currentSection < sections.length - 1) {
                 scrollToSection(currentSection + 1);
             } else if (diff < 0 && currentSection > 0) {
@@ -94,7 +92,7 @@ function initGameSections() {
         }
     };
 
-    // Gestion du clavier
+    // clavier
     const handleKeydown = (e) => {
         if (isScrolling) return;
 
@@ -107,13 +105,12 @@ function initGameSections() {
         }
     };
 
-    // Ajout des écouteurs d'événements
     gameContainer.addEventListener('wheel', handleWheel, { passive: false });
     gameContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
     gameContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
     document.addEventListener('keydown', handleKeydown);
 
-    // Initialisation des positions
+    // initialisation des positions
     sections.forEach((section, i) => {
         section.style.position = 'fixed';
         section.style.top = '0';
@@ -123,11 +120,10 @@ function initGameSections() {
         section.style.height = '100vh';
     });
 
-    // Initialisation de l'indicateur
+    // initialisation de l'indicateur
     updateIndicator(currentSection);
 }
 
-// S'assurer que le script s'exécute même si le DOMContentLoaded a déjà été déclenché
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         initGameSections();

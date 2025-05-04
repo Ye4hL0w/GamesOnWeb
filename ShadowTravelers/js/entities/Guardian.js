@@ -146,4 +146,9 @@ export class Guardian {
             );
         }
     }
+    
+    updateDimensions(image) {
+        const ratio = image.height / image.width;
+        this.height = this.width * ratio;
+    }
 }

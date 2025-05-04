@@ -84,13 +84,13 @@ function initConnexion() {
         const user = JSON.parse(localStorage.getItem(email));
         
         if (user && user.password === password) {
-            // Enregistrer l'utilisateur actuel
+            // enregistrer l'utilisateur actuel
             localStorage.setItem('currentUser', email);
             
             logInForm.reset();
             alert('Connexion réussie');
             
-            // Rediriger vers l'accueil
+            // rediriger vers l'accueil
             window.location.href = '../../index.html';
         } else {
             errorBoxLogin.textContent = 'Email ou mot de passe incorrect';

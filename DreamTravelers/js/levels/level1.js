@@ -33,8 +33,6 @@ class Level1 extends BaseLevel {
 
     startLevel(levelId) {
         this.currentLevel = levelId;
-        const levelManager = new LevelManager();
-        levelManager.startLevel(levelId, this.scene);
     }
 
     handleKeyboard(evt) {

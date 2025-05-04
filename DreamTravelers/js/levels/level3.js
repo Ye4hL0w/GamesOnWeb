@@ -38,8 +38,6 @@ class Level3 extends BaseLevel {
 
     startLevel(levelId) {
         this.currentLevel = levelId;
-        const levelManager = new LevelManager();
-        levelManager.startLevel(levelId, this.scene);
     }
 
     createLevel() {

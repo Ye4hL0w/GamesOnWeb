@@ -1,32 +1,27 @@
 /**
- * Game Progress Manager
- * Handles saving and loading game progress across all games
+ * Gestionnaire de progression des jeux
+ * Gère la sauvegarde et le chargement de la progression à travers tous les jeux
  */
 
-// Game identifiers
+// Identifiants des jeux
 const GAME_IDS = {
     SHADOW_TRAVELERS: 1,
     DREAM_TRAVELERS: 2,
     THE_AWAKENING: 3
 };
 
-// Clean up old progress data and convert to new format
+// convertir au nouveau format
 function cleanupStorageData() {
-    // Supprimer les anciennes entrées séparées
     localStorage.removeItem('game1Progress');
     localStorage.removeItem('game2Progress');
     localStorage.removeItem('game3Progress');
     
-    // Nettoyer et uniformiser les données utilisateur
     const currentUserEmail = localStorage.getItem('currentUser');
     if (currentUserEmail) {
         const userData = JSON.parse(localStorage.getItem(currentUserEmail) || '{}');
         
         if (userData && userData.gameProgress) {
             const newGameProgress = {};
-            
-            // Convertir les données au format unifié
-            // Format: { gameId: { highestLevel: X, progress: Y } }
             
             // Jeu 1: Shadow Travelers
             const shadowData = userData.gameProgress[1] || userData.gameProgress.shadowTravelers || {};
@@ -49,7 +44,7 @@ function cleanupStorageData() {
                 progress: awakeningData.progress || (awakeningData.totalCompleted ? Math.round((awakeningData.totalCompleted / 3) * 100) : 0)
             };
             
-            // Mettre à jour les données utilisateur
+            // mettre à jour les données
             userData.gameProgress = newGameProgress;
             localStorage.setItem(currentUserEmail, JSON.stringify(userData));
             
@@ -58,37 +53,35 @@ function cleanupStorageData() {
     }
 }
 
-// Get the current logged in user
+    // utilisateur actuellement connecté
 function getCurrentUser() {
     const currentUserEmail = localStorage.getItem('currentUser');
     if (!currentUserEmail) {
-        console.warn('No user logged in');
+        console.warn('Aucun utilisateur connecté');
         return null;
     }
     
     const userData = localStorage.getItem(currentUserEmail);
     if (!userData) {
-        console.warn('User data not found');
+        console.warn('Données utilisateur non trouvées');
         return null;
     }
     
     return JSON.parse(userData);
 }
 
-// Save progress for a specific game
+// sauvegarder la progression
 function saveGameProgress(gameId, levelCompleted) {
     const user = getCurrentUser();
     if (!user) {
-        console.error('No user logged in, progress will not be saved');
+        console.error('Aucun utilisateur connecté, la progression ne sera pas sauvegardée');
         return false;
     }
     
-    // Initialize progress data if not exists
     if (!user.gameProgress) {
         user.gameProgress = {};
     }
     
-    // Initialize specific game progress if not exists
     if (!user.gameProgress[gameId]) {
         user.gameProgress[gameId] = {
             highestLevel: 0,
@@ -98,7 +91,6 @@ function saveGameProgress(gameId, levelCompleted) {
     
     const gameProgress = user.gameProgress[gameId];
     
-    // Update highest level if new level is higher
     if (levelCompleted > gameProgress.highestLevel) {
         gameProgress.highestLevel = levelCompleted;
         console.log(`Niveau atteint mis à jour pour jeu ${gameId}: niveau ${levelCompleted}`);
@@ -106,21 +98,21 @@ function saveGameProgress(gameId, levelCompleted) {
         console.log(`Niveau ${levelCompleted} déjà atteint pour jeu ${gameId} (niveau max: ${gameProgress.highestLevel})`);
     }
     
-    // Calculate progress percentage (assuming 3 levels per game)
+    // pourcentage de progression
     gameProgress.progress = Math.min(100, Math.round((gameProgress.highestLevel / 3) * 100));
     
-    // Save updated user data
+    // sauvegarder les données
     localStorage.setItem(user.email, JSON.stringify(user));
     console.log(`Progression sauvegardée pour jeu ${gameId}: Niveau ${levelCompleted} terminé, progression totale ${gameProgress.progress}%`);
     
     return true;
 }
 
-// Load progress for all games
+// charger la progression
 function loadGameProgress() {
     const user = getCurrentUser();
     if (!user || !user.gameProgress) {
-        console.warn('No progress data found');
+        console.warn('Aucune donnée de progression trouvée');
         return {
             [GAME_IDS.SHADOW_TRAVELERS]: { progress: 0, levels: 0 },
             [GAME_IDS.DREAM_TRAVELERS]: { progress: 0, levels: 0 },
@@ -128,7 +120,7 @@ function loadGameProgress() {
         };
     }
     
-    // Convert the stored data to the format expected by the progress display
+    // convertir les données stockées au format attendu
     const result = {};
     
     for (const gameId in GAME_IDS) {
@@ -145,10 +137,8 @@ function loadGameProgress() {
     return result;
 }
 
-// Exécuter le nettoyage au chargement du script
 cleanupStorageData();
 
-// Export functions for use in other files
 window.GameProgress = {
     GAME_IDS,
     saveGameProgress,

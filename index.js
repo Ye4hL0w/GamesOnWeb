@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     loadSection('home');
 
-    // Gestion de la navigation
+    // gestion des clics
     document.querySelectorAll('.li').forEach(item => {
         item.addEventListener('click', () => {
             const section = item.getAttribute('data-section');
@@ -20,14 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialiser l'interface utilisateur
+    // initialisation
     initUserInterface();
 });
 
 async function loadSection(section) {
     const content = document.getElementById('content');
 
-    // Charger le HTML
+    // chargement du HTML
     const response = await fetch(`./sections/${section}/${section}.html`);
     if (!response.ok) {
         throw new Error(`Erreur HTTP: ${response.status}`);
@@ -35,14 +35,13 @@ async function loadSection(section) {
     const html = await response.text();
     content.innerHTML = html;
 
-    // Charger le CSS
+    // chargement du CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = `./sections/${section}/${section}.css`;
     link.id = `style-${section}`;
     document.head.appendChild(link);
 
-    // Charger Font Awesome si connexion
     if (section === 'connexion') {
         const faLink = document.createElement('link');
         faLink.rel = 'stylesheet';
@@ -51,13 +50,12 @@ async function loadSection(section) {
         document.head.appendChild(faLink);
     }
 
-    // Charger le JS avec un timestamp pour éviter la mise en cache
+    // ajout du JS
     const script = document.createElement('script');
     script.src = `./sections/${section}/${section}.js?v=${Date.now()}`;
     script.id = `script-${section}`;
     script.type = 'module';
     
-    // Supprimer l'ancien script s'il existe
     const oldScript = document.querySelector(`#script-${section}`);
     if (oldScript) {
         oldScript.remove();
@@ -65,16 +63,13 @@ async function loadSection(section) {
     
     document.body.appendChild(script);
 
-    // Réinitialiser le menu burger après chaque changement de section
     const burgerMenu = document.querySelector('.burger-menu');
     const liens = document.querySelector('.liens');
     
     if (burgerMenu && liens) {
-        // Nettoyer les anciens événements
         burgerMenu.replaceWith(burgerMenu.cloneNode(true));
         const newBurgerMenu = document.querySelector('.burger-menu');
         
-        // Réattacher les événements
         newBurgerMenu?.addEventListener('click', () => {
             newBurgerMenu.classList.toggle('active');
             liens.classList.toggle('active');
@@ -90,7 +85,6 @@ async function loadSection(section) {
         });
     }
 
-    // Mettre à jour l'élément actif dans la navigation
     document.querySelectorAll('.li').forEach(nav => {
         if (nav.getAttribute('data-section') === section) {
             nav.classList.add('active');
@@ -100,27 +94,26 @@ async function loadSection(section) {
     });
 }
 
-// Gestion de l'affichage utilisateur et déconnexion
+// gestion utilisateur et déconnexion
 function initUserInterface() {
     const currentUserEmail = localStorage.getItem('currentUser');
     if (currentUserEmail) {
-        // Récupérer les données de l'utilisateur
+        // récupération des données
         const userData = JSON.parse(localStorage.getItem(currentUserEmail));
         if (userData) {
-            // Afficher le nom d'utilisateur et le bouton de déconnexion
+            // affichage
             document.getElementById('user-greeting').textContent = `Bonjour ${userData.name}`;
             document.getElementById('user-info').style.display = 'flex';
             document.getElementById('connexion-li').style.display = 'none';
         }
     }
     
-    // Gérer la déconnexion
+    // configuration de la déconnexion
     document.getElementById('deconnexion').addEventListener('click', function() {
         localStorage.removeItem('currentUser');
         document.getElementById('user-info').style.display = 'none';
         document.getElementById('connexion-li').style.display = 'block';
         alert('Vous avez été déconnecté');
-        // Recharger la page
         window.location.reload();
     });
 }

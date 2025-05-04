@@ -23,12 +23,6 @@ export class Player {
         this.jumpVelocity = -25;
         this.gravityValue = 1.2;
 
-        // footsteps
-        this.footstepSound = new Audio('./assets/sounds/none.mp3');
-        this.footstepSound.loop = true;
-        this.footstepSound.volume = 0.5;
-        this.isPlayingFootsteps = false;
-
         this.sprites = {
             runRight: new Image(),
             runRight2: new Image(),
@@ -102,15 +96,6 @@ export class Player {
                 this.isJumping = false;
                 this.velocityY = 0;
             }
-        }
-
-        if (this.isMoving && !this.isJumping && !this.isPlayingFootsteps) {
-            this.footstepSound.play();
-            this.isPlayingFootsteps = true;
-        } else if ((!this.isMoving || this.isJumping) && this.isPlayingFootsteps) {
-            this.footstepSound.pause();
-            this.footstepSound.currentTime = 0;
-            this.isPlayingFootsteps = false;
         }
         
         this.x = Math.max(0, Math.min(this.canvas.width - this.width, this.x));
