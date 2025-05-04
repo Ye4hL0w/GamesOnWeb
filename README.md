@@ -99,3 +99,7 @@ Chaque jeu possède sa propre logique encapsulée dans son répertoire. Voici le
 ## 📄 Licence
 
 Tous les contenus (images, modèles 3D et sons) utilisés dans ce projet sont libres de droits ou créés spécifiquement pour le projet. Aucune restriction d'utilisation n'est appliquée sur ces ressources.
+
+## 📄 Documentation
+
+Un rapport de conception détaillé est disponible dans le fichier `Rapport de conception.pdf` à la racine du projet, fournissant des informations approfondies sur l'architecture, les choix techniques et les fonctionnalités.
