@@ -141,7 +141,21 @@ class Player {
         }
     }
     
-    
+    /*
+     * Système de pathfinding
+     * 
+     * findPath : méthode principale qui décide quelle stratégie utiliser
+     * - vérifie si on peut se déplacer
+     * - utilise findDescentPath en mode normal pour descendre
+     * - utilise findDescentPath en mode inversé pour monter (on calcule le chemin de haut en bas puis on l'inverse)
+     * - gère les contraintes du Level3
+     * 
+     * findDescentPath : moteur principal de recherche de chemin
+     * - algorithme A* simplifié
+     * - détecte les escaliers et plateformes spéciales
+     * - favorise les chemins via escaliers (coût réduit)
+     * - gère les déplacements sur même niveau et la descente
+     */
     findPath(target) {
         // si la cible est celle de la position actuelle, retourner un chemin vide
         if (target.x === this.position.x && target.y === this.position.y && target.z === this.position.z) {
