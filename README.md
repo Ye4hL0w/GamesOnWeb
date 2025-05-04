@@ -102,4 +102,4 @@ Tous les contenus (images, modèles 3D et sons) utilisés dans ce projet sont li
 
 ## 📄 Documentation
 
-Un rapport de conception détaillé est disponible dans le fichier `Rapport de conception.pdf` à la racine du projet, fournissant des informations approfondies sur l'architecture, les choix techniques et les fonctionnalités.
+Un rapport de conception détaillé est disponible dans le fichier `Rapport de conception.pdf` à la racine du projet, fournissant des informations sur l'architecture, les choix techniques et les fonctionnalités.
