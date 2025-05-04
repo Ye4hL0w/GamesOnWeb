@@ -244,7 +244,7 @@ class Game {
                     levelCompleted
                 );
                 console.log(`Progression du jeu TheAwakening sauvegardée: niveau ${levelCompleted} terminé`);
-                this.ui.showMessage(`Niveau ${levelCompleted} terminé et sauvegardé !`, 1500);
+                this.ui.showMessage(`Niveau ${levelCompleted} terminé !`, 1500);
             }
         }
         
@@ -256,11 +256,11 @@ class Game {
             } 
             if(this.currentLevel === level2) {
                 this.controls.canDash = true;
-                this.ui.showMessage("Nouveau pouvoir débloqué : Téléportation ! Appuyez sur Espace pour vous téléporter à l'endroit où vous regardez !", 4000);
+                // this.ui.showMessage("Nouveau pouvoir débloqué : Téléportation ! Appuyez sur Espace pour vous téléporter à l'endroit où vous regardez !", 4000);
                 setTimeout(() => this.startDirectLevel3(), 2000);
             }
             if (this.currentLevel === level3) {
-                this.ui.showMessage("Félicitations ! Vous avez terminé tous les niveaux de TheAwakening !", 3000);
+                this.ui.showMessage("Vous avez terminé tous les niveaux de The Awakening ! Vous avez retrouvé votre ombre et votre esprit !", 3000);
                 setTimeout(() => {
                     this.resetGameState();
                     this.ui.showMenu();

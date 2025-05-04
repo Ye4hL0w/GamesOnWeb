@@ -16,6 +16,7 @@ export class Level3 extends BaseLevel {
         this.jumpingObstacles = [];
         this.directionalObstacles = [];
         this.guardians = [];
+        this.shadowZones = [];
         this.playerStartX = this.canvas.width * 0.1;
         this.playerStartY = this.canvas.height - this.floorHeight;
         
@@ -28,33 +29,65 @@ export class Level3 extends BaseLevel {
         const floorY = this.canvas.height - this.floorHeight;
         const obstacleHeight = 100;
         
+        this.player.inShadowZone = false;
+        this.player.shadowInfluence = 0; // 0 = contrôles normaux, 1 = contrôles inversés
+        
         this.obstacles.push(
-            { x: 1500, y: floorY - obstacleHeight, width: 50, height: obstacleHeight },
+            { x: 1800, y: floorY - obstacleHeight, width: 50, height: obstacleHeight },
         );
 
         this.jumpingObstacles.push(
             new JumpingObstacle(3200, 0, 70, floorY, 200, 8)
         );
+
         this.directionalObstacles.push(
             new DirectionalObstacle(3800, 0, 70, floorY, 200, 8)
         );
 
         const ghostY = floorY - 100;
         this.ghosts.push(
-            new Ghost(750, ghostY, "Tu es arrivé au seuil… Regarde autour de toi. Dream Land brille au loin, mais les gardiens refusent de te laisser partir. La dernière énigme est la plus cruelle.")
+            new Ghost(this.canvas.width - 450, ghostY, "Tu es arrivé au seuil… Regarde autour de toi. Dream Land brille au loin, mais les gardiens refusent de te laisser partir. La dernière énigme est la plus cruelle.")
         );
 
         this.ghosts.push(
             new Ghost(this.levelWidth - 400, ghostY, "Les portes s'ouvrent… mais à quel prix ? Dream Land t'attend… ou bien te piège ? Va, voyageur. Trouve la réponse par toi-même…")
         );
 
-        // Ajouter un gardien au niveau
         this.guardians.push(
-            new Guardian(2400, floorY - 85)
+            new Guardian(2400, floorY - 80)
         );
 
         this.guardians.push(
-            new Guardian(2800, floorY - 85)
+            new Guardian(2800, floorY - 80)
+        );
+
+        this.shadowZones.push(
+            new ShadowZone(4400, 0, 4000, this.canvas.height)
+        );
+
+        // this.guardians.push(
+        //     new Guardian(4800, floorY - 80)
+        // );
+
+        this.directionalObstacles.push(
+            new DirectionalObstacle(5400, 0, 70, floorY, 200, 8)
+        );
+
+        this.guardians.push(
+            new Guardian(6000, floorY - 80)
+        );
+
+        this.jumpingObstacles.push(
+            new JumpingObstacle(6600, 0, 70, floorY, 200, 8)
+        );
+
+        this.guardians.push(
+            new Guardian(7200, floorY - 80)
+        );
+
+
+        this.directionalObstacles.push(
+            new DirectionalObstacle(7800, 0, 70, floorY, 200, 8)
         );
 
         this.exit = new Exit(this.levelWidth - 200, floorY - 100, 80, 80);
@@ -66,14 +99,69 @@ export class Level3 extends BaseLevel {
             this.player.x = this.playerStartX;
             this.player.y = this.playerStartY - this.player.height + 10;
             this.cameraX = 0;
+            this.player.inShadowZone = false;
+            this.player.shadowInfluence = 0;
         }
     }
 
     update() {
-        super.update();
-        
         if (this.player) {
             const playerAbsoluteX = this.player.x + this.cameraX;
+            
+            // zones d'ombre
+            const wasInShadow = this.player.inShadowZone;
+            this.player.inShadowZone = false;
+            
+            // si le joueur est dans une zone d'ombre
+            for (const zone of this.shadowZones) {
+                zone.update();
+                if (zone.checkCollision(this.player, this.cameraX)) {
+                    zone.applyEffect(this.player, wasInShadow);
+                }
+            }
+            
+            // sinon, on réduit l'effet
+            if (!this.player.inShadowZone) {
+                for (const zone of this.shadowZones) {
+                    zone.reduceEffect(this.player, wasInShadow);
+                }
+            }
+            
+            // maj du joueur
+            let effectiveKeys = this.keys;
+            if (this.player.shadowInfluence > 0 && this.shadowZones.length > 0) {
+                effectiveKeys = this.shadowZones[0].getModifiedControls(this.player, this.keys);
+            }
+            
+            this.player.update(effectiveKeys, this.floorHeight);
+            
+            // défilement de la caméra
+            if (this.player.x > this.canvas.width * 0.6 && effectiveKeys.ArrowRight) {
+                const scrollAmount = 15;
+                if (this.cameraX + this.canvas.width < this.levelWidth) {
+                    this.cameraX += scrollAmount;
+                    this.player.x -= scrollAmount;
+                }
+            }
+            
+            if (this.player.x < this.canvas.width * 0.2 && effectiveKeys.ArrowLeft) {
+                const scrollAmount = 15;
+                if (this.cameraX > 0) {
+                    this.cameraX -= scrollAmount;
+                    this.player.x += scrollAmount;
+                }
+            }
+
+            // limites du jeu
+            if (this.player.x < 0 && this.cameraX === 0) {
+                this.player.x = 0;
+            }
+
+            if (this.player.x + this.player.width > this.canvas.width && 
+                this.cameraX + this.canvas.width >= this.levelWidth) {
+                this.player.x = this.canvas.width - this.player.width;
+            }
+            
             for (const ghost of this.ghosts) {
                 ghost.update(playerAbsoluteX);
             }
@@ -118,10 +206,21 @@ export class Level3 extends BaseLevel {
             for (const obstacle of this.directionalObstacles) {
                 obstacle.update();
                 
-                if (this.keys.ArrowLeft) {
-                    obstacle.onPlayerGoLeft(this.player.isJumping);
-                } else if (this.keys.ArrowRight) {
-                    obstacle.onPlayerGoRight(this.player.isJumping);
+                // obstacles directionnels avec l'effet d'ombre
+                if (this.player.shadowInfluence > 0.5) {
+                    // principalement inversés
+                    if (this.keys.ArrowRight) {
+                        obstacle.onPlayerGoLeft(this.player.isJumping);
+                    } else if (this.keys.ArrowLeft) {
+                        obstacle.onPlayerGoRight(this.player.isJumping);
+                    }
+                } else {
+                    // principalement normaux
+                    if (this.keys.ArrowLeft) {
+                        obstacle.onPlayerGoLeft(this.player.isJumping);
+                    } else if (this.keys.ArrowRight) {
+                        obstacle.onPlayerGoRight(this.player.isJumping);
+                    }
                 }
                 
                 if (!this.player.isJumping && this.player.wasJumping) {
@@ -135,6 +234,9 @@ export class Level3 extends BaseLevel {
             
             this.player.wasJumping = this.player.isJumping;
         }
+
+        this.updateObstacles();
+        this.checkExitCollision();
     }
 
     draw() {
@@ -146,7 +248,7 @@ export class Level3 extends BaseLevel {
         }
         this.context.restore();
         
-        // Dessiner les gardiens
+        // gardiens
         this.context.save();
         for (const guardian of this.guardians) {
             guardian.draw(this.context, this.cameraX);
@@ -162,6 +264,13 @@ export class Level3 extends BaseLevel {
         this.context.save();
         for (const obstacle of this.directionalObstacles) {
             obstacle.draw(this.context, this.cameraX);
+        }
+        this.context.restore();
+        
+        // zones d'ombre
+        this.context.save();
+        for (const zone of this.shadowZones) {
+            zone.draw(this.context, this.cameraX);
         }
         this.context.restore();
     }

@@ -26,7 +26,6 @@ export class Level2 extends BaseLevel {
         this.player = new Player(this.canvas);
         this.player.inShadowZone = false;
         this.player.shadowInfluence = 0; // 0 = contrôles normaux, 1 = contrôles inversés
-        this.shadowTransitionRate = 0.03;
         
         const obstacleHeight = 100;
         this.obstacles.push(
@@ -57,128 +56,50 @@ export class Level2 extends BaseLevel {
     }
 
     update() {
-        // pas d'appel à super.update() car nous voulons personnaliser ce comportement
-
         if (this.player) {
             const playerAbsoluteX = this.player.x + this.cameraX;
             
-            // vérifier si le joueur est dans une zone d'ombre
+            // zones d'ombre
             const wasInShadow = this.player.inShadowZone;
             this.player.inShadowZone = false;
             
-            const detectionMargin = 5;
-            
+            // si le joueur est dans une zone d'ombre
             for (const zone of this.shadowZones) {
                 zone.update();
-                
-                // Vérifier la collision
-                const playerRect = {
-                    x: this.player.x + detectionMargin,
-                    y: this.player.y + detectionMargin,
-                    width: this.player.width - 2 * detectionMargin,
-                    height: this.player.height - 2 * detectionMargin
-                };
-                
-                // Zone d'effet légèrement plus petite que la zone visuelle
-                const zoneEffective = {
-                    x: zone.x + detectionMargin,
-                    y: zone.y + detectionMargin,
-                    width: zone.width - 2 * detectionMargin,
-                    height: zone.height - 2 * detectionMargin
-                };
-                
-                if (this.checkCollisionCustom(playerRect, zoneEffective)) {
-                    this.player.inShadowZone = true;
-                    
-                    // Si le joueur vient d'entrer dans la zone, on pourrait jouer un son
-                    if (!wasInShadow) {
-                        console.log("Le joueur commence à entrer dans une zone d'ombre");
-                    }
+                if (zone.checkCollision(this.player, this.cameraX)) {
+                    zone.applyEffect(this.player, wasInShadow);
                 }
             }
             
-            // gérer la transition de l'effet d'ombre
-            if (this.player.inShadowZone && this.player.shadowInfluence < 1) {
-                // Augmenter progressivement l'influence de l'ombre
-                this.player.shadowInfluence = Math.min(1, this.player.shadowInfluence + this.shadowTransitionRate);
-                if (this.player.shadowInfluence >= 1) {
-                    console.log("Contrôles complètement inversés");
-                }
-            } else if (!this.player.inShadowZone && this.player.shadowInfluence > 0) {
-                // Diminuer progressivement l'influence de l'ombre
-                this.player.shadowInfluence = Math.max(0, this.player.shadowInfluence - this.shadowTransitionRate);
-                if (this.player.shadowInfluence <= 0) {
-                    console.log("Contrôles redevenus normaux");
+            // sinon, on réduit l'effet
+            if (!this.player.inShadowZone) {
+                for (const zone of this.shadowZones) {
+                    zone.reduceEffect(this.player, wasInShadow);
                 }
             }
             
-            // Si le joueur vient de sortir d'une zone d'ombre
-            if (wasInShadow && !this.player.inShadowZone) {
-                console.log("Le joueur commence à sortir d'une zone d'ombre");
+            // maj du joueur
+            let effectiveKeys = this.keys;
+            if (this.player.shadowInfluence > 0 && this.shadowZones.length > 0) {
+                effectiveKeys = this.shadowZones[0].getModifiedControls(this.player, this.keys);
             }
             
-            // Gestion des contrôles avec transition progressive
-            if (this.player.shadowInfluence > 0) {
-                // Calcul du mélange des contrôles en fonction de l'influence de l'ombre
-                const normalLeftInfluence = 1 - this.player.shadowInfluence;
-                const invertedLeftInfluence = this.player.shadowInfluence;
-                
-                // "mélange" des touches gauche/droite
-                const effectiveLeftKey = 
-                    (this.keys.ArrowLeft * normalLeftInfluence) + 
-                    (this.keys.ArrowRight * invertedLeftInfluence);
-                    
-                const effectiveRightKey = 
-                    (this.keys.ArrowRight * normalLeftInfluence) + 
-                    (this.keys.ArrowLeft * invertedLeftInfluence);
-                
-                this.player.update({
-                    ArrowLeft: effectiveLeftKey > 0.5,
-                    ArrowRight: effectiveRightKey > 0.5,
-                    Space: this.keys.Space,
-                    ArrowUp: this.keys.ArrowUp
-                }, this.floorHeight);
-                
-                // Gestion du défilement de la caméra avec contrôles partiellement inversés
-                const leftScrollThreshold = this.canvas.width * 0.2;
-                const rightScrollThreshold = this.canvas.width * 0.6;
+            this.player.update(effectiveKeys, this.floorHeight);
+            
+            // défilement de la caméra
+            if (this.player.x > this.canvas.width * 0.6 && effectiveKeys.ArrowRight) {
                 const scrollAmount = 15;
-                
-                // Défilement à droite (combinaison des deux touches selon l'influence)
-                if ((this.player.x > rightScrollThreshold && this.keys.ArrowRight * normalLeftInfluence > 0.3) || 
-                    (this.player.x > rightScrollThreshold && this.keys.ArrowLeft * invertedLeftInfluence > 0.3)) {
-                    if (this.cameraX + this.canvas.width < this.levelWidth) {
-                        this.cameraX += scrollAmount;
-                        this.player.x -= scrollAmount;
-                    }
+                if (this.cameraX + this.canvas.width < this.levelWidth) {
+                    this.cameraX += scrollAmount;
+                    this.player.x -= scrollAmount;
                 }
-                
-                // Défilement à gauche (combinaison des deux touches selon l'influence)
-                if ((this.player.x < leftScrollThreshold && this.keys.ArrowLeft * normalLeftInfluence > 0.3) || 
-                    (this.player.x < leftScrollThreshold && this.keys.ArrowRight * invertedLeftInfluence > 0.3)) {
-                    if (this.cameraX > 0) {
-                        this.cameraX -= scrollAmount;
-                        this.player.x += scrollAmount;
-                    }
-                }
-            } else {
-                // si le joueur n'est pas sous l'influence de l'ombre maj normale
-                this.player.update(this.keys, this.floorHeight);
-                
-                if (this.player.x > this.canvas.width * 0.6 && this.keys.ArrowRight) {
-                    const scrollAmount = 15;
-                    if (this.cameraX + this.canvas.width < this.levelWidth) {
-                        this.cameraX += scrollAmount;
-                        this.player.x -= scrollAmount;
-                    }
-                }
-                
-                if (this.player.x < this.canvas.width * 0.2 && this.keys.ArrowLeft) {
-                    const scrollAmount = 15;
-                    if (this.cameraX > 0) {
-                        this.cameraX -= scrollAmount;
-                        this.player.x += scrollAmount;
-                    }
+            }
+            
+            if (this.player.x < this.canvas.width * 0.2 && effectiveKeys.ArrowLeft) {
+                const scrollAmount = 15;
+                if (this.cameraX > 0) {
+                    this.cameraX -= scrollAmount;
+                    this.player.x += scrollAmount;
                 }
             }
 
@@ -213,7 +134,7 @@ export class Level2 extends BaseLevel {
             for (const obstacle of this.directionalObstacles) {
                 obstacle.update();
                 
-                // Transition pour les obstacles directionnels également
+                // gestion des obstacles directionnels
                 if (this.player.shadowInfluence > 0.5) {
                     // Principalement inversés
                     if (this.keys.ArrowRight) {
@@ -267,7 +188,6 @@ export class Level2 extends BaseLevel {
         }
         this.context.restore();
         
-        // Dessiner les zones d'ombre
         this.context.save();
         for (const zone of this.shadowZones) {
             zone.draw(this.context, this.cameraX);
@@ -289,7 +209,7 @@ export class Level2 extends BaseLevel {
             console.error('Module GameProgress non disponible');
         }
         
-        // ajouter un effet visuel de "fondu" avant la transition
+        // ajouter un effet de fondu avant la transition
         const canvas = this.canvas;
         const context = this.context;
         
@@ -312,16 +232,5 @@ export class Level2 extends BaseLevel {
                 }, 500);
             }
         }, 50);
-    }
-
-    // méthode personnalisée de détection de collisions pour les zones d'ombre
-    checkCollisionCustom(player, obstacle) {
-        // on utilise la position absolue
-        const adjustedObstacleX = obstacle.x - this.cameraX;
-        
-        return player.x < adjustedObstacleX + obstacle.width &&
-               player.x + player.width > adjustedObstacleX &&
-               player.y < obstacle.y + obstacle.height &&
-               player.y + player.height > obstacle.y;
     }
 } 
