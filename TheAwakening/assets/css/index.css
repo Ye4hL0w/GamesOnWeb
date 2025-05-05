@@ -33,9 +33,10 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 30px;
-    padding: 60px;
-    width: 600px;
+    gap: 20px;
+    padding: 40px;
+    width: 90%;
+    max-width: 550px;
     background: rgba(0, 0, 0, 0.7);
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
@@ -56,20 +57,21 @@ body {
 }
 
 .menu-btn {
-    width: 300px;
-    padding: 20px;
-    margin: 10px 0;
+    width: 100%;
+    max-width: 300px;
+    padding: 15px;
+    margin: 5px 0;
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     color: white;
-    font-size: 20px;
+    font-size: 18px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .menu-btn span {
@@ -314,4 +316,47 @@ body {
 
 .back-button a:hover {
     background-color: #2a2a2a;
+}
+
+/* Media Queries pour la responsivité */
+@media screen and (max-width: 768px) {
+    .menu-content {
+        padding: 30px;
+        gap: 15px;
+    }
+    
+    .menu-content h1 {
+        font-size: 2.5em;
+        margin-bottom: 1rem;
+    }
+    
+    .menu-btn {
+        padding: 12px;
+        font-size: 16px;
+    }
+    
+    .menu-btn span {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .menu-content {
+        padding: 20px;
+        gap: 10px;
+    }
+    
+    .menu-content h1 {
+        font-size: 2em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .menu-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .menu-btn span {
+        font-size: 12px;
+    }
 }

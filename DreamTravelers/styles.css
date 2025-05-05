@@ -55,6 +55,7 @@ h1 {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 30px rgba(204, 93, 232, 0.6), 0 0 60px rgba(127, 212, 239, 0.4);
+    margin: 10px;
 }
 
 @keyframes titleFloat {
@@ -255,8 +256,7 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    height: auto;
+    height: fit-content;
 }
 
 .menu-content {
@@ -266,7 +266,12 @@ h2 {
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
     text-align: center;
+    width: 90%;
     max-width: 600px;
+    height: auto;
+    height: fit-content;
+    min-height: 60vh;
+    max-height: 80vh;
     border: 1px solid rgba(42, 150, 170, 0.3);
 }
 
@@ -332,6 +337,8 @@ h2 {
     .menu-content {
         padding: 2rem;
         margin: 0 1rem;
+        width: 95%;
+        min-height: 55vh;
     }
     
     .menu-btn {
@@ -340,6 +347,28 @@ h2 {
     
     h1 {
         font-size: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-content {
+        padding: 1.5rem;
+        gap: 1rem;
+        width: 95%;
+        min-height: 50vh;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    .menu-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+    }
+    
+    .menu-btn span {
+        font-size: 0.8rem;
     }
 }
 
