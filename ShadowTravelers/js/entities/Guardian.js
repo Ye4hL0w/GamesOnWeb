@@ -56,7 +56,7 @@ export class Guardian {
         if (distance < this.detectionRange) {
             this.isChasing = true;
             
-            // Augmenter la vitesse pendant la poursuite
+            // augmenter la vitesse pendant la poursuite
             if (this.speed < this.maxChaseSpeed) {
                 this.speed += this.acceleration;
                 if (this.speed > this.maxChaseSpeed) {
