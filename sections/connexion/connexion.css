@@ -15,8 +15,8 @@
 }
 
 .content {
-    padding: 40px 5%;
-    min-height: 80vh;
+    padding: 40px 0;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -61,6 +61,7 @@
     position: relative;
     z-index: 10;
     transition: all 0.3s ease;
+    margin: 0 auto;
 }
 
 #connexion-box:hover {
