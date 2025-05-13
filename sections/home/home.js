@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     initGameSections();
+    initFloatingButton();
 });
 
 function initGameSections() {
@@ -127,7 +128,34 @@ function initGameSections() {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         initGameSections();
+        initFloatingButton();
     });
 } else {
     initGameSections();
+    initFloatingButton();
+}
+
+// bouton flottant
+function initFloatingButton() {
+    const floatingButton = document.getElementById('floating-to-dream');
+    if (floatingButton) {
+        floatingButton.addEventListener('click', function() {
+            // trouver l'index de Dream Travelers
+            const sections = document.querySelectorAll('.game-section');
+            let dreamIndex = -1;
+            
+            sections.forEach((section, index) => {
+                if (section.id === 'dream') {
+                    dreamIndex = index;
+                }
+            });
+            
+            if (dreamIndex !== -1) {
+                const indicators = document.querySelectorAll('.indicator-dot');
+                if (indicators.length > dreamIndex) {
+                    indicators[dreamIndex].click();
+                }
+            }
+        });
+    }
 }
